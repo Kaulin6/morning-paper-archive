@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morning Paper — Archive</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#111; color:#f0ebe0; font-family:'DM Mono',monospace; padding:60px; }
+  h1 { font-family:'Bebas Neue',sans-serif; font-size:80px; line-height:1; margin-bottom:8px; }
+  .sub { color:#888; font-size:12px; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:60px; }
+  .sub span { color:#ff4d00; }
+  .list { display:flex; flex-direction:column; gap:2px; }
+  .entry { display:flex; align-items:center; gap:24px; background:#1a1a1a; padding:20px 28px; text-decoration:none; color:inherit; transition:background 0.15s; }
+  .entry:hover { background:#222; }
+  .entry-date { font-family:'Bebas Neue',sans-serif; font-size:22px; color:#ff4d00; width:160px; flex-shrink:0; }
+  .entry-day { font-size:12px; color:#888; flex:1; letter-spacing:0.05em; }
+  .entry-arrow { color:#444; font-size:18px; }
+  .entry:hover .entry-arrow { color:#ff4d00; }
+  .empty { color:#333; font-size:13px; padding:20px 0; }
+  footer { margin-top:48px; font-size:11px; color:#333; letter-spacing:0.15em; }
+</style>
+</head>
+<body>
+<h1>Morning Paper</h1>
+<p class="sub">Archive — Published by <span>Mango 🥭</span></p>
+<div class="list" id="list"><p class="empty">No issues yet.</p></div>
+<footer>KAULIN6/MORNING-PAPER-ARCHIVE · GITHUB PAGES</footer>
+<script id="papers-data" type="application/json">[]</script>
+<script>
+const papers = JSON.parse(document.getElementById('papers-data').textContent);
+const list = document.getElementById('list');
+if (papers.length) {
+  list.innerHTML = papers.map(p => `
+    <a class="entry" href="papers/${p.file}">
+      <div class="entry-date">${p.date}</div>
+      <div class="entry-day">${p.day} · ${p.stats}</div>
+      <div class="entry-arrow">→</div>
+    </a>
+  `).join('');
+}
+</script>
+</body>
+</html>
