@@ -1181,13 +1181,13 @@ function renderAboveTheFold(bookmarks) {
           <span>${esc(item.category || 'General')}</span>
           ${item.agentWorkflow ? `<span>·</span><span style="color:#ff4d00;font-weight:700">🤖 Agent</span>` : ''}
         </div>
-        <div class="atf-headline">${esc(truncate(item.applicability, 90))}</div>
-        <div class="atf-body">${esc(item.summary ? truncate(item.summary, 200) : truncate(item.text, 200))}</div>
+        <div class="atf-headline">${esc(item.applicability)}</div>
+        <div class="atf-body">${esc(item.summary ? item.summary : item.text)}</div>
         ${item.keyTakeaways?.length ? `
           <div style="margin-top:0.25rem; border-top:1px solid rgba(0,0,0,0.08); padding-top:0.5rem;">
             ${item.keyTakeaways.slice(0,2).map(t => `<div style="font-size:0.72rem;color:rgba(0,0,0,0.5);padding:2px 0;">→ ${esc(t)}</div>`).join('')}
           </div>` : ''}
-        ${item.implications?.specific ? `<div style="font-size:0.73rem;color:#ff4d00;margin-top:auto;padding-top:0.4rem;font-weight:600;">⚡ ${esc(truncate(item.implications.specific, 100))}</div>` : ''}
+        ${item.implications?.specific ? `<div style="font-size:0.73rem;color:#ff4d00;margin-top:auto;padding-top:0.4rem;font-weight:600;">⚡ ${esc(item.implications.specific)}</div>` : ''}
         <a class="neo-link" href="${esc(item.url)}" target="_blank" rel="noopener" style="margin-top:0.5rem;">→ Source tweet</a>
       </div>
     </div>
@@ -1227,8 +1227,8 @@ function renderTheWire(bookmarks) {
     <div class="wire-item reveal-child">
       <div class="wire-num">${String(i+1).padStart(2,'0')}</div>
       <div class="wire-content">
-        <div class="wire-text">"${esc(truncate(signal, 220))}"</div>
-        ${specific ? `<div style="font-size:0.75rem;color:rgba(0,0,0,0.5);margin-top:0.3rem;font-style:italic;">⚡ ${esc(truncate(specific,120))}</div>` : ''}
+        <div class="wire-text">"${esc(signal)}"</div>
+        ${specific ? `<div style="font-size:0.75rem;color:rgba(0,0,0,0.5);margin-top:0.3rem;font-style:italic;">⚡ ${esc(specific)}</div>` : ''}
         <div class="wire-source" style="margin-top:0.4rem;display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
           via <a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.author)}</a>
           <span class="wire-cat-badge">${esc(b.category || 'General')}</span>
@@ -1278,7 +1278,7 @@ function renderDemos(mvps) {
         </div>
         ${projectTag}
         <div class="demo-name">${esc(mvp.name)}</div>
-        <div class="demo-desc">${esc(truncate(mvp.description, 140))}</div>
+        <div class="demo-desc">${esc(mvp.description)}</div>
         <div class="demo-actions" style="margin-top:auto;">${openBtn}${ghBtn}</div>
       </div>`;
   }).join('');
@@ -1480,9 +1480,9 @@ function renderSparks(bookmarks) {
           <div class="spark-author">${esc(b.author)}</div>
           ${projects.map(p => `<span style="font-size:0.6rem;background:rgba(0,0,0,0.08);padding:1px 5px;border-radius:2px;font-weight:700;">${p}</span>`).join('')}
         </div>
-        <div class="spark-text">${esc(truncate(b.text, 200))}</div>
-        ${b.summary ? `<div style="font-size:0.76rem;color:rgba(0,0,0,0.5);margin-top:0.3rem;line-height:1.45;">${esc(truncate(b.summary,160))}</div>` : ''}
-        ${b.implications?.specific ? `<div style="font-size:0.72rem;color:#ff4d00;margin-top:0.25rem;">⚡ ${esc(truncate(b.implications.specific,100))}</div>` : ''}
+        <div class="spark-text">${esc(b.text)}</div>
+        ${b.summary ? `<div style="font-size:0.76rem;color:rgba(0,0,0,0.5);margin-top:0.3rem;line-height:1.45;">${esc(b.summary)}</div>` : ''}
+        ${b.implications?.specific ? `<div style="font-size:0.72rem;color:#ff4d00;margin-top:0.25rem;">⚡ ${esc(b.implications.specific)}</div>` : ''}
         <div class="spark-meta" style="margin-top:0.5rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
           <span class="cat-badge">${esc(b.category || 'Spark')}</span>
           <span class="score-chip">★ ${(r.composite||0).toFixed(1)}</span>
