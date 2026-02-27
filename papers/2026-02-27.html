@@ -1,0 +1,1525 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Morning Paper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&amp;display=swap" rel="stylesheet">
+  <style>
+    /* ─── Reset & Base ───────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Neo-Brutalism Palette */
+      --neo-cream:      #fffdf5;
+      --neo-yellow:     #ffd93d;
+      --neo-purple:     #f3e8ff;
+      --neo-white:      #ffffff;
+      --neo-black:      #000000;
+      --neo-amber:      #E8B84B;
+      --neo-green:      #22c55e;
+      --neo-red:        #ff6b6b;
+
+      /* Section backgrounds */
+      --bg-masthead:    #000000;
+      --bg-atf:         #fffdf5;
+      --bg-wire:        #ffd93d;
+      --bg-demos:       #ffffff;
+      --bg-proposals:   #f3e8ff;
+      --bg-sparks:      #fffdf5;
+      --bg-library:     #000000;
+
+      /* Typography */
+      --font-display: "Space Grotesk", -apple-system, sans-serif;
+      --font-body: Georgia, "Times New Roman", serif;
+      --font-sans: -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+      /* Neo borders/shadows */
+      --neo-border:        4px solid #000;
+      --neo-border-thick:  8px solid #000;
+      --neo-shadow-sm:     4px 4px 0px 0px #000;
+      --neo-shadow-md:     6px 6px 0px 0px #000;
+      --neo-shadow-lg:     8px 8px 0px 0px #000;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--neo-cream);
+      color: var(--neo-black);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── Scroll Progress Bar ─────────────────────────────── */
+    #scroll-progress {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 6px;
+      height: 100vh;
+      background: rgba(0,0,0,0.1);
+      z-index: 1000;
+      border-left: 2px solid #000;
+    }
+    #scroll-progress-fill {
+      width: 100%;
+      height: 0%;
+      background: var(--neo-amber);
+      transition: height 0.1s linear;
+    }
+
+    /* ─── Reveal Animations ───────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── Masthead ───────────────────────────────────────────── */
+    .masthead {
+      background: var(--bg-masthead);
+      color: var(--neo-cream);
+      padding: 3rem 2rem 4rem;
+      border-bottom: var(--neo-border-thick);
+      position: relative;
+      overflow: hidden;
+    }
+    .masthead-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    .masthead-stickers {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .sticker {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      border: 3px solid currentColor;
+      padding: 0.35rem 0.75rem;
+      white-space: nowrap;
+    }
+    .sticker-amber {
+      color: var(--neo-amber);
+      border-color: var(--neo-amber);
+      transform: rotate(-1.5deg);
+    }
+    .sticker-cream {
+      color: var(--neo-cream);
+      border-color: var(--neo-cream);
+      transform: rotate(1deg);
+    }
+    .sticker-green {
+      color: var(--neo-green);
+      border-color: var(--neo-green);
+      transform: rotate(-0.5deg);
+    }
+    .masthead-nameplate {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 11vw, 9rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 0.88;
+      text-transform: uppercase;
+      color: var(--neo-cream);
+      margin-bottom: 1.5rem;
+    }
+    .masthead-nameplate .hl {
+      color: var(--neo-amber);
+    }
+    .masthead-rule {
+      height: 4px;
+      background: var(--neo-amber);
+      margin: 1.5rem 0;
+    }
+    .masthead-sub {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,253,245,0.5);
+      margin-top: 0.75rem;
+    }
+    .masthead-tagline {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-style: italic;
+      color: rgba(255,253,245,0.6);
+      margin-top: 0.5rem;
+    }
+
+    /* ─── Section Wrapper ─────────────────────────────────── */
+    .section-block {
+      border-bottom: var(--neo-border-thick);
+      padding: 4rem 2rem;
+    }
+    .section-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    .section-block.bg-atf       { background: var(--bg-atf); }
+    .section-block.bg-wire      { background: var(--bg-wire); }
+    .section-block.bg-demos     { background: var(--bg-demos); }
+    .section-block.bg-proposals { background: var(--bg-proposals); }
+    .section-block.bg-sparks    { background: var(--bg-sparks); }
+    .section-block.bg-library   { background: var(--bg-library); color: var(--neo-cream); }
+
+    /* ─── Section Headers ─────────────────────────────────── */
+    .section-header {
+      margin-bottom: 2.5rem;
+    }
+    .section-num {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      font-weight: 900;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      margin-bottom: 0.25rem;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      line-height: 0.95;
+      position: relative;
+      display: inline-block;
+    }
+    .section-title::after {
+      content: '';
+      display: block;
+      height: 6px;
+      background: var(--neo-amber);
+      margin-top: 0.3rem;
+    }
+    .section-deck {
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      opacity: 0.6;
+      margin-top: 0.75rem;
+      font-style: italic;
+    }
+
+    /* ─── Above the Fold ─────────────────────────────────── */
+    .atf-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .atf-card {
+      background: var(--neo-white);
+      border: var(--neo-border);
+      box-shadow: var(--neo-shadow-lg);
+      padding: 1.75rem;
+      transition: transform 0.12s, box-shadow 0.12s;
+      position: relative;
+    }
+    .atf-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 11px 11px 0px 0px #000;
+    }
+    .atf-amber-strip {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 6px;
+      background: var(--neo-amber);
+    }
+    .atf-project-tag {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.6rem;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      background: var(--neo-amber);
+      color: #000;
+      padding: 0.2rem 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .atf-headline {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 0.5rem;
+    }
+    .atf-body {
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: rgba(0,0,0,0.7);
+      margin-bottom: 0.75rem;
+    }
+    .atf-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-sans);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(0,0,0,0.45);
+      margin-bottom: 0.75rem;
+    }
+    .score-badge {
+      font-family: var(--font-display);
+      font-weight: 900;
+      color: #000;
+      font-size: 0.65rem;
+    }
+    .neo-link {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-bottom: 2px solid currentColor;
+      padding-bottom: 1px;
+      transition: opacity 0.12s;
+    }
+    .neo-link:hover { opacity: 0.6; }
+
+    /* ─── The Wire ───────────────────────────────────────── */
+    .wire-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .wire-item {
+      display: grid;
+      grid-template-columns: 4rem 1fr;
+      gap: 0 1.5rem;
+      padding: 1.5rem 0;
+      border-bottom: 3px solid #000;
+      align-items: start;
+    }
+    .wire-item:first-child { border-top: 3px solid #000; }
+    .wire-num {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 1;
+      color: #000;
+      opacity: 0.15;
+      text-align: right;
+    }
+    .wire-content {}
+    .wire-text {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      font-style: italic;
+      line-height: 1.5;
+      color: #000;
+      margin-bottom: 0.4rem;
+    }
+    .wire-source {
+      font-family: var(--font-sans);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(0,0,0,0.55);
+    }
+    .wire-source a {
+      color: #000;
+      border-bottom: 1px solid #000;
+    }
+    .wire-cat-badge {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.58rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: #000;
+      color: var(--neo-yellow);
+      padding: 0.15rem 0.45rem;
+      margin-left: 0.5rem;
+    }
+
+    /* ─── Demos Live ─────────────────────────────────────── */
+    .demos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .demo-card {
+      background: var(--neo-white);
+      border: var(--neo-border);
+      box-shadow: var(--neo-shadow-lg);
+      padding: 1.5rem;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .demo-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 11px 11px 0px 0px #000;
+    }
+    .demo-status-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .live-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--neo-green);
+      animation: pulse 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    .dead-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #ccc;
+      flex-shrink: 0;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+      50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(34,197,94,0); }
+    }
+    .live-badge {
+      font-family: var(--font-display);
+      font-size: 0.58rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      background: var(--neo-green);
+      color: #000;
+      padding: 0.15rem 0.4rem;
+      border: 2px solid #000;
+      box-shadow: 2px 2px 0px 0px #000;
+    }
+    .dead-badge {
+      font-family: var(--font-display);
+      font-size: 0.58rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      background: #e5e5e5;
+      color: #666;
+      padding: 0.15rem 0.4rem;
+      border: 2px solid #999;
+    }
+    .demo-name {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+      color: #000;
+    }
+    .demo-desc {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: rgba(0,0,0,0.65);
+      margin-bottom: 1rem;
+    }
+    .demo-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .neo-btn {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.9rem;
+      border: 3px solid #000;
+      box-shadow: var(--neo-shadow-sm);
+      transition: transform 0.1s, box-shadow 0.1s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .neo-btn:hover {
+      transform: translate(4px, 4px);
+      box-shadow: none;
+      text-decoration: none;
+    }
+    .neo-btn-primary { background: var(--neo-amber); color: #000; }
+    .neo-btn-ghost   { background: transparent; color: #000; }
+
+    /* ─── Proposals ─────────────────────────────────────── */
+    .proposals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+    .proposal-group {
+      background: var(--neo-white);
+      border: var(--neo-border);
+      box-shadow: var(--neo-shadow-lg);
+      padding: 1.5rem;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .proposal-group:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 10px 10px 0px 0px #000;
+    }
+    .proposal-group-title {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      border-bottom: 3px solid #000;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .proposal-item {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.12);
+    }
+    .proposal-item:last-child { border-bottom: none; }
+    .proposal-headline {
+      font-family: var(--font-display);
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 0.25rem;
+    }
+    .proposal-body {
+      font-size: 0.8rem;
+      color: rgba(0,0,0,0.6);
+      line-height: 1.45;
+      font-style: italic;
+    }
+    .effort-badge {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.5rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.1rem 0.35rem;
+      border: 2px solid currentColor;
+      margin-left: 0.4rem;
+      vertical-align: middle;
+    }
+    .effort-easy   { color: #16a34a; }
+    .effort-medium { color: #ca8a04; }
+    .effort-hard   { color: #dc2626; }
+
+    /* ─── Top Sparks ─────────────────────────────────────── */
+    .sparks-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .spark-card {
+      background: var(--neo-white);
+      border: var(--neo-border);
+      box-shadow: var(--neo-shadow-lg);
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: 3.5rem 1fr auto;
+      gap: 0 1.2rem;
+      align-items: start;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    /* Alternating rotations */
+    .spark-card:nth-child(odd)  { transform: rotate(-0.5deg); }
+    .spark-card:nth-child(even) { transform: rotate(0.5deg); }
+    .spark-card:nth-child(odd):hover  { transform: rotate(0deg) translate(-3px, -3px); box-shadow: 11px 11px 0px 0px #000; }
+    .spark-card:nth-child(even):hover { transform: rotate(0deg) translate(-3px, -3px); box-shadow: 11px 11px 0px 0px #000; }
+
+    .spark-rank {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1;
+      color: #000;
+      opacity: 0.12;
+      text-align: right;
+    }
+    .spark-content {}
+    .spark-author {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.3rem;
+    }
+    .spark-text {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: rgba(0,0,0,0.85);
+      margin-bottom: 0.5rem;
+    }
+    .spark-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .cat-badge {
+      font-family: var(--font-display);
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.1rem 0.4rem;
+      border: 2px solid #000;
+      color: #000;
+    }
+    .score-chip {
+      font-family: var(--font-display);
+      font-size: 0.68rem;
+      font-weight: 900;
+      background: var(--neo-amber);
+      color: #000;
+      padding: 0.1rem 0.4rem;
+      border: 2px solid #000;
+    }
+    .spark-link-btn {
+      font-size: 0.65rem;
+      padding: 0.3rem 0.65rem;
+      align-self: start;
+      white-space: nowrap;
+    }
+
+    /* ─── Library ─────────────────────────────────────────── */
+    .library-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .lib-stat-card {
+      background: var(--neo-amber);
+      border: var(--neo-border);
+      box-shadow: var(--neo-shadow-lg);
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .lib-stat-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 11px 11px 0px 0px var(--neo-amber);
+    }
+    .lib-num {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 900;
+      color: #000;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .lib-label {
+      font-family: var(--font-display);
+      font-size: 0.6rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.6);
+    }
+    .library-tagline {
+      font-family: var(--font-body);
+      font-style: italic;
+      color: rgba(255,253,245,0.55);
+      font-size: 0.95rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    /* ─── Footer ──────────────────────────────────────────── */
+    .footer {
+      background: #000;
+      color: var(--neo-cream);
+      text-align: center;
+      padding: 2rem;
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .footer a {
+      color: var(--neo-amber);
+      border-bottom: 1px solid var(--neo-amber);
+    }
+
+    /* ─── Loading / Empty ─────────────────────────────────── */
+    .loading {
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-style: italic;
+      opacity: 0.5;
+      padding: 1.5rem 0;
+    }
+    .empty-note {
+      font-family: var(--font-sans);
+      font-style: italic;
+      font-size: 0.85rem;
+      opacity: 0.5;
+    }
+
+    /* ─── Responsive ──────────────────────────────────────── */
+    @media (max-width: 860px) {
+      .atf-grid { grid-template-columns: 1fr; }
+      .library-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .section-block { padding: 3rem 1.25rem; }
+      .masthead { padding: 2rem 1.25rem 3rem; }
+      .spark-card { grid-template-columns: 2.5rem 1fr; }
+      .spark-link-btn { display: none; }
+      .library-stats { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Scroll Progress Bar ──────────────────────── -->
+<div id="scroll-progress">
+  <div id="scroll-progress-fill"></div>
+</div>
+
+<!-- ─── Masthead ─────────────────────────────────── -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-stickers">
+      <span class="sticker sticker-amber" id="meta-date-sticker">Friday, February 27, 2026</span>
+      <span class="sticker sticker-cream">Published by Mango 🥭</span>
+      <span class="sticker sticker-green" id="meta-vol-sticker">Vol. I · No. 58</span>
+    </div>
+    <div class="masthead-nameplate">
+      The <span class="hl">Morning</span><br>Paper
+    </div>
+    <div class="masthead-rule"></div>
+    <div class="masthead-sub">TweetPool Intelligence Daily — Est. 2026</div>
+    <div class="masthead-tagline" id="meta-tagline">3 new bookmarks in the last 24h. Last enriched: Feb 26, 2026.</div>
+  </div>
+</header>
+
+<!-- ─── Section 1: Above the Fold ────────────────── -->
+<section class="section-block bg-atf">
+  <div class="section-inner">
+    <div class="section-header reveal visible">
+      <div class="section-num">Section 01</div>
+      <div class="section-title">Above the Fold</div>
+      <div class="section-deck">Top action items from the intel pool — what to act on today.</div>
+    </div>
+    <div class="atf-grid" id="atf-grid">
+    <div class="atf-card reveal-child reveal visible" style="transition-delay: 0ms;">
+      <div class="atf-amber-strip"></div>
+      <div style="padding-left:0.5rem">
+        <div class="atf-project-tag">Container HQ</div>
+        <div class="atf-meta">
+          <span>@gregisenberg</span>
+          <span>·</span>
+          <span class="score-badge">★ 5.0</span>
+          <span>·</span>
+          <span>Development &amp; Tooling</span>
+        </div>
+        <div class="atf-headline">Maintain a linked 'Facility Log' where maintenance records, tenant disputes, and expansion plans ar…</div>
+        <div class="atf-body">Maintain a linked 'Facility Log' where maintenance records, tenant disputes, and expansion plans are semantically connected for AI-driven auditing.</div>
+        <a class="neo-link" href="https://x.com/gregisenberg/status/2026036464287412412" target="_blank" rel="noopener">→ View source tweet</a>
+      </div>
+    </div>
+  
+    <div class="atf-card reveal-child reveal visible" style="transition-delay: 100ms;">
+      <div class="atf-amber-strip"></div>
+      <div style="padding-left:0.5rem">
+        <div class="atf-project-tag">Container HQ</div>
+        <div class="atf-meta">
+          <span>@Framer_X</span>
+          <span>·</span>
+          <span class="score-badge">★ 5.0</span>
+          <span>·</span>
+          <span>Development &amp; Tooling</span>
+        </div>
+        <div class="atf-headline">Create interactive 3D walkthroughs of storage facility layouts from basic site photographs for pros…</div>
+        <div class="atf-body">Create interactive 3D walkthroughs of storage facility layouts from basic site photographs for prospective tenants.</div>
+        <a class="neo-link" href="https://x.com/Framer_X/status/2025912264256307447" target="_blank" rel="noopener">→ View source tweet</a>
+      </div>
+    </div>
+  
+    <div class="atf-card reveal-child reveal visible" style="transition-delay: 200ms;">
+      <div class="atf-amber-strip"></div>
+      <div style="padding-left:0.5rem">
+        <div class="atf-project-tag">Container HQ</div>
+        <div class="atf-meta">
+          <span>@kemal_ersin</span>
+          <span>·</span>
+          <span class="score-badge">★ 5.0</span>
+          <span>·</span>
+          <span>Development &amp; Tooling</span>
+        </div>
+        <div class="atf-headline">A 'Facility Dashboard' where different pixel characters represent the health of different storage u…</div>
+        <div class="atf-body">A 'Facility Dashboard' where different pixel characters represent the health of different storage units, gate systems, and security cameras for site managers.</div>
+        <a class="neo-link" href="https://x.com/kemal_ersin/status/2025656752117534901" target="_blank" rel="noopener">→ View source tweet</a>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ─── Section 2: The Wire ───────────────────────── -->
+<section class="section-block bg-wire">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">Section 02</div>
+      <div class="section-title">The Wire</div>
+      <div class="section-deck">What the internet is telling us — trend signals, no noise.</div>
+    </div>
+    <div class="wire-list" id="wire-grid">
+    <div class="wire-item reveal-child reveal" style="transition-delay: 0ms;">
+      <div class="wire-num">01</div>
+      <div class="wire-content">
+        <div class="wire-text">"High-leverage organizational framework integrating knowledge vault with agentic execution."</div>
+        <div class="wire-source">
+          via <a href="https://x.com/gregisenberg/status/2026036464287412412" target="_blank" rel="noopener">@gregisenberg</a>
+          <span class="wire-cat-badge">Development &amp; Tooling</span>
+        </div>
+      </div>
+    </div>
+  
+    <div class="wire-item reveal-child reveal" style="transition-delay: 80ms;">
+      <div class="wire-num">02</div>
+      <div class="wire-content">
+        <div class="wire-text">"Dramatically expands creative possibilities for image-based content and product photography."</div>
+        <div class="wire-source">
+          via <a href="https://x.com/Framer_X/status/2025912264256307447" target="_blank" rel="noopener">@Framer_X</a>
+          <span class="wire-cat-badge">Development &amp; Tooling</span>
+        </div>
+      </div>
+    </div>
+  
+    <div class="wire-item reveal-child reveal" style="transition-delay: 160ms;">
+      <div class="wire-num">03</div>
+      <div class="wire-content">
+        <div class="wire-text">"Adds visual feedback to agent workflows, making multi-agent monitoring more intuitive and fun."</div>
+        <div class="wire-source">
+          via <a href="https://x.com/kemal_ersin/status/2025656752117534901" target="_blank" rel="noopener">@kemal_ersin</a>
+          <span class="wire-cat-badge">Development &amp; Tooling</span>
+        </div>
+      </div>
+    </div>
+  
+    <div class="wire-item reveal-child reveal" style="transition-delay: 240ms;">
+      <div class="wire-num">04</div>
+      <div class="wire-content">
+        <div class="wire-text">"Demonstrates AI-assisted development of complex interactive data visualizations."</div>
+        <div class="wire-source">
+          via <a href="https://x.com/0xblz/status/2024236010796695675" target="_blank" rel="noopener">@0xblz</a>
+          <span class="wire-cat-badge">Development &amp; Tooling</span>
+        </div>
+      </div>
+    </div>
+  
+    <div class="wire-item reveal-child reveal" style="transition-delay: 320ms;">
+      <div class="wire-num">05</div>
+      <div class="wire-content">
+        <div class="wire-text">"Automates a traditionally manual knowledge management task using AI agents."</div>
+        <div class="wire-source">
+          via <a href="https://x.com/jessegenet/status/2021272063538082221" target="_blank" rel="noopener">@jessegenet</a>
+          <span class="wire-cat-badge">AI Agents &amp; Orchestration</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ─── Section 3: Demos Live ────────────────────── -->
+<section class="section-block bg-demos">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">Section 03</div>
+      <div class="section-title">Demos Live</div>
+      <div class="section-deck">Every MVP with a live URL — tap to open.</div>
+    </div>
+    <div class="demos-grid" id="demos-grid">
+      <div class="demo-card reveal-child reveal" style="transition-delay: 0ms;">
+        <div class="demo-status-row"><span class="dead-dot"></span><span class="dead-badge">No Demo</span></div>
+        <div class="demo-name">3D Facility Walkthrough</div>
+        <div class="demo-desc">3D Facility Walkthrough MVP</div>
+        <div class="demo-actions"><span class="neo-btn neo-btn-ghost" style="opacity:.35;pointer-events:none">No Demo</span></div>
+      </div>
+    
+      <div class="demo-card reveal-child reveal" style="transition-delay: 80ms;">
+        <div class="demo-status-row"><span class="dead-dot"></span><span class="dead-badge">No Demo</span></div>
+        <div class="demo-name">Agent Health Dashboard</div>
+        <div class="demo-desc">Agent Health Dashboard MVP</div>
+        <div class="demo-actions"><span class="neo-btn neo-btn-ghost" style="opacity:.35;pointer-events:none">No Demo</span></div>
+      </div>
+    
+      <div class="demo-card reveal-child reveal" style="transition-delay: 160ms;">
+        <div class="demo-status-row"><span class="live-dot"></span><span class="live-badge">Live</span></div>
+        <div class="demo-name">Container Site Visualizer</div>
+        <div class="demo-desc">A browser-based 3D tool for Container HQ sales. A prospect uploads (or pastes) a photo of their land, the app generates…</div>
+        <div class="demo-actions"><a class="neo-btn neo-btn-primary" href="https://literary-institutions-dramatic-heading.trycloudflare.com" target="_blank" rel="noopener">Open Demo →</a><a class="neo-btn neo-btn-ghost" href="https://github.com/Kaulin6/mvp-container-visualizer" target="_blank" rel="noopener">GitHub ↗</a></div>
+      </div>
+    
+      <div class="demo-card reveal-child reveal" style="transition-delay: 240ms;">
+        <div class="demo-status-row"><span class="live-dot"></span><span class="live-badge">Live</span></div>
+        <div class="demo-name">The Morning Paper</div>
+        <div class="demo-desc">A daily "newspaper" that Kaulin opens each morning. Pulls from TweetPool's MORNING_REPORT.md and bookmarks.json to gene…</div>
+        <div class="demo-actions"><a class="neo-btn neo-btn-primary" href="https://suggestions-wizard-buy-gateway.trycloudflare.com" target="_blank" rel="noopener">Open Demo →</a><a class="neo-btn neo-btn-ghost" href="https://github.com/Kaulin6/mvp-morning-paper" target="_blank" rel="noopener">GitHub ↗</a></div>
+      </div>
+    
+      <div class="demo-card reveal-child reveal" style="transition-delay: 320ms;">
+        <div class="demo-status-row"><span class="dead-dot"></span><span class="dead-badge">No Demo</span></div>
+        <div class="demo-name">Dynamic CRM Negotiation Scripts</div>
+        <div class="demo-desc">Dynamic CRM Negotiation Scripts MVP</div>
+        <div class="demo-actions"><span class="neo-btn neo-btn-ghost" style="opacity:.35;pointer-events:none">No Demo</span></div>
+      </div>
+    
+      <div class="demo-card reveal-child reveal" style="transition-delay: 400ms;">
+        <div class="demo-status-row"><span class="dead-dot"></span><span class="dead-badge">No Demo</span></div>
+        <div class="demo-name">Spatial Planning API Visualization</div>
+        <div class="demo-desc">Spatial Planning API Visualization MVP</div>
+        <div class="demo-actions"><span class="neo-btn neo-btn-ghost" style="opacity:.35;pointer-events:none">No Demo</span></div>
+      </div>
+    
+      <div class="demo-card reveal-child reveal" style="transition-delay: 480ms;">
+        <div class="demo-status-row"><span class="dead-dot"></span><span class="dead-badge">No Demo</span></div>
+        <div class="demo-name">3D Container Layout Simulator</div>
+        <div class="demo-desc">3D Container Layout Simulator MVP</div>
+        <div class="demo-actions"><span class="neo-btn neo-btn-ghost" style="opacity:.35;pointer-events:none">No Demo</span></div>
+      </div>
+    
+      <div class="demo-card reveal-child reveal" style="transition-delay: 560ms;">
+        <div class="demo-status-row"><span class="dead-dot"></span><span class="dead-badge">No Demo</span></div>
+        <div class="demo-name">Wholesale Pre-Sale Platform</div>
+        <div class="demo-desc">Wholesale Pre-Sale Platform MVP</div>
+        <div class="demo-actions"><span class="neo-btn neo-btn-ghost" style="opacity:.35;pointer-events:none">No Demo</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Section 4: Proposals ─────────────────────── -->
+<section class="section-block bg-proposals">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">Section 04</div>
+      <div class="section-title">Proposals</div>
+      <div class="section-deck">New proposals from the last 7 days — grouped by project.</div>
+    </div>
+    <div class="proposals-grid" id="proposals-grid">
+    <div class="proposal-group reveal-child reveal" style="transition-delay: 0ms;">
+      <div class="proposal-group-title">Update — 2026-02-26</div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            Investor Visualization Engine<span class="effort-badge effort-medium">Medium</span>
+          </div>
+          <div class="proposal-body">(`@GeminiApp` + `@Google`): Use Gemini image generation to produce photorealistic 3D renders of container layouts on customer-submitted sit…</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            Competitor Landing Page Sniper<span class="effort-badge effort-medium">Medium</span>
+          </div>
+          <div class="proposal-body">(`@everestchris6`): Autonomous agent scouts storage facilities with weak web presence, auto-generates comparison landing pages targeting th…</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            Site Selection Heatmap<span class="effort-badge effort-hard">Hard</span>
+          </div>
+          <div class="proposal-body">(`@pham_blnh`): Identify industrial supply chain chokepoints near proposed container sites — facilities near rail, ports, or logistics hubs…</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            Agent Latch for Pricing Bot<span class="effort-badge effort-easy">Easy</span>
+          </div>
+          <div class="proposal-body">(`@jonnym1ller`): Implement constraint latches on any automated rent-adjustment agent — hard caps, rollback logic, and compliance guards so…</div>
+        </div>
+      
+    </div>
+  
+    <div class="proposal-group reveal-child reveal" style="transition-delay: 100ms;">
+      <div class="proposal-group-title">Container HQ (Self-Storage)</div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            AI Phone Assistant
+          </div>
+          <div class="proposal-body">Based on the bookmark by `@scaling_shields` (charging storage facilities $2,800/mo to answer phones), build an OpenClaw skill that handles …</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            Dynamic Rent Optimizer
+          </div>
+          <div class="proposal-body">Based on `@Storage_Venture`, implement a logic engine that tests rent increases on new/short-term tenants first, rather than long-term ones…</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            Lead Gen FOIA Bot
+          </div>
+          <div class="proposal-body">Use the "FOIA request lead gen" strategy from `@pipelineabuser` to automatically file requests for government-held storage or industrial de…</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            GIS Heatmapping for Site Selection
+          </div>
+          <div class="proposal-body">Integrate `@kyle_e_walker`'s LODES/employment sectors mapping to identify new 8x20 container locations based on block-level worker density.</div>
+        </div>
+      
+    </div>
+  
+    <div class="proposal-group reveal-child reveal" style="transition-delay: 200ms;">
+      <div class="proposal-group-title">Meal Flow (Recipe &amp; Ordering)</div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            Computer Vision Pantry Audit
+          </div>
+          <div class="proposal-body">Use the computer vision concepts from `@mfranz_on` (counting people/traffic) to allow users to "sweep" their pantry with a phone camera. Op…</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            Bulk Ad Generator for Growth
+          </div>
+          <div class="proposal-body">Use the `@codyschneiderxx` Facebook ad generator strategy to create 100+ variations of "Save time on meal planning" ads, targeting busy par…</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            AI Shopping Agent "Salaried"
+          </div>
+          <div class="proposal-body">Inspired by `@heynavtoor`, create a sub-agent for users that is "given" their grocery budget and must optimize the order across Instacart/W…</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            SVG Animated Recipe Dossiers
+          </div>
+          <div class="proposal-body">Use `@jrgarciadev`'s SVG-to-Animated tool to turn static recipe icons into interactive, Gemini-powered animations that guide the user throu…</div>
+        </div>
+      
+    </div>
+  
+    <div class="proposal-group reveal-child reveal" style="transition-delay: 300ms;">
+      <div class="proposal-group-title">Wholesale CRM (Real Estate)</div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            Interactive Deal Mapping
+          </div>
+          <div class="proposal-body">Integrate the mapping tech shown by `@kyle_e_walker` to allow wholesalers to "draw a lasso" around high-equity neighborhoods and instantly …</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            Automated Outreach "Ralph Loop"
+          </div>
+          <div class="proposal-body">Implement the "Ralph Loop" (`@ryancarson`) for cold outreach. The agent researches a property, writes a personalized email/text, analyzes t…</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            Competitor "Ad Stealing"
+          </div>
+          <div class="proposal-body">Use the strategy from `@blvckledge` to target competitor wholesale brand names on Google Ads, capturing sellers who are looking for alterna…</div>
+        </div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            "Tax Delinquent" Auto-Extractor
+          </div>
+          <div class="proposal-body">Based on `@N8RealEstate`'s Upwork workflow, build a sub-agent that takes 2,000+ pages of PDFs and uses Gemini 3.1 Flash to extract 1-100 un…</div>
+        </div>
+      
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ─── Section 5: Top Sparks ────────────────────── -->
+<section class="section-block bg-sparks">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">Section 05</div>
+      <div class="section-title">Top Sparks</div>
+      <div class="section-deck">Highest-scoring sparks from the last 14 days — by composite score.</div>
+    </div>
+    <ul class="sparks-list" id="sparks-list">
+    <li class="spark-card reveal-child reveal" style="transition-delay: 0ms;">
+      <div class="spark-rank">01</div>
+      <div class="spark-content">
+        <div class="spark-author">@gregisenberg</div>
+        <div class="spark-text">how to use obsidian + claude code to build a 24/7 personal operating system and build your startup: 1. write everything in markdown (daily notes, projects, beliefs, people, meetin…</div>
+        <div class="spark-meta">
+          <span class="cat-badge">Development &amp; Tooling</span>
+          <span class="score-chip">★ 5.0</span>
+        </div>
+      </div>
+      <a class="neo-btn neo-btn-ghost spark-link-btn" href="https://x.com/gregisenberg/status/2026036464287412412" target="_blank" rel="noopener">View →</a>
+    </li>
+  
+    <li class="spark-card reveal-child reveal" style="transition-delay: 100ms;">
+      <div class="spark-rank">02</div>
+      <div class="spark-content">
+        <div class="spark-author">@Framer_X</div>
+        <div class="spark-text">This tool is insane. Upload any image. Move camera in 3D space. And get a completely new camera angle Also it’s free!</div>
+        <div class="spark-meta">
+          <span class="cat-badge">Development &amp; Tooling</span>
+          <span class="score-chip">★ 5.0</span>
+        </div>
+      </div>
+      <a class="neo-btn neo-btn-ghost spark-link-btn" href="https://x.com/Framer_X/status/2025912264256307447" target="_blank" rel="noopener">View →</a>
+    </li>
+  
+    <li class="spark-card reveal-child reveal" style="transition-delay: 200ms;">
+      <div class="spark-rank">03</div>
+      <div class="spark-content">
+        <div class="spark-author">@kemal_ersin</div>
+        <div class="spark-text">Plugin: https:// marketplace.visualstudio.com/items?itemName =pablodelucca.pixel-agents … Source codes:</div>
+        <div class="spark-meta">
+          <span class="cat-badge">Development &amp; Tooling</span>
+          <span class="score-chip">★ 5.0</span>
+        </div>
+      </div>
+      <a class="neo-btn neo-btn-ghost spark-link-btn" href="https://x.com/kemal_ersin/status/2025656752117534901" target="_blank" rel="noopener">View →</a>
+    </li>
+  
+    <li class="spark-card reveal-child reveal" style="transition-delay: 300ms;">
+      <div class="spark-rank">04</div>
+      <div class="spark-content">
+        <div class="spark-author">@0xblz</div>
+        <div class="spark-text">building with Claude and @threejs to visualize wind in 3d is fun</div>
+        <div class="spark-meta">
+          <span class="cat-badge">Development &amp; Tooling</span>
+          <span class="score-chip">★ 5.0</span>
+        </div>
+      </div>
+      <a class="neo-btn neo-btn-ghost spark-link-btn" href="https://x.com/0xblz/status/2024236010796695675" target="_blank" rel="noopener">View →</a>
+    </li>
+  
+    <li class="spark-card reveal-child reveal" style="transition-delay: 400ms;">
+      <div class="spark-rank">05</div>
+      <div class="spark-content">
+        <div class="spark-author">@jonnym1ller</div>
+        <div class="spark-text">what is so unbelievably wild about this is that I didn't realise @AtlasForgeAI had built some of these meta-learning loops until I read his essay e.g. he had read some of my excha…</div>
+        <div class="spark-meta">
+          <span class="cat-badge">AI Agents &amp; Orchestration</span>
+          <span class="score-chip">★ 4.8</span>
+        </div>
+      </div>
+      <a class="neo-btn neo-btn-ghost spark-link-btn" href="https://x.com/jonnym1ller/status/2026381596551676406" target="_blank" rel="noopener">View →</a>
+    </li>
+  </ul>
+  </div>
+</section>
+
+<!-- ─── Section 6: The Library ───────────────────── -->
+<section class="section-block bg-library">
+  <div class="section-inner">
+    <div class="section-header reveal" style="color:var(--neo-cream)">
+      <div class="section-num">Section 06</div>
+      <div class="section-title" style="color:var(--neo-cream)">The Library</div>
+      <div class="section-deck" style="color:rgba(255,253,245,0.5)">Pool stats — depth of the archive.</div>
+    </div>
+    <div class="library-stats" id="library-bar">
+    <div class="lib-stat-card reveal-child reveal" style="transition-delay:0ms">
+      <div class="lib-num">280</div>
+      <div class="lib-label">Bookmarks</div>
+    </div>
+  
+    <div class="lib-stat-card reveal-child reveal" style="transition-delay:100ms">
+      <div class="lib-num">118</div>
+      <div class="lib-label">Sparks</div>
+    </div>
+  
+    <div class="lib-stat-card reveal-child reveal" style="transition-delay:200ms">
+      <div class="lib-num">117</div>
+      <div class="lib-label">With Implications</div>
+    </div>
+  
+    <div class="lib-stat-card reveal-child reveal" style="transition-delay:300ms">
+      <div class="lib-num" style="font-size:1.4rem">Feb 26, 2026</div>
+      <div class="lib-label">Last Enriched</div>
+    </div>
+  </div>
+    <p class="library-tagline" id="library-tagline">3 new bookmarks in the last 24h. Last enriched: Feb 26, 2026.</p>
+  </div>
+</section>
+
+<footer class="footer">
+  The Morning Paper &nbsp;·&nbsp; Generated by Mango 🥭 &nbsp;·&nbsp; TweetPool Intelligence System
+  &nbsp;·&nbsp; <a href="https://github.com/Kaulin6/mvp-morning-paper" target="_blank" rel="noopener">GitHub ↗</a>
+</footer>
+
+<script>
+/* ──────────────────────────────────────────────────────── *
+ *  Morning Paper — client-side data engine (neo-brutalism) *
+ * ──────────────────────────────────────────────────────── */
+
+const MS_DAY = 86400000;
+const MS_7D  = 7  * MS_DAY;
+const MS_14D = 14 * MS_DAY;
+const NOW    = new Date();
+
+// ── Utilities ────────────────────────────────────────────
+function esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function truncate(str, len) {
+  if (!str) return '';
+  str = str.replace(/\s+/g,' ').trim();
+  return str.length <= len ? str : str.slice(0, len-1) + '…';
+}
+function effortBadge(effort) {
+  if (!effort) return '';
+  const cls = effort.toLowerCase().includes('easy') ? 'effort-easy'
+    : effort.toLowerCase().includes('hard') ? 'effort-hard' : 'effort-medium';
+  return `<span class="effort-badge ${cls}">${esc(effort)}</span>`;
+}
+function dayOfYear() {
+  const start = new Date(NOW.getFullYear(), 0, 0);
+  return Math.floor((NOW - start) / MS_DAY);
+}
+
+// ── Date setup ───────────────────────────────────────────
+const DATE_STR = NOW.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+document.getElementById('meta-date-sticker').textContent = DATE_STR;
+document.getElementById('meta-vol-sticker').textContent = `Vol. I · No. ${dayOfYear()}`;
+
+// ── Scroll progress ───────────────────────────────────────
+const progressFill = document.getElementById('scroll-progress-fill');
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = total > 0 ? (scrolled / total) * 100 : 0;
+  progressFill.style.height = pct + '%';
+}, { passive: true });
+
+// ── IntersectionObserver reveal ───────────────────────────
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+function observeReveal(el) {
+  el.classList.add('reveal');
+  revealObserver.observe(el);
+}
+
+function staggerReveal(container, selector='.reveal-child', baseDelay=0) {
+  const children = container.querySelectorAll(selector);
+  children.forEach((child, i) => {
+    child.style.transitionDelay = (baseDelay + i * 80) + 'ms';
+    revealObserver.observe(child);
+  });
+}
+
+// Observe existing section headers
+document.querySelectorAll('.section-header.reveal').forEach(el => revealObserver.observe(el));
+
+// ── Fetch helpers ─────────────────────────────────────────
+async function fetchJSON(url) {
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } catch(e) { console.warn('fetchJSON failed', url, e); return null; }
+}
+async function fetchText(url) {
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.text();
+  } catch(e) { console.warn('fetchText failed', url, e); return null; }
+}
+
+// ── Section 1: Above the Fold ─────────────────────────────
+function renderAboveTheFold(bookmarks) {
+  const grid = document.getElementById('atf-grid');
+  if (!bookmarks) { grid.innerHTML = `<div class="empty-note">Could not load bookmarks.</div>`; return; }
+
+  const projectMap = { containerHQ:'Container HQ', mealFlow:'Meal Flow', birddog:'Birddog', wildcard:'Wild Card' };
+  const items = [];
+  for (const b of bookmarks) {
+    if (!b.applicability) continue;
+    for (const [key, label] of Object.entries(projectMap)) {
+      if (b.applicability[key]) {
+        items.push({ project: label, text: b.applicability[key], author: b.author, url: b.url, composite: b.ratings?.composite || 0, category: b.category });
+        break;
+      }
+    }
+  }
+  items.sort((a,b) => b.composite - a.composite);
+  const top3 = items.slice(0, 3);
+
+  if (!top3.length) { grid.innerHTML = `<div class="empty-note">No actionable items found.</div>`; return; }
+
+  grid.innerHTML = top3.map(item => `
+    <div class="atf-card reveal-child">
+      <div class="atf-amber-strip"></div>
+      <div style="padding-left:0.5rem">
+        <div class="atf-project-tag">${esc(item.project)}</div>
+        <div class="atf-meta">
+          <span>${esc(item.author)}</span>
+          <span>·</span>
+          <span class="score-badge">★ ${item.composite.toFixed(1)}</span>
+          <span>·</span>
+          <span>${esc(item.category || '')}</span>
+        </div>
+        <div class="atf-headline">${esc(truncate(item.text, 100))}</div>
+        <div class="atf-body">${esc(truncate(item.text, 240))}</div>
+        <a class="neo-link" href="${esc(item.url)}" target="_blank" rel="noopener">→ View source tweet</a>
+      </div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.reveal-child').forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = (i * 100) + 'ms';
+    revealObserver.observe(el);
+  });
+}
+
+// ── Section 2: The Wire ───────────────────────────────────
+function renderTheWire(bookmarks) {
+  const grid = document.getElementById('wire-grid');
+  if (!bookmarks) { grid.innerHTML = `<div class="empty-note">No wire data.</div>`; return; }
+
+  const sparks = bookmarks
+    .filter(b => b.isSpark && b.why && b.why.trim().length > 10)
+    .sort((a,b) => (b.ratings?.composite||0) - (a.ratings?.composite||0))
+    .slice(0, 5);
+
+  if (!sparks.length) { grid.innerHTML = `<div class="empty-note">No signals today.</div>`; return; }
+
+  grid.innerHTML = sparks.map((b, i) => `
+    <div class="wire-item reveal-child">
+      <div class="wire-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="wire-content">
+        <div class="wire-text">"${esc(truncate(b.why, 200))}"</div>
+        <div class="wire-source">
+          via <a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.author)}</a>
+          <span class="wire-cat-badge">${esc(b.category || 'General')}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.reveal-child').forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = (i * 80) + 'ms';
+    revealObserver.observe(el);
+  });
+}
+
+// ── Section 3: Demos Live ────────────────────────────────
+function renderDemos(mvps) {
+  const grid = document.getElementById('demos-grid');
+  if (!mvps || !mvps.length) {
+    grid.innerHTML = `<div class="empty-note" style="grid-column:1/-1">No MVPs indexed yet. Run generate-index.js to refresh.</div>`;
+    return;
+  }
+
+  grid.innerHTML = mvps.map(mvp => {
+    const isLive = !!(mvp.liveUrl);
+    const statusHtml = isLive
+      ? `<span class="live-dot"></span><span class="live-badge">Live</span>`
+      : `<span class="dead-dot"></span><span class="dead-badge">No Demo</span>`;
+    const openBtn = isLive
+      ? `<a class="neo-btn neo-btn-primary" href="${esc(mvp.liveUrl)}" target="_blank" rel="noopener">Open Demo →</a>`
+      : `<span class="neo-btn neo-btn-ghost" style="opacity:.35;pointer-events:none">No Demo</span>`;
+    const ghBtn = mvp.githubUrl
+      ? `<a class="neo-btn neo-btn-ghost" href="${esc(mvp.githubUrl)}" target="_blank" rel="noopener">GitHub ↗</a>`
+      : '';
+    return `
+      <div class="demo-card reveal-child">
+        <div class="demo-status-row">${statusHtml}</div>
+        <div class="demo-name">${esc(mvp.name)}</div>
+        <div class="demo-desc">${esc(truncate(mvp.description, 120))}</div>
+        <div class="demo-actions">${openBtn}${ghBtn}</div>
+      </div>
+    `;
+  }).join('');
+
+  grid.querySelectorAll('.reveal-child').forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = (i * 80) + 'ms';
+    revealObserver.observe(el);
+  });
+}
+
+// ── Section 4: Proposals ─────────────────────────────────
+function parseProposals(md) {
+  if (!md) return {};
+  const groups = {};
+  let cur = null;
+  for (const line of md.split('\n')) {
+    const gm = line.match(/^##\s+(?:\d+\.\s+)?(.+)/);
+    if (gm) { cur = gm[1].trim(); if (!groups[cur]) groups[cur] = []; continue; }
+    const im = line.match(/^[-*]\s+\*\*([^*]+)\*\*[:\s]*(.+)/);
+    if (im && cur) {
+      const title = im[1].trim();
+      const body  = im[2].trim();
+      const em    = body.match(/Effort:\s*(Easy|Medium|Hard)/i);
+      groups[cur].push({ title, body, effort: em ? em[1] : null });
+    }
+  }
+  return groups;
+}
+
+function renderProposals(md) {
+  const grid = document.getElementById('proposals-grid');
+  if (!md) { grid.innerHTML = `<div class="empty-note">Could not load PROPOSALS.md.</div>`; return; }
+
+  const groups = parseProposals(md);
+  const entries = Object.entries(groups).filter(([,items]) => items.length > 0);
+  if (!entries.length) { grid.innerHTML = `<div class="empty-note">No proposals parsed.</div>`; return; }
+
+  const skip = (k) => k.toLowerCase().includes('update') || k.toLowerCase().includes('project proposals');
+  const mainSections = entries.filter(([k]) => !skip(k));
+  const updateSection = entries.find(([k]) => k.toLowerCase().includes('update'));
+  const toRender = updateSection ? [updateSection, ...mainSections] : mainSections;
+
+  grid.innerHTML = toRender.slice(0, 4).map(([group, items]) => `
+    <div class="proposal-group reveal-child">
+      <div class="proposal-group-title">${esc(group)}</div>
+      ${items.slice(0, 4).map(item => `
+        <div class="proposal-item">
+          <div class="proposal-headline">
+            ${esc(item.title)}${effortBadge(item.effort)}
+          </div>
+          <div class="proposal-body">${esc(truncate(item.body.replace(/Effort:\s*(Easy|Medium|Hard)/i,'').trim(), 140))}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.reveal-child').forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = (i * 100) + 'ms';
+    revealObserver.observe(el);
+  });
+}
+
+// ── Section 5: Top Sparks ────────────────────────────────
+function renderSparks(bookmarks) {
+  const list = document.getElementById('sparks-list');
+  if (!bookmarks) { list.innerHTML = `<li class="empty-note">No spark data.</li>`; return; }
+
+  const cutoff = new Date(NOW - MS_14D);
+  const top5 = bookmarks
+    .filter(b => b.isSpark && new Date(b.time) > cutoff)
+    .sort((a,b) => (b.ratings?.composite||0) - (a.ratings?.composite||0))
+    .slice(0, 5);
+
+  if (!top5.length) { list.innerHTML = `<li class="empty-note">No sparks in the last 14 days.</li>`; return; }
+
+  list.innerHTML = top5.map((b, i) => `
+    <li class="spark-card reveal-child">
+      <div class="spark-rank">${String(i+1).padStart(2,'0')}</div>
+      <div class="spark-content">
+        <div class="spark-author">${esc(b.author)}</div>
+        <div class="spark-text">${esc(truncate(b.text, 180))}</div>
+        <div class="spark-meta">
+          <span class="cat-badge">${esc(b.category || 'Spark')}</span>
+          <span class="score-chip">★ ${(b.ratings?.composite||0).toFixed(1)}</span>
+        </div>
+      </div>
+      <a class="neo-btn neo-btn-ghost spark-link-btn" href="${esc(b.url)}" target="_blank" rel="noopener">View →</a>
+    </li>
+  `).join('');
+
+  list.querySelectorAll('.reveal-child').forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = (i * 100) + 'ms';
+    revealObserver.observe(el);
+  });
+}
+
+// ── Section 6: Library ───────────────────────────────────
+function renderLibrary(bookmarks) {
+  const bar = document.getElementById('library-bar');
+  if (!bookmarks) { bar.innerHTML = `<div class="empty-note" style="color:var(--neo-cream)">No data.</div>`; return; }
+
+  const total  = bookmarks.length;
+  const sparks = bookmarks.filter(b => b.isSpark).length;
+  const withApp = bookmarks.filter(b => {
+    const a = b.applicability;
+    return a && (a.containerHQ || a.mealFlow || a.birddog || a.wildcard);
+  }).length;
+  const lastDate = bookmarks.reduce((max, b) => {
+    const t = new Date(b.time); return t > max ? t : max;
+  }, new Date(0));
+  const lastStr = lastDate.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+
+  const cutoff24 = new Date(NOW - MS_DAY);
+  const new24 = bookmarks.filter(b => new Date(b.time) > cutoff24).length;
+
+  const taglineEl = document.getElementById('library-tagline');
+  taglineEl.textContent = new24 > 0
+    ? `${new24} new ${new24 === 1 ? 'bookmark' : 'bookmarks'} in the last 24h. Last enriched: ${lastStr}.`
+    : `Last enriched: ${lastStr}. Pool runs deep.`;
+
+  document.getElementById('meta-tagline').textContent = taglineEl.textContent;
+
+  const stats = [
+    { num: total,   label: 'Bookmarks' },
+    { num: sparks,  label: 'Sparks' },
+    { num: withApp, label: 'With Implications' },
+    { num: lastStr, label: 'Last Enriched', small: true },
+  ];
+
+  bar.innerHTML = stats.map((s, i) => `
+    <div class="lib-stat-card reveal-child" style="transition-delay:${i*100}ms">
+      <div class="lib-num" ${s.small ? 'style="font-size:1.4rem"' : ''}>${esc(String(s.num))}</div>
+      <div class="lib-label">${esc(s.label)}</div>
+    </div>
+  `).join('');
+
+  bar.querySelectorAll('.reveal-child').forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = (i * 100) + 'ms';
+    revealObserver.observe(el);
+  });
+}
+
+// ── Bootstrap ─────────────────────────────────────────────
+(async function init() {
+  const [bookmarks, mvps, proposalsMd] = await Promise.all([
+    fetchJSON('bookmarks.json'),
+    fetchJSON('mvp-index.json'),
+    fetchText('PROPOSALS.md'),
+  ]);
+
+  renderAboveTheFold(bookmarks);
+  renderTheWire(bookmarks);
+  renderDemos(mvps);
+  renderProposals(proposalsMd);
+  renderSparks(bookmarks);
+  renderLibrary(bookmarks);
+})();
+</script>
+
+
+</body></html>
