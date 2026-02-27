@@ -25,6 +25,7 @@
       --bg-atf:         #fffdf5;
       --bg-wire:        #ffd93d;
       --bg-demos:       #ffffff;
+      --bg-angle:       #000000;
       --bg-proposals:   #f3e8ff;
       --bg-sparks:      #fffdf5;
       --bg-library:     #000000;
@@ -455,10 +456,59 @@
     .neo-btn-primary { background: var(--neo-amber); color: #000; }
     .neo-btn-ghost   { background: transparent; color: #000; }
 
+    /* ─── The Angle ──────────────────────────────────────── */
+    .angle-block {
+      background: var(--neo-white);
+      border: var(--neo-border);
+      box-shadow: var(--neo-shadow-lg);
+      padding: 2rem 2.5rem;
+      max-width: 780px;
+    }
+    .angle-label {
+      font-family: var(--font-display);
+      font-size: 0.6rem;
+      font-weight: 900;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #ff4d00;
+      margin-bottom: 0.75rem;
+    }
+    .angle-headline {
+      font-family: var(--font-body);
+      font-size: 2rem;
+      font-style: italic;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      border-bottom: 3px solid #000;
+      padding-bottom: 1rem;
+    }
+    .angle-body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.7;
+      color: rgba(0,0,0,0.8);
+      margin-bottom: 1.25rem;
+    }
+    .angle-play {
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: #000;
+      color: #fff;
+      padding: 0.6rem 1rem;
+      display: inline-block;
+    }
+    .angle-play::before {
+      content: "THE PLAY → ";
+      color: #ff4d00;
+      letter-spacing: 0.1em;
+    }
+
     /* ─── Proposals ─────────────────────────────────────── */
     .proposals-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 2rem;
     }
     .proposal-group {
@@ -483,23 +533,31 @@
       margin-bottom: 1rem;
     }
     .proposal-item {
-      padding: 0.6rem 0;
+      padding: 0.85rem 0;
       border-bottom: 1px solid rgba(0,0,0,0.12);
     }
     .proposal-item:last-child { border-bottom: none; }
     .proposal-headline {
       font-family: var(--font-display);
-      font-size: 0.92rem;
+      font-size: 0.95rem;
       font-weight: 700;
       line-height: 1.3;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.4rem;
     }
     .proposal-body {
-      font-size: 0.8rem;
-      color: rgba(0,0,0,0.6);
-      line-height: 1.45;
-      font-style: italic;
+      font-size: 0.82rem;
+      color: rgba(0,0,0,0.72);
+      line-height: 1.55;
+      margin-bottom: 0.5rem;
     }
+    .proposal-next {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #ff4d00;
+      letter-spacing: 0.05em;
+    }
+    .proposal-next::before { content: "→ "; }
     .effort-badge {
       display: inline-block;
       font-family: var(--font-display);
@@ -705,7 +763,7 @@
     </div>
     <div class="masthead-rule"></div>
     <div class="masthead-sub">TweetPool Intelligence Daily — Est. 2026</div>
-    <div class="masthead-tagline" id="meta-tagline">3 new bookmarks in the last 24h. Last enriched: Feb 26, 2026.</div>
+    <div class="masthead-tagline" id="meta-tagline">1 new bookmark in the last 24h. Last enriched: Feb 26, 2026.</div>
   </div>
 </header>
 
@@ -908,142 +966,119 @@
 </section>
 
 <!-- ─── Section 4: Proposals ─────────────────────── -->
+<!-- ─── Section 04: The Angle ─────────────────────── -->
+<section class="section-block" style="background:var(--bg-angle);">
+  <div class="section-inner">
+    <div class="section-header reveal" style="color:#f0ebe0;">
+      <div class="section-num" style="color:#ff4d00;">Section 04</div>
+      <div class="section-title" style="color:#f0ebe0;">The Angle</div>
+      <div class="section-deck" style="color:rgba(240,235,224,0.6);">One editorial take — grounded in this week's intel, aimed at your businesses.</div>
+    </div>
+    <div id="angle-block">
+      <div class="angle-block reveal">
+        <div class="angle-label">Today's Angle</div>
+        <div class="angle-headline">Your 60-Inbox Machine Has Nothing to Say Yet</div>
+        <div class="angle-body">Greg Isenberg's viral thread this week wasn't really about Obsidian or Claude Code — it was about the compounding value of writing your thinking down before you automate anything. Container HQ is standing up 20 domains and 60 inboxes for cold outreach, but zero marketing materials exist. That's a distribution cannon aimed at a blank wall. Infrastructure scales fast; bad messaging scales faster, and in the wrong direction.</div>
+        <div class="angle-play">Write five tested cold email sequences before a single inbox goes live — the bottleneck was never sending, it was having something worth reading.</div>
+      </div></div>
+  </div>
+</section>
+
+<!-- ─── Section 05: Proposals ────────────────────── -->
 <section class="section-block bg-proposals">
   <div class="section-inner">
     <div class="section-header reveal">
-      <div class="section-num">Section 04</div>
+      <div class="section-num">Section 05</div>
       <div class="section-title">Proposals</div>
-      <div class="section-deck">New proposals from the last 7 days — grouped by project.</div>
+      <div class="section-deck">Fresh ideas from the intel engine — business case + next action for each.</div>
     </div>
     <div class="proposals-grid" id="proposals-grid">
     <div class="proposal-group reveal-child reveal" style="transition-delay: 0ms;">
-      <div class="proposal-group-title">Update — 2026-02-26</div>
+      <div class="proposal-group-title">Container HQ</div>
       
         <div class="proposal-item">
-          <div class="proposal-headline">
-            Investor Visualization Engine<span class="effort-badge effort-medium">Medium</span>
-          </div>
-          <div class="proposal-body">(`@GeminiApp` + `@Google`): Use Gemini image generation to produce photorealistic 3D renders of container layouts on customer-submitted sit…</div>
+          <div class="proposal-headline">Interactive 3D Container Simulator</div>
+          <div class="proposal-body">Every operator you cold-email is doing napkin math on how many units fit their lot. A 3D drag-and-drop simulator turns your sales page into a closing tool — the operator sells themselves before you ever get on a call. But this is a high-effort build that only pays off once your cold email pipeline is actually sending volume, so it's premature today.</div>
+          <div class="proposal-next">Shelf this until cold email campaigns hit 500+ sends/week, then spec it as a lead-magnet landing page feature.</div>
         </div>
       
         <div class="proposal-item">
-          <div class="proposal-headline">
-            Competitor Landing Page Sniper<span class="effort-badge effort-medium">Medium</span>
-          </div>
-          <div class="proposal-body">(`@everestchris6`): Autonomous agent scouts storage facilities with weak web presence, auto-generates comparison landing pages targeting th…</div>
-        </div>
-      
-        <div class="proposal-item">
-          <div class="proposal-headline">
-            Site Selection Heatmap<span class="effort-badge effort-hard">Hard</span>
-          </div>
-          <div class="proposal-body">(`@pham_blnh`): Identify industrial supply chain chokepoints near proposed container sites — facilities near rail, ports, or logistics hubs…</div>
-        </div>
-      
-        <div class="proposal-item">
-          <div class="proposal-headline">
-            Agent Latch for Pricing Bot<span class="effort-badge effort-easy">Easy</span>
-          </div>
-          <div class="proposal-body">(`@jonnym1ller`): Implement constraint latches on any automated rent-adjustment agent — hard caps, rollback logic, and compliance guards so…</div>
+          <div class="proposal-headline">Custom Interior Component Prototyping</div>
+          <div class="proposal-body">Move-in-ready units with custom shelving and security brackets command premium pricing and differentiate you from every other container reseller on Google. AI-generated CAD cuts the design cycle from weeks to hours, and 3D printing lets you test fixtures before committing to manufacturing runs. The window is now — operators are heading into spring expansion season and making purchase decisions in the next 60 days.</div>
+          <div class="proposal-next">Identify the top 3 most-requested interior configurations from existing customer conversations and prototype one bracket design in an AI CAD tool this week.</div>
         </div>
       
     </div>
   
     <div class="proposal-group reveal-child reveal" style="transition-delay: 100ms;">
-      <div class="proposal-group-title">Container HQ (Self-Storage)</div>
+      <div class="proposal-group-title">Meal Flow</div>
       
         <div class="proposal-item">
-          <div class="proposal-headline">
-            AI Phone Assistant
-          </div>
-          <div class="proposal-body">Based on the bookmark by `@scaling_shields` (charging storage facilities $2,800/mo to answer phones), build an OpenClaw skill that handles …</div>
+          <div class="proposal-headline">Kroger API Grocery Integration</div>
+          <div class="proposal-body">You've got Instacart and Walmart, but Kroger owns 2,800 stores across the Midwest and Southeast — that's the exact demographic gap in your checkout funnel. Their API is open and well-documented, meaning integration is straightforward engineering, not partnership negotiation. Every week you don't have Kroger is a week users in Ohio and Georgia bounce at checkout.</div>
+          <div class="proposal-next">Register for Kroger Developer Portal access and spike a one-click checkout flow for a single test recipe by end of next week.</div>
         </div>
       
         <div class="proposal-item">
-          <div class="proposal-headline">
-            Dynamic Rent Optimizer
-          </div>
-          <div class="proposal-body">Based on `@Storage_Venture`, implement a logic engine that tests rent increases on new/short-term tenants first, rather than long-term ones…</div>
-        </div>
-      
-        <div class="proposal-item">
-          <div class="proposal-headline">
-            Lead Gen FOIA Bot
-          </div>
-          <div class="proposal-body">Use the "FOIA request lead gen" strategy from `@pipelineabuser` to automatically file requests for government-held storage or industrial de…</div>
-        </div>
-      
-        <div class="proposal-item">
-          <div class="proposal-headline">
-            GIS Heatmapping for Site Selection
-          </div>
-          <div class="proposal-body">Integrate `@kyle_e_walker`'s LODES/employment sectors mapping to identify new 8x20 container locations based on block-level worker density.</div>
+          <div class="proposal-headline">Animated Recipe Previews</div>
+          <div class="proposal-body">Static thumbnails die in a feed — short animated loops increase tap-through rates by 2-3x in every content app that's tested them. This is low effort with current image-to-animation models, and it makes your app feel like TikTok instead of a recipe database. It's a retention play: more taps, more saves, more weekly active users.</div>
+          <div class="proposal-next">Pick 10 high-performing recipe thumbnails, run them through Stable Video Diffusion or Runway, and A/B test animated vs. static in the feed this weekend.</div>
         </div>
       
     </div>
   
     <div class="proposal-group reveal-child reveal" style="transition-delay: 200ms;">
-      <div class="proposal-group-title">Meal Flow (Recipe &amp; Ordering)</div>
+      <div class="proposal-group-title">Birddog</div>
       
         <div class="proposal-item">
-          <div class="proposal-headline">
-            Computer Vision Pantry Audit
-          </div>
-          <div class="proposal-body">Use the computer vision concepts from `@mfranz_on` (counting people/traffic) to allow users to "sweep" their pantry with a phone camera. Op…</div>
+          <div class="proposal-headline">Dynamic Negotiation CRM Scripts</div>
+          <div class="proposal-body">Wholesalers lose deals because they talk too much and anchor first — your CRM can fix that in real time by injecting battle-tested scripts directly into the call interface. This is low effort, high leverage: you're turning every junior wholesaler into a closer without training sessions. It's also a killer demo feature when you pitch Birddog to new users.</div>
+          <div class="proposal-next">Write 5 context-triggered script prompts covering the most common seller objections and wire them into the CRM call view as pop-up cards.</div>
         </div>
       
         <div class="proposal-item">
-          <div class="proposal-headline">
-            Bulk Ad Generator for Growth
-          </div>
-          <div class="proposal-body">Use the `@codyschneiderxx` Facebook ad generator strategy to create 100+ variations of "Save time on meal planning" ads, targeting busy par…</div>
-        </div>
-      
-        <div class="proposal-item">
-          <div class="proposal-headline">
-            AI Shopping Agent "Salaried"
-          </div>
-          <div class="proposal-body">Inspired by `@heynavtoor`, create a sub-agent for users that is "given" their grocery budget and must optimize the order across Instacart/W…</div>
-        </div>
-      
-        <div class="proposal-item">
-          <div class="proposal-headline">
-            SVG Animated Recipe Dossiers
-          </div>
-          <div class="proposal-body">Use `@jrgarciadev`'s SVG-to-Animated tool to turn static recipe icons into interactive, Gemini-powered animations that guide the user throu…</div>
+          <div class="proposal-headline">CRM Inbound Automation Layer</div>
+          <div class="proposal-body">Speed-to-lead is everything in wholesaling — the first person to respond gets the deal. An automated first-touch that fires within 60 seconds of a new lead, scores the response, and routes hot prospects to a human collapses your funnel from hours to minutes. This is the feature that turns Birddog from a CRM into a lead machine, which is your stated primary goal.</div>
+          <div class="proposal-next">Map the current lead intake flow end-to-end, define the scoring rubric (motivated seller signals), and build the OpenClaw skill for email/SMS first-touch on a single lead source.</div>
         </div>
       
     </div>
   
     <div class="proposal-group reveal-child reveal" style="transition-delay: 300ms;">
-      <div class="proposal-group-title">Wholesale CRM (Real Estate)</div>
+      <div class="proposal-group-title">Polymarket / Trading</div>
       
         <div class="proposal-item">
-          <div class="proposal-headline">
-            Interactive Deal Mapping
-          </div>
-          <div class="proposal-body">Integrate the mapping tech shown by `@kyle_e_walker` to allow wholesalers to "draw a lasso" around high-equity neighborhoods and instantly …</div>
+          <div class="proposal-headline">Signal-to-Bet Arbitrage Monitor</div>
+          <div class="proposal-body">Polymarket prices lag real-world events by minutes — that's the arbitrage window. A monitor that catches verified geopolitical tweets, matches them to open markets, and pings you on Telegram before the crowd reprices is pure alpha. The opportunity is now: prediction markets are seeing record volume and the signal-to-noise ratio on geopolitical Twitter is the highest it's been.</div>
+          <div class="proposal-next">Curate a list of 20 high-signal Twitter accounts, map them to the top 10 active Polymarket contracts, and build a keyword-match Telegram alert pipeline.</div>
+        </div>
+      
+    </div>
+  
+    <div class="proposal-group reveal-child reveal" style="transition-delay: 400ms;">
+      <div class="proposal-group-title">TweetPool</div>
+      
+        <div class="proposal-item">
+          <div class="proposal-headline">Agent Health Dashboard</div>
+          <div class="proposal-body">You're running multiple agents and cron jobs across projects with no single pane of glass — which means you find out something's broken when the output stops, not when the error fires. A health dashboard with token usage and last-run status turns silent failures into instant visibility. As you scale agent count, this goes from nice-to-have to prerequisite.</div>
+          <div class="proposal-next">Inventory every active cron job and sub-agent, define the health check schema (last run, status code, token burn), and build a minimal menu bar widget or Telegram status ping.</div>
         </div>
       
         <div class="proposal-item">
-          <div class="proposal-headline">
-            Automated Outreach "Ralph Loop"
-          </div>
-          <div class="proposal-body">Implement the "Ralph Loop" (`@ryancarson`) for cold outreach. The agent researches a property, writes a personalized email/text, analyzes t…</div>
+          <div class="proposal-headline">CLAUDE.md Standardization</div>
+          <div class="proposal-body">Every project without a CLAUDE.md is an agent running without guardrails — inconsistent output formats, missing architecture context, and wasted tokens re-discovering what it should already know. This is 2-3 hours of work that pays dividends on every single agent run going forward. Do it now before you add more projects and the debt compounds.</div>
+          <div class="proposal-next">Audit all active project directories, draft a CLAUDE.md template with standard sections (architecture, output format, constraints), and deploy to every project by end of day.</div>
         </div>
       
-        <div class="proposal-item">
-          <div class="proposal-headline">
-            Competitor "Ad Stealing"
-          </div>
-          <div class="proposal-body">Use the strategy from `@blvckledge` to target competitor wholesale brand names on Google Ads, capturing sellers who are looking for alterna…</div>
-        </div>
+    </div>
+  
+    <div class="proposal-group reveal-child reveal" style="transition-delay: 500ms;">
+      <div class="proposal-group-title">Wild Card</div>
       
         <div class="proposal-item">
-          <div class="proposal-headline">
-            "Tax Delinquent" Auto-Extractor
-          </div>
-          <div class="proposal-body">Based on `@N8RealEstate`'s Upwork workflow, build a sub-agent that takes 2,000+ pages of PDFs and uses Gemini 3.1 Flash to extract 1-100 un…</div>
+          <div class="proposal-headline">Skill Graph Architecture</div>
+          <div class="proposal-body">Flat-file memory works until it doesn't — and you're approaching the threshold where agents can't find what they know. A skill graph with wikilinks lets agents traverse dependencies instead of grep-searching through markdown, which is the difference between an agent that learns and one that forgets. But this is a high-effort infrastructure bet with no direct revenue impact today.</div>
+          <div class="proposal-next">Before building, validate the pain: audit 5 recent agent runs for cases where flat-file memory caused redundant work or missed context, then decide if the ROI justifies the build.</div>
         </div>
       
     </div>
@@ -1157,7 +1192,7 @@
       <div class="lib-label">Last Enriched</div>
     </div>
   </div>
-    <p class="library-tagline" id="library-tagline">3 new bookmarks in the last 24h. Last enriched: Feb 26, 2026.</p>
+    <p class="library-tagline" id="library-tagline">1 new bookmark in the last 24h. Last enriched: Feb 26, 2026.</p>
   </div>
 </section>
 
@@ -1388,7 +1423,59 @@ function parseProposals(md) {
   return groups;
 }
 
+function renderEditorial(editorial) {
+  // ── The Angle ──
+  const angleBlock = document.getElementById('angle-block');
+  if (editorial?.theAngle) {
+    const a = editorial.theAngle;
+    angleBlock.innerHTML = `
+      <div class="angle-block reveal">
+        <div class="angle-label">Today's Angle</div>
+        <div class="angle-headline">${esc(a.headline)}</div>
+        <div class="angle-body">${esc(a.body)}</div>
+        ${a.thePlay ? `<div class="angle-play">${esc(a.thePlay)}</div>` : ''}
+      </div>`;
+    angleBlock.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  } else {
+    angleBlock.innerHTML = `<div class="empty-note" style="color:#555;">No editorial generated today.</div>`;
+  }
+
+  // ── Proposals with pitches ──
+  const grid = document.getElementById('proposals-grid');
+  if (!editorial?.proposals?.length) {
+    grid.innerHTML = `<div class="empty-note">No proposals today.</div>`;
+    return;
+  }
+
+  // Group by project
+  const byProject = {};
+  for (const p of editorial.proposals) {
+    if (!byProject[p.project]) byProject[p.project] = [];
+    byProject[p.project].push(p);
+  }
+
+  grid.innerHTML = Object.entries(byProject).map(([project, items]) => `
+    <div class="proposal-group reveal-child">
+      <div class="proposal-group-title">${esc(project)}</div>
+      ${items.map(item => `
+        <div class="proposal-item">
+          <div class="proposal-headline">${esc(item.title)}</div>
+          <div class="proposal-body">${esc(item.pitch || item.rawBody)}</div>
+          ${item.nextAction ? `<div class="proposal-next">${esc(item.nextAction)}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.reveal-child').forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = (i * 100) + 'ms';
+    revealObserver.observe(el);
+  });
+}
+
 function renderProposals(md) {
+  // Legacy fallback — only used if editorial.json doesn't load
   const grid = document.getElementById('proposals-grid');
   if (!md) { grid.innerHTML = `<div class="empty-note">Could not load PROPOSALS.md.</div>`; return; }
 
@@ -1401,15 +1488,15 @@ function renderProposals(md) {
   const updateSection = entries.find(([k]) => k.toLowerCase().includes('update'));
   const toRender = updateSection ? [updateSection, ...mainSections] : mainSections;
 
-  grid.innerHTML = toRender.slice(0, 4).map(([group, items]) => `
+  grid.innerHTML = toRender.slice(0, 6).map(([group, items]) => `
     <div class="proposal-group reveal-child">
       <div class="proposal-group-title">${esc(group)}</div>
-      ${items.slice(0, 4).map(item => `
+      ${items.map(item => `
         <div class="proposal-item">
           <div class="proposal-headline">
             ${esc(item.title)}${effortBadge(item.effort)}
           </div>
-          <div class="proposal-body">${esc(truncate(item.body.replace(/Effort:\s*(Easy|Medium|Hard)/i,'').trim(), 140))}</div>
+          <div class="proposal-body">${esc(item.body.replace(/Effort:\s*(Easy|Medium|Hard)/i,'').trim())}</div>
         </div>
       `).join('')}
     </div>
@@ -1506,16 +1593,22 @@ function renderLibrary(bookmarks) {
 
 // ── Bootstrap ─────────────────────────────────────────────
 (async function init() {
-  const [bookmarks, mvps, proposalsMd] = await Promise.all([
+  const [bookmarks, mvps, proposalsMd, editorial] = await Promise.all([
     fetchJSON('bookmarks.json'),
     fetchJSON('mvp-index.json'),
     fetchText('PROPOSALS.md'),
+    fetchJSON('editorial.json'),
   ]);
 
   renderAboveTheFold(bookmarks);
   renderTheWire(bookmarks);
   renderDemos(mvps);
-  renderProposals(proposalsMd);
+  // Use editorial pitches if available, else fall back to raw proposals
+  if (editorial?.proposals?.length) {
+    renderEditorial(editorial);
+  } else {
+    renderProposals(proposalsMd);
+  }
   renderSparks(bookmarks);
   renderLibrary(bookmarks);
 })();
