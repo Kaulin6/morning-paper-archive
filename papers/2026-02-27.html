@@ -1138,44 +1138,64 @@ function renderAboveTheFold(bookmarks) {
   const grid = document.getElementById('atf-grid');
   if (!bookmarks) { grid.innerHTML = `<div class="empty-note">Could not load bookmarks.</div>`; return; }
 
-  const projectMap = { containerHQ:'Container HQ', mealFlow:'Meal Flow', birddog:'Birddog', wildcard:'Wild Card' };
+  const projectMap = {
+    containerHQ:'Container HQ', mealFlow:'Meal Flow', birddog:'Birddog',
+    polymarket:'Polymarket', fundingArb:'Funding Arb', tweetPool:'TweetPool', wildcard:'Wild Card'
+  };
   const items = [];
   for (const b of bookmarks) {
     if (!b.applicability) continue;
     for (const [key, label] of Object.entries(projectMap)) {
       if (b.applicability[key]) {
-        items.push({ project: label, text: b.applicability[key], author: b.author, url: b.url, composite: b.ratings?.composite || 0, category: b.category });
+        items.push({
+          project: label, key,
+          applicability: b.applicability[key],
+          summary: b.summary || '',
+          implications: b.implications || {},
+          keyTakeaways: b.keyTakeaways || [],
+          author: b.author, url: b.url, text: b.text,
+          composite: b.ratings?.composite || 0,
+          category: b.category,
+          agentWorkflow: b.agentWorkflow,
+          agentWorkflowNote: b.agentWorkflowNote,
+        });
         break;
       }
     }
   }
   items.sort((a,b) => b.composite - a.composite);
-  const top3 = items.slice(0, 3);
+  const top4 = items.slice(0, 4);
+  if (!top4.length) { grid.innerHTML = `<div class="empty-note">No actionable items found.</div>`; return; }
 
-  if (!top3.length) { grid.innerHTML = `<div class="empty-note">No actionable items found.</div>`; return; }
-
-  grid.innerHTML = top3.map(item => `
-    <div class="atf-card reveal-child">
+  grid.innerHTML = top4.map((item, idx) => `
+    <div class="atf-card reveal-child" style="${idx === 0 ? 'border-left: 6px solid #ff4d00;' : ''}">
       <div class="atf-amber-strip"></div>
-      <div style="padding-left:0.5rem">
-        <div class="atf-project-tag">${esc(item.project)}</div>
+      <div style="padding-left:0.5rem; display:flex; flex-direction:column; gap:0.4rem; height:100%">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div class="atf-project-tag">${esc(item.project)}</div>
+          <span class="score-badge">★ ${item.composite.toFixed(1)}</span>
+        </div>
         <div class="atf-meta">
           <span>${esc(item.author)}</span>
           <span>·</span>
-          <span class="score-badge">★ ${item.composite.toFixed(1)}</span>
-          <span>·</span>
-          <span>${esc(item.category || '')}</span>
+          <span>${esc(item.category || 'General')}</span>
+          ${item.agentWorkflow ? `<span>·</span><span style="color:#ff4d00;font-weight:700">🤖 Agent</span>` : ''}
         </div>
-        <div class="atf-headline">${esc(truncate(item.text, 100))}</div>
-        <div class="atf-body">${esc(truncate(item.text, 240))}</div>
-        <a class="neo-link" href="${esc(item.url)}" target="_blank" rel="noopener">→ View source tweet</a>
+        <div class="atf-headline">${esc(truncate(item.applicability, 90))}</div>
+        <div class="atf-body">${esc(item.summary ? truncate(item.summary, 200) : truncate(item.text, 200))}</div>
+        ${item.keyTakeaways?.length ? `
+          <div style="margin-top:0.25rem; border-top:1px solid rgba(0,0,0,0.08); padding-top:0.5rem;">
+            ${item.keyTakeaways.slice(0,2).map(t => `<div style="font-size:0.72rem;color:rgba(0,0,0,0.5);padding:2px 0;">→ ${esc(t)}</div>`).join('')}
+          </div>` : ''}
+        ${item.implications?.specific ? `<div style="font-size:0.73rem;color:#ff4d00;margin-top:auto;padding-top:0.4rem;font-weight:600;">⚡ ${esc(truncate(item.implications.specific, 100))}</div>` : ''}
+        <a class="neo-link" href="${esc(item.url)}" target="_blank" rel="noopener" style="margin-top:0.5rem;">→ Source tweet</a>
       </div>
     </div>
   `).join('');
 
   grid.querySelectorAll('.reveal-child').forEach((el, i) => {
     el.classList.add('reveal');
-    el.style.transitionDelay = (i * 100) + 'ms';
+    el.style.transitionDelay = (i * 80) + 'ms';
     revealObserver.observe(el);
   });
 }
@@ -1185,25 +1205,39 @@ function renderTheWire(bookmarks) {
   const grid = document.getElementById('wire-grid');
   if (!bookmarks) { grid.innerHTML = `<div class="empty-note">No wire data.</div>`; return; }
 
+  // Use implications.general for macro trends — richer than b.why
   const sparks = bookmarks
-    .filter(b => b.isSpark && b.why && b.why.trim().length > 10)
+    .filter(b => b.isSpark && (b.implications?.general || b.summary))
     .sort((a,b) => (b.ratings?.composite||0) - (a.ratings?.composite||0))
-    .slice(0, 5);
+    .slice(0, 6);
 
   if (!sparks.length) { grid.innerHTML = `<div class="empty-note">No signals today.</div>`; return; }
 
-  grid.innerHTML = sparks.map((b, i) => `
+  grid.innerHTML = sparks.map((b, i) => {
+    const signal = b.implications?.general || b.summary || '';
+    const specific = b.implications?.specific || '';
+    const projects = Object.entries(b.applicability || {})
+      .filter(([k,v]) => v && k !== 'marketing')
+      .map(([k]) => k.replace('containerHQ','Container HQ').replace('mealFlow','Meal Flow')
+        .replace('birddog','Birddog').replace('polymarket','Polymarket')
+        .replace('tweetPool','TweetPool').replace('fundingArb','Funding Arb').replace('wildcard','Wild Card'))
+      .slice(0, 2);
+
+    return `
     <div class="wire-item reveal-child">
       <div class="wire-num">${String(i+1).padStart(2,'0')}</div>
       <div class="wire-content">
-        <div class="wire-text">"${esc(truncate(b.why, 200))}"</div>
-        <div class="wire-source">
+        <div class="wire-text">"${esc(truncate(signal, 220))}"</div>
+        ${specific ? `<div style="font-size:0.75rem;color:rgba(0,0,0,0.5);margin-top:0.3rem;font-style:italic;">⚡ ${esc(truncate(specific,120))}</div>` : ''}
+        <div class="wire-source" style="margin-top:0.4rem;display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
           via <a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.author)}</a>
           <span class="wire-cat-badge">${esc(b.category || 'General')}</span>
+          ${projects.map(p => `<span style="font-size:0.65rem;background:rgba(0,0,0,0.07);padding:1px 6px;border-radius:2px;">${esc(p)}</span>`).join('')}
+          <span style="margin-left:auto;font-size:0.7rem;opacity:0.4;">★ ${(b.ratings?.composite||0).toFixed(1)}</span>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   grid.querySelectorAll('.reveal-child').forEach((el, i) => {
     el.classList.add('reveal');
@@ -1216,34 +1250,42 @@ function renderTheWire(bookmarks) {
 function renderDemos(mvps) {
   const grid = document.getElementById('demos-grid');
   if (!mvps || !mvps.length) {
-    grid.innerHTML = `<div class="empty-note" style="grid-column:1/-1">No MVPs indexed yet. Run generate-index.js to refresh.</div>`;
+    grid.innerHTML = `<div class="empty-note" style="grid-column:1/-1">No MVPs indexed yet.</div>`;
     return;
   }
 
-  grid.innerHTML = mvps.map(mvp => {
+  // Sort: live first
+  const sorted = [...mvps].sort((a,b) => (b.liveUrl ? 1 : 0) - (a.liveUrl ? 1 : 0));
+
+  grid.innerHTML = sorted.map((mvp, i) => {
     const isLive = !!(mvp.liveUrl);
     const statusHtml = isLive
       ? `<span class="live-dot"></span><span class="live-badge">Live</span>`
       : `<span class="dead-dot"></span><span class="dead-badge">No Demo</span>`;
     const openBtn = isLive
       ? `<a class="neo-btn neo-btn-primary" href="${esc(mvp.liveUrl)}" target="_blank" rel="noopener">Open Demo →</a>`
-      : `<span class="neo-btn neo-btn-ghost" style="opacity:.35;pointer-events:none">No Demo</span>`;
+      : `<span class="neo-btn neo-btn-ghost" style="opacity:.3;pointer-events:none">No Live URL</span>`;
     const ghBtn = mvp.githubUrl
       ? `<a class="neo-btn neo-btn-ghost" href="${esc(mvp.githubUrl)}" target="_blank" rel="noopener">GitHub ↗</a>`
       : '';
+    const builtDate = mvp.builtDate ? `<span style="font-size:0.65rem;color:rgba(0,0,0,0.35);margin-left:auto;">Built ${esc(mvp.builtDate)}</span>` : '';
+    const projectTag = mvp.project ? `<span style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.4);">${esc(mvp.project)}</span>` : '';
+
     return `
-      <div class="demo-card reveal-child">
-        <div class="demo-status-row">${statusHtml}</div>
+      <div class="demo-card reveal-child" style="${isLive ? 'border-top:3px solid #000;' : 'opacity:0.7;'}">
+        <div class="demo-status-row" style="display:flex;align-items:center;gap:0.5rem;">
+          ${statusHtml}${builtDate}
+        </div>
+        ${projectTag}
         <div class="demo-name">${esc(mvp.name)}</div>
-        <div class="demo-desc">${esc(truncate(mvp.description, 120))}</div>
-        <div class="demo-actions">${openBtn}${ghBtn}</div>
-      </div>
-    `;
+        <div class="demo-desc">${esc(truncate(mvp.description, 140))}</div>
+        <div class="demo-actions" style="margin-top:auto;">${openBtn}${ghBtn}</div>
+      </div>`;
   }).join('');
 
   grid.querySelectorAll('.reveal-child').forEach((el, i) => {
     el.classList.add('reveal');
-    el.style.transitionDelay = (i * 80) + 'ms';
+    el.style.transitionDelay = (i * 60) + 'ms';
     revealObserver.observe(el);
   });
 }
@@ -1408,32 +1450,53 @@ function renderSparks(bookmarks) {
   const list = document.getElementById('sparks-list');
   if (!bookmarks) { list.innerHTML = `<li class="empty-note">No spark data.</li>`; return; }
 
-  const cutoff = new Date(NOW - MS_14D);
-  const top5 = bookmarks
-    .filter(b => b.isSpark && new Date(b.time) > cutoff)
+  // Show top 8 all-time, not just 14 days — more useful
+  const top = bookmarks
+    .filter(b => b.isSpark)
     .sort((a,b) => (b.ratings?.composite||0) - (a.ratings?.composite||0))
-    .slice(0, 5);
+    .slice(0, 8);
 
-  if (!top5.length) { list.innerHTML = `<li class="empty-note">No sparks in the last 14 days.</li>`; return; }
+  if (!top.length) { list.innerHTML = `<li class="empty-note">No sparks yet.</li>`; return; }
 
-  list.innerHTML = top5.map((b, i) => `
+  list.innerHTML = top.map((b, i) => {
+    const r = b.ratings || {};
+    const ratingBars = [
+      { label: 'Impact',   val: r.impact   || 0 },
+      { label: 'Novelty',  val: r.novelty  || 0 },
+      { label: 'Fit',      val: r.fit      || 0 },
+      { label: 'Build',    val: r.iterations || 0 },
+    ];
+    const projects = Object.entries(b.applicability || {})
+      .filter(([k,v]) => v && k !== 'marketing')
+      .map(([k]) => k.replace('containerHQ','CHQ').replace('mealFlow','MF')
+        .replace('birddog','BD').replace('polymarket','PM')
+        .replace('tweetPool','TP').replace('fundingArb','FA').replace('wildcard','WC'));
+
+    return `
     <li class="spark-card reveal-child">
       <div class="spark-rank">${String(i+1).padStart(2,'0')}</div>
       <div class="spark-content">
-        <div class="spark-author">${esc(b.author)}</div>
-        <div class="spark-text">${esc(truncate(b.text, 180))}</div>
-        <div class="spark-meta">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.2rem;">
+          <div class="spark-author">${esc(b.author)}</div>
+          ${projects.map(p => `<span style="font-size:0.6rem;background:rgba(0,0,0,0.08);padding:1px 5px;border-radius:2px;font-weight:700;">${p}</span>`).join('')}
+        </div>
+        <div class="spark-text">${esc(truncate(b.text, 200))}</div>
+        ${b.summary ? `<div style="font-size:0.76rem;color:rgba(0,0,0,0.5);margin-top:0.3rem;line-height:1.45;">${esc(truncate(b.summary,160))}</div>` : ''}
+        ${b.implications?.specific ? `<div style="font-size:0.72rem;color:#ff4d00;margin-top:0.25rem;">⚡ ${esc(truncate(b.implications.specific,100))}</div>` : ''}
+        <div class="spark-meta" style="margin-top:0.5rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
           <span class="cat-badge">${esc(b.category || 'Spark')}</span>
-          <span class="score-chip">★ ${(b.ratings?.composite||0).toFixed(1)}</span>
+          <span class="score-chip">★ ${(r.composite||0).toFixed(1)}</span>
+          ${ratingBars.map(rb => `<span style="font-size:0.65rem;color:rgba(0,0,0,0.4);">${rb.label} ${rb.val}/5</span>`).join('')}
+          ${b.agentWorkflow ? `<span style="font-size:0.65rem;color:#ff4d00;font-weight:700;">🤖 Agent-ready</span>` : ''}
         </div>
       </div>
       <a class="neo-btn neo-btn-ghost spark-link-btn" href="${esc(b.url)}" target="_blank" rel="noopener">View →</a>
-    </li>
-  `).join('');
+    </li>`;
+  }).join('');
 
   list.querySelectorAll('.reveal-child').forEach((el, i) => {
     el.classList.add('reveal');
-    el.style.transitionDelay = (i * 100) + 'ms';
+    el.style.transitionDelay = (i * 80) + 'ms';
     revealObserver.observe(el);
   });
 }
