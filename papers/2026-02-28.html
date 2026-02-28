@@ -238,21 +238,21 @@
     .pinned-headline-card {
       display: flex;
       align-items: stretch;
-      border: 3px solid #2d2a22;
-      box-shadow: 4px 4px 0 #2d2a22;
+      border: 3px solid #000;
+      box-shadow: 4px 4px 0 #000;
       text-decoration: none;
       color: inherit;
-      background: #2d2a22;
+      background: #000;
       transition: transform 0.12s, box-shadow 0.12s;
       overflow: hidden;
     }
     .pinned-headline-card:hover {
       transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0 #2d2a22;
+      box-shadow: 6px 6px 0 #000;
     }
     .pinned-headline-flag {
       background: var(--neo-amber);
-      color: #2d2a22;
+      color: #000;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1050,6 +1050,33 @@ return _f?_f(url,o):Promise.reject(new Error('no fetch'));};
   </div>
 </section>
 
+<!-- ─── § IEEPA Research Links ─────────────────────── -->
+<section class="section-block" style="background:#000;padding-top:0;padding-bottom:1.5rem;">
+  <div class="section-inner" style="padding-top:0;">
+    <div id="pinned-headlines">
+      <div class="pinned-headline-strip">
+        <a class="pinned-headline-card" href="https://kaulin6.github.io/morning-paper-archive/papers/2026-02-28-ieepa-deal-flow.html" target="_blank" rel="noopener">
+          <div class="pinned-headline-flag">Research</div>
+          <div class="pinned-headline-body">
+            <div class="pinned-headline-kicker">Special Report · New Opportunity</div>
+            <div class="pinned-headline-title">IEEPA Tariff Refund Deal Flow — Acquisition Structures, Legal Costs &amp; Portfolio Economics</div>
+            <div class="pinned-headline-deck">$175B in illegal tariffs. How to source claims, structure deals with your investor, and what Flexport's 10%+3.5% model means for you.</div>
+          </div>
+          <div class="pinned-headline-arrow">→</div>
+        </a>
+        <a class="pinned-headline-card" href="https://kaulin6.github.io/morning-paper-archive/papers/2026-02-28-ieepa-research.html" target="_blank" rel="noopener">
+          <div class="pinned-headline-flag">Research</div>
+          <div class="pinned-headline-body">
+            <div class="pinned-headline-kicker">Special Report · Background</div>
+            <div class="pinned-headline-title">IEEPA Tariff Refund Arbitrage — Four Angles, The Cold Email Pitch &amp; Why Small Importers Are the Gap</div>
+            <div class="pinned-headline-deck">SCOTUS struck down IEEPA tariffs. Wall Street is buying claims at 40¢. The deal-sourcing play explained from scratch.</div>
+          </div>
+          <div class="pinned-headline-arrow">→</div>
+        </a>
+      </div>
+  </div>
+</section>
+
 <!-- ─── § Today's One Thing ──────────────────────── -->
 <section class="section-block" style="background:#ff4d00;">
   <div class="section-inner">
@@ -1095,27 +1122,6 @@ return _f?_f(url,o):Promise.reject(new Error('no fetch'));};
       <div class="section-title">Above the Fold</div>
       <div class="section-deck">Highest-value sparks — what to read, think about, and act on.</div>
     </div>
-    <div id="pinned-headlines">
-      <div class="pinned-headline-strip">
-        <a class="pinned-headline-card" href="https://kaulin6.github.io/morning-paper-archive/papers/2026-02-28-ieepa-deal-flow.html" target="_blank" rel="noopener">
-          <div class="pinned-headline-flag">Research</div>
-          <div class="pinned-headline-body">
-            <div class="pinned-headline-kicker">Special Report · New Opportunity</div>
-            <div class="pinned-headline-title">IEEPA Tariff Refund Deal Flow — Acquisition Structures, Legal Costs &amp; Portfolio Economics</div>
-            <div class="pinned-headline-deck">$175B in illegal tariffs. How to source claims, structure deals with your investor, and what Flexport's 10%+3.5% model means for you.</div>
-          </div>
-          <div class="pinned-headline-arrow">→</div>
-        </a>
-        <a class="pinned-headline-card" href="https://kaulin6.github.io/morning-paper-archive/papers/2026-02-28-ieepa-research.html" target="_blank" rel="noopener">
-          <div class="pinned-headline-flag">Research</div>
-          <div class="pinned-headline-body">
-            <div class="pinned-headline-kicker">Special Report · Background</div>
-            <div class="pinned-headline-title">IEEPA Tariff Refund Arbitrage — Four Angles, The Cold Email Pitch &amp; Why Small Importers Are the Gap</div>
-            <div class="pinned-headline-deck">SCOTUS struck down IEEPA tariffs. Wall Street is buying claims at 40¢. The deal-sourcing play explained from scratch.</div>
-          </div>
-          <div class="pinned-headline-arrow">→</div>
-        </a>
-      </div>
     </div>
     <div class="atf-grid" id="atf-grid">
       <div class="loading">Loading bookmarks…</div>
