@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IEEPA Tariff Refund Arbitrage — Research Brief · Mango 🥭</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;900&family=DM+Mono:wght@400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #fffdf5;
+    --red: #ff4d00;
+    --yellow: #ffd93d;
+    --green: #00c896;
+    --blue: #3b82f6;
+    --border: 3px solid var(--black);
+    --shadow: 6px 6px 0 var(--black);
+    --shadow-sm: 4px 4px 0 var(--black);
+  }
+
+  body {
+    background: var(--white);
+    color: var(--black);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── Masthead ─────────────────────────────────────────── */
+  .masthead {
+    border-bottom: var(--border);
+    padding: 1.5rem 2rem 1rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .masthead-left { display: flex; flex-direction: column; gap: 0.25rem; }
+  .back-link { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--black); text-decoration: none; opacity: 0.4; }
+  .back-link:hover { opacity: 1; }
+  .masthead-paper { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; line-height: 1; letter-spacing: 0.02em; }
+  .masthead-kicker { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--red); }
+  .masthead-right { text-align: right; }
+  .masthead-date { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: rgba(0,0,0,0.4); }
+  .masthead-tag { display: inline-block; background: var(--yellow); border: 2px solid var(--black); padding: 0.2rem 0.6rem; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; box-shadow: var(--shadow-sm); transform: rotate(-1deg); margin-top: 0.4rem; }
+
+  /* ── Hero ─────────────────────────────────────────────── */
+  .hero {
+    border-bottom: var(--border);
+    padding: 3rem 2rem 2.5rem;
+    background: var(--black);
+    color: var(--white);
+  }
+  .hero-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--yellow); margin-bottom: 1rem; }
+  .hero-headline { font-weight: 900; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.05; margin-bottom: 1.25rem; max-width: 800px; }
+  .hero-headline em { color: var(--yellow); font-style: normal; }
+  .hero-deck { font-size: 1.05rem; line-height: 1.6; max-width: 640px; opacity: 0.75; margin-bottom: 2rem; }
+  .hero-stats { display: flex; gap: 2rem; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; }
+  .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; line-height: 1; color: var(--yellow); }
+  .stat-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.5; margin-top: 0.2rem; }
+
+  /* ── Layout ───────────────────────────────────────────── */
+  .content { max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+  /* ── Section headers ──────────────────────────────────── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 0 1rem;
+    border-top: var(--border);
+    margin-top: 2.5rem;
+  }
+  .section-num { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--red); letter-spacing: 0.1em; }
+  .section-title { font-weight: 900; font-size: 1.4rem; }
+
+  /* ── Angle cards ──────────────────────────────────────── */
+  .angles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 1.25rem; }
+  .angle-card {
+    border: var(--border);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-shadow: var(--shadow);
+    background: var(--white);
+    position: relative;
+  }
+  .angle-card.featured { background: var(--black); color: var(--white); }
+  .angle-verdict {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border: 2px solid currentColor;
+  }
+  .verdict-yes { background: var(--green); color: var(--black); border-color: var(--black); }
+  .verdict-maybe { background: var(--yellow); color: var(--black); border-color: var(--black); }
+  .verdict-no { background: #f1f1f1; color: rgba(0,0,0,0.4); border-color: rgba(0,0,0,0.2); }
+  .angle-title { font-weight: 800; font-size: 1.1rem; line-height: 1.2; }
+  .angle-card.featured .angle-title { color: var(--yellow); }
+  .angle-body { font-size: 0.88rem; line-height: 1.6; opacity: 0.8; }
+  .angle-card.featured .angle-body { opacity: 0.7; }
+  .angle-why { font-size: 0.8rem; font-weight: 700; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.08em; }
+  .featured-badge {
+    position: absolute;
+    top: -1px;
+    right: 1.5rem;
+    background: var(--red);
+    color: var(--white);
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border: 2px solid var(--black);
+    border-top: none;
+  }
+
+  /* ── Playbook steps ───────────────────────────────────── */
+  .playbook { display: flex; flex-direction: column; gap: 0; margin-top: 1.25rem; border: var(--border); }
+  .step {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    border-bottom: 2px solid var(--black);
+    min-height: 5rem;
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    background: var(--black);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.75rem;
+    border-right: var(--border);
+    flex-shrink: 0;
+  }
+  .step-content { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  .step-title { font-weight: 800; font-size: 0.95rem; }
+  .step-body { font-size: 0.85rem; line-height: 1.55; opacity: 0.7; }
+  .step-tool { display: inline-block; background: var(--yellow); border: 1.5px solid var(--black); padding: 0.1rem 0.4rem; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.25rem; }
+
+  /* ── Numbers bar ──────────────────────────────────────── */
+  .numbers-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    border: var(--border);
+    margin-top: 1.25rem;
+    box-shadow: var(--shadow);
+  }
+  .number-cell {
+    padding: 1.25rem 1.5rem;
+    border-right: 2px solid var(--black);
+    border-bottom: 2px solid var(--black);
+  }
+  .number-cell:last-child { border-right: none; }
+  .number-val { font-family: 'Bebas Neue', sans-serif; font-size: 2.25rem; line-height: 1; color: var(--red); }
+  .number-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.5; margin-top: 0.3rem; }
+
+  /* ── Risk list ────────────────────────────────────────── */
+  .risk-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.25rem; }
+  .risk-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--black);
+    background: #fff8f5;
+  }
+  .risk-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .risk-body { font-size: 0.88rem; line-height: 1.55; }
+  .risk-title { font-weight: 800; margin-bottom: 0.25rem; }
+
+  /* ── Next steps ───────────────────────────────────────── */
+  .next-steps { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1.25rem; }
+  .next-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 0.9rem 1.1rem;
+    border: 2px solid var(--black);
+    background: var(--white);
+    box-shadow: 3px 3px 0 var(--black);
+  }
+  .next-step-check { font-size: 1rem; flex-shrink: 0; }
+  .next-step-text { font-size: 0.88rem; line-height: 1.5; font-weight: 500; }
+
+  /* ── Sources ──────────────────────────────────────────── */
+  .sources-grid { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.25rem; }
+  .source-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid rgba(0,0,0,0.15);
+    background: #fafaf8;
+    text-decoration: none;
+    color: var(--black);
+    font-size: 0.82rem;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .source-item:hover { border-color: var(--black); background: var(--yellow); }
+  .source-icon { opacity: 0.35; font-size: 0.9rem; flex-shrink: 0; }
+  .source-pub { font-weight: 700; margin-right: 0.25rem; }
+  .source-title { opacity: 0.7; }
+
+  /* ── The Pitch ────────────────────────────────────────── */
+  .pitch-box {
+    border: var(--border);
+    background: var(--black);
+    color: var(--white);
+    padding: 2rem;
+    margin-top: 1.25rem;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .pitch-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--yellow);
+    margin-bottom: 1rem;
+  }
+  .pitch-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    font-style: italic;
+    opacity: 0.9;
+    border-left: 3px solid var(--yellow);
+    padding-left: 1.25rem;
+  }
+  .pitch-note { font-size: 0.78rem; opacity: 0.45; margin-top: 1rem; font-family: 'DM Mono', monospace; }
+
+  /* ── Footer ───────────────────────────────────────────── */
+  footer {
+    border-top: var(--border);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: var(--black);
+    color: var(--white);
+    margin-top: 4rem;
+  }
+  footer a { color: var(--yellow); text-decoration: none; font-weight: 700; font-size: 0.8rem; }
+  footer .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.68rem; opacity: 0.4; }
+
+  @media (max-width: 600px) {
+    .masthead, .hero, .content { padding-left: 1rem; padding-right: 1rem; }
+    .hero-headline { font-size: 1.8rem; }
+    .angles-grid { grid-template-columns: 1fr; }
+    .numbers-bar { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Masthead ─────────────────────────────────────── -->
+<header class="masthead">
+  <div class="masthead-left">
+    <a href="../index.html" class="back-link">← Morning Paper Archive</a>
+    <div class="masthead-paper">Mango Research</div>
+    <div class="masthead-kicker">Special Report · IEEPA Tariff Refund Arbitrage</div>
+  </div>
+  <div class="masthead-right">
+    <div class="masthead-date">Saturday, February 28, 2026</div>
+    <div class="masthead-tag">New Opportunity</div>
+  </div>
+</header>
+
+<!-- ── Hero ─────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-label">Breaking · Finance &amp; Trade</div>
+  <h1 class="hero-headline">$175 Billion in Illegal Tariffs.<br>Wall Street Is Already <em>Buying the Claims.</em><br>Nobody Called the Small Guys.</h1>
+  <p class="hero-deck">The Supreme Court struck down Trump's IEEPA tariffs on Feb 20. That created a secondary market for refund claims — companies selling their potential refunds to hedge funds at 40¢ on the dollar. Seaport Global and Jefferies are calling Fortune 500s. The small importer who paid $80K in tariffs has no idea this market exists. That's the gap.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-val">$175B</div><div class="stat-label">Potential refunds</div></div>
+    <div class="stat"><div class="stat-val">40¢</div><div class="stat-label">Current market rate</div></div>
+    <div class="stat"><div class="stat-val">19.2M</div><div class="stat-label">Unliquidated entries</div></div>
+    <div class="stat"><div class="stat-val">180</div><div class="stat-label">Day protest window</div></div>
+  </div>
+</section>
+
+<div class="content">
+
+  <!-- ── The Angles ───────────────────────────────────── -->
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Four Angles — Ranked by Viability</h2>
+  </div>
+
+  <div class="angles-grid">
+
+    <div class="angle-card featured">
+      <div class="featured-badge">The Play</div>
+      <div class="angle-verdict verdict-yes">✓ Do This</div>
+      <div class="angle-title">Deal Sourcing / Finder's Fee</div>
+      <div class="angle-body">Build an outreach machine targeting small importers who paid IEEPA tariffs but have no idea there's a secondary market for their claims. Qualify them, hand them to hedge fund buyers (Seaport, Jefferies), collect 1–5% finder's fee. No capital required. Fully automatable.</div>
+      <div class="angle-why">Same playbook as Birddog + Container HQ — find the underserved segment, build the outreach stack, connect supply to demand.</div>
+    </div>
+
+    <div class="angle-card">
+      <div class="angle-verdict verdict-maybe">⚠ Maybe</div>
+      <div class="angle-title">Direct Claim Purchasing</div>
+      <div class="angle-body">Buy refund claims at ~40¢ on dollar directly from importers, collect 100¢ when/if government pays. Seaport Global and hedge funds are already doing this. Hundreds of millions in deals done since November 2025.</div>
+      <div class="angle-why">Requires $500K+ capital, 3–5 year patience, legal expertise. Wall Street already owns this market. Pass unless you have the capital.</div>
+    </div>
+
+    <div class="angle-card">
+      <div class="angle-verdict verdict-maybe">⚠ Complex</div>
+      <div class="angle-title">Downstream Buyer Recovery</div>
+      <div class="angle-body">Retailers and distributors who absorbed tariff surcharges in their purchase prices may have claims against their importers. Importer gets the refund but won't share it — downstream buyers must act before that money is spent.</div>
+      <div class="angle-why">Requires suing your own supplier. Relationship risk. Hard to systematize at scale. Only viable with existing retail/distribution relationships.</div>
+    </div>
+
+    <div class="angle-card">
+      <div class="angle-verdict verdict-no">✗ Pass</div>
+      <div class="angle-title">M&amp;A Refund Arbitrage</div>
+      <div class="angle-body">Companies sold between Liberation Day and Feb 2026 have ambiguous refund ownership. Buyer vs. seller disputes are coming per Forbes. Someone bought a company not knowing it had a refund claim sitting in it.</div>
+      <div class="angle-why">Too legal, too case-by-case. This is law firm territory. Pass.</div>
+    </div>
+
+  </div>
+
+  <!-- ── The Playbook ──────────────────────────────────── -->
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">The Playbook — Deal Sourcing Step by Step</h2>
+  </div>
+
+  <div class="playbook">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Get the Data</div>
+        <div class="step-body">Every US import shipment is publicly logged. Filter by China-origin goods, April 2025–Feb 24 2026, importer of record field. Target sweet spot: $50K–$2M claims. Big enough to be worth it, small enough that Wall Street hasn't called them yet.</div>
+        <span class="step-tool">Import Genius $299–599/mo</span>
+        <span class="step-tool">Panjiva (S&P Global)</span>
+        <span class="step-tool">Customs City (cheaper alt)</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Build the Cold Outreach Stack</div>
+        <div class="step-body">Same infrastructure as Container HQ. 20 domains, 60 inboxes, Instantly.ai sequences. Personalize with company name + estimated tariff amount pulled from customs data. Subject line: "You're owed a refund — here's how to get paid now."</div>
+        <span class="step-tool">Porkbun domains</span>
+        <span class="step-tool">Google Workspace</span>
+        <span class="step-tool">Instantly.ai</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Qualify Inbound</div>
+        <div class="step-body">Confirm they're the importer of record (not just a buyer of goods). Estimate claim size: import value × IEEPA tariff rate. Confirm liquidation status — unliquidated entries are easier (PSC route), liquidated need protest within 180 days.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Establish the Buyer Network</div>
+        <div class="step-body">Need a relationship with at least one: Seaport Global (Wes Harrell, head of trading), Jefferies, Oppenheimer, or a dedicated IEEPA hedge fund. Pitch: "I source pre-qualified importer leads with documented claim sizes. What's your referral arrangement?"</div>
+        <span class="step-tool">Seaport Global</span>
+        <span class="step-tool">Jefferies</span>
+        <span class="step-tool">Oppenheimer</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Collect Finder's Fee</div>
+        <div class="step-body">Standard financial intermediation: 1–5% of deal value. On a $200K claim sold at 40¢ ($80K), a 2% fee = $1,600. If you're sourcing 10–20 deals/month, that compounds fast. The real upside: if claims go to 70–80¢ as litigation resolves, today's sourced deals appreciate.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── The Pitch ─────────────────────────────────────── -->
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">The Cold Email Pitch</h2>
+  </div>
+
+  <div class="pitch-box">
+    <div class="pitch-label">Draft Cold Email — Subject: "You're owed a tariff refund — here's how to get paid now"</div>
+    <div class="pitch-text">
+      "Hey [First Name] —<br><br>
+      Your company imported [product category] from China between April 2025 and February 2026. Based on public customs records, you likely paid somewhere in the range of [estimated amount] in IEEPA tariffs.<br><br>
+      The Supreme Court ruled those tariffs were illegal on February 20th. You're owed that money back. The problem: the government says it could take years. The courts are a mess.<br><br>
+      We connect importers like you to institutional buyers who will pay 40–50 cents on the dollar for your refund claim — today, not years from now. No legal fees. No waiting.<br><br>
+      Worth a 15-minute call?<br><br>
+      — [Name]"
+    </div>
+    <div class="pitch-note">Personalize with actual HTS codes + estimated tariff exposure from Import Genius data. Response rate hypothesis: 3–8% given the novelty and direct financial benefit.</div>
+  </div>
+
+  <!-- ── Key Numbers ────────────────────────────────────── -->
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Key Numbers</h2>
+  </div>
+
+  <div class="numbers-bar">
+    <div class="number-cell">
+      <div class="number-val">$175B</div>
+      <div class="number-label">Total refunds owed (Penn Wharton)</div>
+    </div>
+    <div class="number-cell">
+      <div class="number-val">40¢</div>
+      <div class="number-label">Current market rate post-ruling (up from 20¢)</div>
+    </div>
+    <div class="number-cell">
+      <div class="number-val">19.2M</div>
+      <div class="number-label">Unliquidated entries — easier refund path</div>
+    </div>
+    <div class="number-cell">
+      <div class="number-val">180</div>
+      <div class="number-label">Days to file protest on liquidated entries</div>
+    </div>
+    <div class="number-cell">
+      <div class="number-val">150</div>
+      <div class="number-label">Days until Section 122 tariffs expire (July 2026)</div>
+    </div>
+    <div class="number-cell">
+      <div class="number-val">1–5%</div>
+      <div class="number-label">Standard finder's fee for financial intermediation</div>
+    </div>
+  </div>
+
+  <!-- ── Risks ─────────────────────────────────────────── -->
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Risks — Eyes Open</h2>
+  </div>
+
+  <div class="risk-list">
+    <div class="risk-item">
+      <div class="risk-icon">⚠️</div>
+      <div class="risk-body">
+        <div class="risk-title">Government is actively fighting refunds</div>
+        Trump said in court he'd pay them. Now his DOJ is stalling. Kavanaugh called it a "mess" in his dissent. The administration is simultaneously collecting the same rates under Section 122. Timeline is genuinely unknown — could be 3–5 years.
+      </div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-icon">⚠️</div>
+      <div class="risk-body">
+        <div class="risk-title">Only plaintiffs in existing lawsuits may get refunds</div>
+        The government may argue that only companies who were active plaintiffs in the original IEEPA cases are entitled to refunds. That's a much smaller universe than all importers who paid the tariffs.
+      </div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-icon">⚠️</div>
+      <div class="risk-body">
+        <div class="risk-title">Liquidated vs. unliquidated matters a lot</div>
+        Unliquidated entries (19.2M): easier path via Post Summary Correction. Liquidated entries: must file protest within 180 days of liquidation via CBP Form 19. Missing the window = claim may be barred.
+      </div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-icon">⚠️</div>
+      <div class="risk-body">
+        <div class="risk-title">Political risk</div>
+        Trump could cut deals with companies that "play nice" and exclude those that sue. CEOs are already being cautious about publicly demanding refunds to avoid retribution. Per Semafor: "CEOs weigh seeking US tariff refunds after Supreme Court ruling."
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Next Steps ────────────────────────────────────── -->
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Next Steps to Validate</h2>
+  </div>
+
+  <div class="next-steps">
+    <div class="next-step">
+      <div class="next-step-check">□</div>
+      <div class="next-step-text"><strong>Get Import Genius trial</strong> — can we pull IEEPA-affected importer lists by HTS code + origin country + date range? Validate the data is actionable before paying $300/mo.</div>
+    </div>
+    <div class="next-step">
+      <div class="next-step-check">□</div>
+      <div class="next-step-text"><strong>Contact Seaport Global (Wes Harrell)</strong> — what are their sourcing/referral terms? Do they have an existing intermediary program? LinkedIn or cold email to the trading desk.</div>
+    </div>
+    <div class="next-step">
+      <div class="next-step-check">□</div>
+      <div class="next-step-text"><strong>Run a test pitch to 3 small importers</strong> — manually find 3 companies via public CBP data, send the pitch email, measure response rate. Proof of concept before building the stack.</div>
+    </div>
+    <div class="next-step">
+      <div class="next-step-check">□</div>
+      <div class="next-step-text"><strong>Legal question</strong> — does assigning a refund claim require specific documentation? Can a company assign their claim before they've even filed a protest? Need a trade law opinion.</div>
+    </div>
+    <div class="next-step">
+      <div class="next-step-check">□</div>
+      <div class="next-step-text"><strong>Crossover with Container HQ infrastructure</strong> — the cold email stack being built for Container HQ (Porkbun domains, Google Workspace, Instantly.ai) can run both campaigns simultaneously. One build, two revenue streams.</div>
+    </div>
+  </div>
+
+  <!-- ── Sources ───────────────────────────────────────── -->
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">Sources</h2>
+  </div>
+
+  <div class="sources-grid">
+    <a class="source-item" href="https://www.npr.org/2026/02/25/nx-s1-5723910/the-market-for-tariff-refunds" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">NPR</span><span class="source-title">— The market for tariff refunds</span></span>
+    </a>
+    <a class="source-item" href="https://prospect.org/2026/02/24/looming-chaos-trump-tariff-refunds/" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">American Prospect</span><span class="source-title">— The Looming Chaos of Tariff Refunds</span></span>
+    </a>
+    <a class="source-item" href="https://budgetmodel.wharton.upenn.edu/issues/2026/2/20/supreme-court-tariff-ruling-ieepa-revenue-and-potential-refunds" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">Penn Wharton</span><span class="source-title">— IEEPA Revenue and Potential Refunds ($175B estimate)</span></span>
+    </a>
+    <a class="source-item" href="https://natlawreview.com/article/who-gets-tariff-refund-how-retailers-and-downstream-buyers-can-recover-their-share" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">National Law Review</span><span class="source-title">— Who Gets the Tariff Refund? Downstream buyers</span></span>
+    </a>
+    <a class="source-item" href="https://www.forbes.com/sites/richardkestenbaum/2026/02/25/who-gets-the-tariff-refund-if-the-company-is-sold/" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">Forbes</span><span class="source-title">— Who Gets the Refund in M&A Deals?</span></span>
+    </a>
+    <a class="source-item" href="https://www.avalara.com/blog/en/north-america/2026/02/how-to-request-tariff-refunds.html" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">Avalara</span><span class="source-title">— How to Request Tariff Refunds (step-by-step)</span></span>
+    </a>
+    <a class="source-item" href="https://www.flexport.com/blog/the-supreme-courts-ieepa-tariff-ruling-next-steps-potential-refunds-and/" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">Flexport</span><span class="source-title">— IEEPA Ruling: Next Steps, Potential Refunds</span></span>
+    </a>
+    <a class="source-item" href="https://www.cato.org/blog/sore-losers-supreme-court-government-doesnt-want-pay-back-unlawful-tariff-money-after-all" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">Cato Institute</span><span class="source-title">— Government Doesn't Want to Pay Back Unlawful Tariff Money</span></span>
+    </a>
+    <a class="source-item" href="https://www.troutman.com/insights/ieepa-related-tariffs-are-gone-but-the-fight-over-refunds-is-just-beginning/" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">Troutman Pepper</span><span class="source-title">— The Fight Over Refunds Is Just Beginning</span></span>
+    </a>
+    <a class="source-item" href="https://www.houstonpublicmedia.org/articles/news/business/2026/02/23/544155/businesses-could-spend-years-waiting-for-tariff-refunds-in-wake-of-scotus-decision/" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">Houston Public Media</span><span class="source-title">— Small Businesses Could Spend Years Waiting</span></span>
+    </a>
+    <a class="source-item" href="https://www.skadden.com/insights/publications/2026/02/the-supreme-court-ends-ieepa-tariffs" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">Skadden</span><span class="source-title">— The Supreme Court Ends IEEPA Tariffs</span></span>
+    </a>
+    <a class="source-item" href="https://www.foley.com/insights/publications/2026/02/what-every-multinational-should-know-about-the-new-section-122-tariffs-and-preserving-ieepa-refund-rights/" target="_blank" rel="noopener">
+      <span class="source-icon">↗</span><span><span class="source-pub">Foley &amp; Lardner</span><span class="source-title">— Preserving IEEPA Refund Rights Under Section 122</span></span>
+    </a>
+  </div>
+
+</div><!-- /content -->
+
+<footer>
+  <div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.05em;">Mango Research</div>
+    <a href="../index.html">← Back to Morning Paper Archive</a>
+  </div>
+  <div class="footer-meta">
+    IEEPA TARIFF REFUND ARBITRAGE · SPECIAL REPORT · 2026-02-28<br>
+    Research by Mango 🥭 · Built on TweetPool intelligence
+  </div>
+</footer>
+
+</body>
+</html>
