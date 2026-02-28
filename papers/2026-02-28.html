@@ -303,23 +303,6 @@
       flex-shrink: 0;
     }
 
-    /* ── Pulse mini grid (inside Intelligence section) ─────── */
-    .pulse-mini-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:0.6rem; }
-    .pulse-mini-card { border:1px solid rgba(255,255,255,0.1); padding:1rem 1.1rem; background:rgba(255,255,255,0.04); }
-    .pulse-mini-topic { font-size:0.6rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--neo-amber); margin-bottom:0.35rem; }
-    .pulse-mini-insight { font-size:0.82rem; line-height:1.5; color:rgba(255,253,245,0.55); }
-    .pulse-mini-source { font-size:0.65rem; color:rgba(255,253,245,0.25); margin-top:0.5rem; }
-    .pulse-mini-source a { color:rgba(232,184,75,0.5); text-decoration:none; }
-    .pulse-mini-source a:hover { color:var(--neo-amber); }
-
-    /* ── Reminders dark variant ─────────────────────────────── */
-    .reminders-dark .reminder-card { background:#1a1a1a; border-color:rgba(255,255,255,0.1); box-shadow:none; }
-    .reminders-dark .reminder-headline { color:#f0ebe0; }
-    .reminders-dark .reminder-body { color:rgba(240,235,224,0.45); }
-    .reminders-dark .reminder-project { color:rgba(255,255,255,0.25); }
-    .reminders-dark .reminder-obsidian a { color:rgba(255,255,255,0.25); }
-    .reminders-dark .reminder-obsidian a:hover { color:var(--neo-amber); }
-
     /* ── Editorial Picks ─────────────────────────────────── */
     .editorial-picks-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:0.5rem; }
     .editorial-pick-card { border:3px solid rgba(255,255,255,0.12); padding:1.5rem; display:flex; flex-direction:column; gap:0.75rem; background:rgba(255,255,255,0.04); transition:border-color 0.15s; text-decoration:none; color:inherit; }
@@ -1038,21 +1021,16 @@ return _f?_f(url,o):Promise.reject(new Error('no fetch'));};
   </div>
 </header>
 
-<!-- ─── § The Angle ─────────────────────────────── -->
-<section class="section-block" style="background:#000;">
+<!-- ─── Section 1: Above the Fold ────────────────── -->
+<section class="section-block bg-atf">
   <div class="section-inner">
-    <div class="section-header reveal" style="color:#f0ebe0;">
-      <div class="section-num" style="color:#ff4d00;">The Angle</div>
-      <div class="section-title" style="color:#f0ebe0;">This Week's Take</div>
-      <div class="section-deck" style="color:rgba(240,235,224,0.45);">One editorial — live intel, aimed at your businesses.</div>
+    <div class="section-header reveal">
+      <div class="section-num">Section 01</div>
+      <div class="section-title">Above the Fold</div>
+      <div class="section-deck">Top action items from the intel pool — what to act on today.</div>
     </div>
-    <div id="angle-block"></div>
-  </div>
-</section>
 
-<!-- ─── § IEEPA Research Links ─────────────────────── -->
-<section class="section-block" style="background:#000;padding-top:0;padding-bottom:1.5rem;">
-  <div class="section-inner" style="padding-top:0;">
+    <!-- ── Pinned Research Headlines (static — no JS needed) ── -->
     <div id="pinned-headlines">
       <div class="pinned-headline-strip">
         <a class="pinned-headline-card" href="https://kaulin6.github.io/morning-paper-archive/papers/2026-02-28-ieepa-deal-flow.html" target="_blank" rel="noopener">
@@ -1074,68 +1052,21 @@ return _f?_f(url,o):Promise.reject(new Error('no fetch'));};
           <div class="pinned-headline-arrow">→</div>
         </a>
       </div>
-  </div>
-</section>
+    </div>
 
-<!-- ─── § Today's One Thing ──────────────────────── -->
-<section class="section-block" style="background:#ff4d00;">
-  <div class="section-inner">
-    <div class="section-header reveal" style="color:#000;">
-      <div class="section-num" style="color:rgba(0,0,0,0.4);">On Deck</div>
-      <div class="section-title" style="color:#000;">Today's One Thing</div>
-      <div class="section-deck" style="color:rgba(0,0,0,0.6);">The single most important action this week.</div>
-    </div>
-    <div id="on-deck-block"></div>
-  </div>
-</section>
-
-<!-- ─── § Intelligence ───────────────────────────── -->
-<section class="section-block" style="background:#000;">
-  <div class="section-inner">
-    <div class="section-header reveal" style="color:#f0ebe0;">
-      <div class="section-num" style="color:var(--neo-amber);">Intelligence</div>
-      <div class="section-title" style="color:#f0ebe0;">What's Moving</div>
-      <div class="section-deck" style="color:rgba(255,253,245,0.35);">Two synthesized reads + four live market signals — all relevant to your businesses.</div>
-    </div>
-    <div id="editorial-picks-grid" class="editorial-picks-grid" style="margin-bottom:1.5rem;"></div>
-    <div id="pulse-grid" class="pulse-mini-grid"></div>
-  </div>
-</section>
-
-<!-- ─── § Project Reminders ──────────────────────── -->
-<section class="section-block" style="background:#0a0a0a;">
-  <div class="section-inner">
-    <div class="section-header reveal" style="color:#f0ebe0;">
-      <div class="section-num" style="color:#ff4d00;">Reminders</div>
-      <div class="section-title" style="color:#f0ebe0;">Don't Sleep On These</div>
-      <div class="section-deck" style="color:rgba(240,235,224,0.35);">Your projects — what's left, why it matters.</div>
-    </div>
-    <div id="reminders-grid" class="reminders-grid reminders-dark"></div>
-  </div>
-</section>
-
-<!-- ─── § Above the Fold ─────────────────────────── -->
-<section class="section-block bg-atf">
-  <div class="section-inner">
-    <div class="section-header reveal">
-      <div class="section-num">Top Signals</div>
-      <div class="section-title">Above the Fold</div>
-      <div class="section-deck">Highest-value sparks — what to read, think about, and act on.</div>
-    </div>
-    </div>
     <div class="atf-grid" id="atf-grid">
       <div class="loading">Loading bookmarks…</div>
     </div>
   </div>
 </section>
 
-<!-- ─── § The Wire ────────────────────────────────── -->
+<!-- ─── Section 2: The Wire ───────────────────────── -->
 <section class="section-block bg-wire">
   <div class="section-inner">
     <div class="section-header reveal">
-      <div class="section-num">The Wire</div>
-      <div class="section-title">Bookmark Intel</div>
-      <div class="section-deck">Recent signals from the bookmark feed — trend patterns, no noise.</div>
+      <div class="section-num">Section 02</div>
+      <div class="section-title">The Wire</div>
+      <div class="section-deck">What the internet is telling us — trend signals, no noise.</div>
     </div>
     <div class="wire-list" id="wire-grid">
       <div class="loading">Loading wire…</div>
@@ -1143,39 +1074,13 @@ return _f?_f(url,o):Promise.reject(new Error('no fetch'));};
   </div>
 </section>
 
-<!-- ─── § Proposals ───────────────────────────────── -->
-<section class="section-block bg-proposals">
-  <div class="section-inner">
-    <div class="section-header reveal">
-      <div class="section-num">Proposals</div>
-      <div class="section-title">Ideas Worth Acting On</div>
-      <div class="section-deck">Income-scored — highest revenue potential first. Max 1 wild card.</div>
-    </div>
-    <div class="proposals-grid" id="proposals-grid">
-      <div class="loading">Loading proposals…</div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── § Editor's Notes (collapsed) ─────────────── -->
-<section class="section-block" style="background:#f5f3ee;border-top:2px solid rgba(0,0,0,0.06);">
-  <div class="section-inner">
-    <details>
-      <summary style="font-size:0.7rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;opacity:0.35;padding:0.75rem 0;cursor:pointer;list-style:none;display:flex;align-items:center;gap:0.5rem;">
-        <span style="font-size:0.6rem;">&#9658;</span> Editor's Notes — Flagged Assumptions
-      </summary>
-      <div id="factcheck-list" style="padding:0.75rem 0 1rem;display:flex;flex-direction:column;gap:0.5rem;"></div>
-    </details>
-  </div>
-</section>
-
-<!-- ─── § Demos Live ──────────────────────────────── -->
+<!-- ─── Section 3: Demos Live ────────────────────── -->
 <section class="section-block bg-demos">
   <div class="section-inner">
     <div class="section-header reveal">
-      <div class="section-num">Demos</div>
+      <div class="section-num">Section 03</div>
       <div class="section-title">Demos Live</div>
-      <div class="section-deck">Every MVP — grouped by project. Live ones open instantly.</div>
+      <div class="section-deck">Every MVP built by the system — grouped by project. Live ones open instantly.</div>
     </div>
     <div class="demos-grid" id="demos-grid">
       <div class="loading">Loading demos…</div>
@@ -1183,15 +1088,104 @@ return _f?_f(url,o):Promise.reject(new Error('no fetch'));};
   </div>
 </section>
 
-<!-- ─── § Project Status ──────────────────────────── -->
+<!-- ─── Section 4: Proposals ─────────────────────── -->
+<!-- ─── Section 04: On Deck ──────────────────────── -->
+<section class="section-block" style="background:#ff4d00;">
+  <div class="section-inner">
+    <div class="section-header reveal" style="color:#000;">
+      <div class="section-num" style="color:rgba(0,0,0,0.4);">On Deck</div>
+      <div class="section-title" style="color:#000;">Today's One Thing</div>
+      <div class="section-deck" style="color:rgba(0,0,0,0.6);">The single most important action — above everything else.</div>
+    </div>
+    <div id="on-deck-block"></div>
+  </div>
+</section>
+
+<!-- ─── Section 04b: Market Pulse ────────────────── -->
+<section class="section-block bg-wire">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">Market Pulse</div>
+      <div class="section-title">What Moved This Week</div>
+      <div class="section-deck">Self-storage, containers, cold email — three signals that matter.</div>
+    </div>
+    <div id="pulse-grid" class="proposals-grid"></div>
+  </div>
+</section>
+
+<!-- ─── Section 04c: Editorial Deep Reads ────────── -->
+<section class="section-block" style="background:#000;">
+  <div class="section-inner">
+    <div class="section-header reveal" style="color:#f0ebe0;">
+      <div class="section-num" style="color:var(--neo-amber);">Deep Reads</div>
+      <div class="section-title" style="color:#f0ebe0;">This Week in Your World</div>
+      <div class="section-deck" style="color:rgba(255,253,245,0.45);">Two stories worth actually reading — synthesized for your businesses.</div>
+    </div>
+    <div id="editorial-picks-grid" class="editorial-picks-grid"></div>
+  </div>
+</section>
+
+<!-- ─── Section 04d: Project Status ──────────────── -->
 <section class="section-block" style="background:#111;">
   <div class="section-inner">
     <div class="section-header reveal" style="color:#f0ebe0;">
       <div class="section-num" style="color:#ff4d00;">Status</div>
-      <div class="section-title" style="color:#f0ebe0;">Project Status</div>
-      <div class="section-deck" style="color:rgba(240,235,224,0.4);">Where things stand across the portfolio.</div>
+      <div class="section-title" style="color:#f0ebe0;">Projects</div>
+      <div class="section-deck" style="color:rgba(240,235,224,0.5);">Where things stand across the portfolio.</div>
     </div>
     <div id="status-grid"></div>
+  </div>
+</section>
+
+<!-- ─── Section 04e: Project Reminders ───────────── -->
+<section class="section-block" style="background:var(--neo-cream);">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num" style="color:var(--neo-amber);">Reminders</div>
+      <div class="section-title">Don't Sleep On These</div>
+      <div class="section-deck">Your projects are waiting. Here's what's left — and why it matters.</div>
+    </div>
+    <div id="reminders-grid" class="reminders-grid"></div>
+  </div>
+</section>
+
+<!-- ─── Section 05: The Angle ─────────────────────── -->
+<section class="section-block" style="background:var(--bg-angle);">
+  <div class="section-inner">
+    <div class="section-header reveal" style="color:#f0ebe0;">
+      <div class="section-num" style="color:#ff4d00;">Section 04</div>
+      <div class="section-title" style="color:#f0ebe0;">The Angle</div>
+      <div class="section-deck" style="color:rgba(240,235,224,0.6);">One editorial take — grounded in this week's intel, aimed at your businesses.</div>
+    </div>
+    <div id="angle-block">
+      <div class="loading" style="color:#555;">Generating editorial…</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Section 06: Proposals ────────────────────── -->
+<section class="section-block bg-proposals">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">Section 05</div>
+      <div class="section-title">Proposals</div>
+      <div class="section-deck">Fresh ideas from the intel engine — business case + next action for each.</div>
+    </div>
+    <div class="proposals-grid" id="proposals-grid">
+      <div class="loading">Loading proposals…</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Editor Pass ──────────────────────────────── -->
+<section class="section-block" style="background:#f8f6f0;border-top:3px solid rgba(0,0,0,0.08);">
+  <div class="section-inner">
+    <details style="cursor:pointer;">
+      <summary style="font-size:0.72rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;opacity:0.4;padding:1rem 0;list-style:none;display:flex;align-items:center;gap:0.5rem;">
+        <span>▶</span> Editor's Notes — Assumptions &amp; Unverified Claims
+      </summary>
+      <div id="factcheck-list" style="padding:0.75rem 0 1rem;display:flex;flex-direction:column;gap:0.5rem;"></div>
+    </details>
   </div>
 </section>
 
@@ -1547,14 +1541,19 @@ function renderOnDeck(onDeck) {
 function renderMarketPulse(pulseItems) {
   const grid = document.getElementById('pulse-grid');
   if (!grid) return;
-  if (!pulseItems?.length) { grid.innerHTML = ''; return; }
-  // Render as compact mini-cards inside the Intelligence section (dark bg)
-  grid.innerHTML = pulseItems.map(p => `
-    <div class="pulse-mini-card">
-      <div class="pulse-mini-topic">${esc(p.topic)}</div>
-      <div class="pulse-mini-insight">${esc(p.insight || p.headline || '')}</div>
-      ${p.sourceUrl ? `<div class="pulse-mini-source"><a href="${esc(p.sourceUrl)}" target="_blank" rel="noopener">↗ ${esc(p.sourceTitle || 'Source')}</a></div>` : ''}
+  if (!pulseItems?.length) { grid.innerHTML = '<div class="empty-note">No market pulse today.</div>'; return; }
+  grid.innerHTML = pulseItems.map((p, i) => `
+    <div class="pulse-card reveal-child" style="transition-delay:${i*80}ms">
+      <div class="pulse-topic">${esc(p.topic)}</div>
+      <div class="pulse-headline">${esc(p.headline)}</div>
+      <div class="pulse-insight">${esc(p.insight)}</div>
+      ${p.implication ? `<div class="pulse-implication">${esc(p.implication)}</div>` : ''}
+      ${p.sourceUrl ? `<div style="margin-top:0.5rem;font-size:0.7rem;opacity:0.6;"><a href="${esc(p.sourceUrl)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">↗ ${esc(p.sourceTitle || p.sourceUrl)}</a></div>` : ''}
     </div>`).join('');
+  grid.querySelectorAll('.reveal-child').forEach((el, i) => {
+    el.classList.add('reveal');
+    revealObserver.observe(el);
+  });
 }
 
 function renderEditorialPicks(picks) {
@@ -1604,20 +1603,13 @@ function renderFactCheck(items) {
 function renderProjectStatus(statusItems) {
   const el = document.getElementById('status-grid');
   if (!el) return;
-  // Filter out junk: must have a real project name (not a markdown header) and a status
-  const VALID_PROJECTS = ['Container HQ','Meal Flow','Birddog','Polymarket','TweetPool','IEEPA','Funding Fee','Marketing'];
-  const filtered = (statusItems || []).filter(s =>
-    s.project && s.status &&
-    !s.project.startsWith('#') &&
-    VALID_PROJECTS.some(p => s.project.includes(p))
-  );
-  if (!filtered.length) { el.innerHTML = '<div class="empty-note" style="color:#555;">No status data.</div>'; return; }
+  if (!statusItems?.length) { el.innerHTML = '<div class="empty-note" style="color:#555;">No status data.</div>'; return; }
   el.className = 'status-grid';
-  el.innerHTML = filtered.map(s => `
+  el.innerHTML = statusItems.map(s => `
     <div class="status-card reveal-child">
       <div class="status-project">${esc(s.project)}</div>
       <div class="status-text">${esc(s.status)}</div>
-      <div><span class="status-badge ${esc(s.priority || '')}">${esc(s.priority || '')}</span></div>
+      <div><span class="status-badge ${esc(s.priority)}">${esc(s.priority)}</span></div>
     </div>`).join('');
   el.querySelectorAll('.reveal-child').forEach(el => {
     el.classList.add('reveal');
