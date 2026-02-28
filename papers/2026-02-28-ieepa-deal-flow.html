@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IEEPA Deal Flow & Economics — Mango Research</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;900&family=DM+Mono:wght@400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a; --white: #fffdf5; --red: #ff4d00;
+    --yellow: #ffd93d; --green: #00c896; --blue: #3b82f6;
+    --orange: #fb923c; --purple: #a855f7;
+    --border: 3px solid var(--black);
+    --shadow: 6px 6px 0 var(--black); --shadow-sm: 4px 4px 0 var(--black);
+  }
+  body { background: var(--white); color: var(--black); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; }
+
+  /* Masthead */
+  .masthead { border-bottom: var(--border); padding: 1.5rem 2rem 1rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .back-link { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--black); text-decoration: none; opacity: 0.4; display: block; margin-bottom: 0.3rem; }
+  .back-link:hover { opacity: 1; }
+  .masthead-paper { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; line-height: 1; }
+  .masthead-kicker { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--red); }
+  .masthead-date { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: rgba(0,0,0,0.4); text-align: right; }
+  .masthead-tag { display: inline-block; background: var(--green); border: 2px solid var(--black); padding: 0.2rem 0.6rem; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; box-shadow: var(--shadow-sm); transform: rotate(1deg); margin-top: 0.4rem; }
+
+  /* Hero */
+  .hero { border-bottom: var(--border); padding: 3rem 2rem 2.5rem; background: var(--black); color: var(--white); }
+  .hero-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--green); margin-bottom: 1rem; }
+  .hero-headline { font-weight: 900; font-size: clamp(1.8rem, 4.5vw, 3rem); line-height: 1.05; margin-bottom: 1.25rem; max-width: 800px; }
+  .hero-headline em { color: var(--yellow); font-style: normal; }
+  .hero-deck { font-size: 1rem; line-height: 1.65; max-width: 660px; opacity: 0.75; }
+
+  /* Layout */
+  .content { max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
+  .section-header { display: flex; align-items: center; gap: 1rem; padding: 2rem 0 1rem; border-top: var(--border); margin-top: 2.5rem; }
+  .section-num { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--red); letter-spacing: 0.1em; }
+  .section-title { font-weight: 900; font-size: 1.4rem; }
+  .section-sub { font-size: 0.85rem; opacity: 0.5; margin-top: 0.5rem; line-height: 1.5; }
+
+  /* Flow diagram */
+  .flow { display: flex; flex-direction: column; gap: 0; margin-top: 1.25rem; }
+  .flow-step { display: grid; grid-template-columns: 2.5rem 1fr; border: var(--border); margin-bottom: -3px; background: var(--white); position: relative; }
+  .flow-step:last-child { margin-bottom: 0; }
+  .flow-num { background: var(--black); color: var(--white); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; border-right: var(--border); writing-mode: horizontal-tb; min-height: 5rem; }
+  .flow-body { padding: 1.1rem 1.25rem; }
+  .flow-actor { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.3rem; }
+  .flow-title { font-weight: 800; font-size: 0.97rem; margin-bottom: 0.3rem; }
+  .flow-desc { font-size: 0.84rem; line-height: 1.55; opacity: 0.7; }
+  .flow-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.5rem; }
+  .tag { display: inline-block; padding: 0.12rem 0.45rem; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border: 1.5px solid var(--black); }
+  .tag-legal { background: #fef3c7; }
+  .tag-money { background: #dcfce7; }
+  .tag-doc { background: #dbeafe; }
+  .tag-warn { background: #fee2e2; }
+  .flow-arrow { position: absolute; bottom: -1.5rem; left: 50%; transform: translateX(-50%); z-index: 10; background: var(--black); color: var(--yellow); font-size: 1.1rem; width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; border: 2px solid var(--black); }
+
+  /* Three paths */
+  .paths-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: var(--border); margin-top: 1.25rem; box-shadow: var(--shadow); }
+  .path-card { padding: 1.5rem; border-right: 2px solid var(--black); display: flex; flex-direction: column; gap: 0.75rem; }
+  .path-card:last-child { border-right: none; }
+  .path-card.featured { background: var(--black); color: var(--white); }
+  .path-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+  .path-card.featured .path-label { color: var(--yellow); }
+  .path-title { font-weight: 900; font-size: 1.1rem; line-height: 1.2; }
+  .path-mechanic { font-size: 0.84rem; line-height: 1.55; opacity: 0.75; }
+  .path-card.featured .path-mechanic { opacity: 0.65; }
+  .path-math { font-family: 'DM Mono', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.06); padding: 0.75rem; margin-top: 0.25rem; line-height: 1.7; }
+  .path-card.featured .path-math { background: rgba(255,255,255,0.08); }
+  .path-verdict { font-size: 0.72rem; font-weight: 800; margin-top: auto; padding-top: 0.75rem; border-top: 1.5px solid rgba(0,0,0,0.1); }
+  .path-card.featured .path-verdict { border-top-color: rgba(255,255,255,0.15); }
+  .verdict-good { color: var(--green); }
+  .verdict-ok { color: var(--orange); }
+  .verdict-bad { color: #ef4444; }
+
+  /* Cost breakdown table */
+  .cost-table { width: 100%; border-collapse: collapse; margin-top: 1.25rem; border: var(--border); box-shadow: var(--shadow); }
+  .cost-table th { background: var(--black); color: var(--white); padding: 0.75rem 1rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-align: left; border-right: 1px solid rgba(255,255,255,0.15); }
+  .cost-table th:last-child { border-right: none; }
+  .cost-table td { padding: 0.75rem 1rem; font-size: 0.85rem; border-bottom: 1.5px solid rgba(0,0,0,0.08); border-right: 1px solid rgba(0,0,0,0.08); vertical-align: top; }
+  .cost-table td:last-child { border-right: none; }
+  .cost-table tr:last-child td { border-bottom: none; }
+  .cost-table tr:nth-child(even) td { background: rgba(0,0,0,0.02); }
+  .cost-table .total-row td { font-weight: 800; background: #fef3c7; font-family: 'DM Mono', monospace; }
+  .cost-highlight { font-weight: 800; color: var(--red); }
+
+  /* Flexport callout */
+  .flexport-box { border: var(--border); margin-top: 1.25rem; box-shadow: var(--shadow); }
+  .flexport-head { background: #1a1aff; color: white; padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem; }
+  .flexport-head-title { font-weight: 900; font-size: 1.1rem; }
+  .flexport-head-badge { background: white; color: #1a1aff; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.15rem 0.5rem; }
+  .flexport-body { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .flexport-fee { display: flex; flex-direction: column; gap: 0.35rem; }
+  .flexport-fee-val { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; line-height: 1; color: #1a1aff; }
+  .flexport-fee-label { font-size: 0.75rem; font-weight: 700; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.08em; }
+  .flexport-fee-desc { font-size: 0.82rem; line-height: 1.5; opacity: 0.7; margin-top: 0.25rem; }
+  .flexport-math { font-family: 'DM Mono', monospace; font-size: 0.78rem; background: #f0f0ff; padding: 0.75rem; line-height: 1.8; border: 1.5px solid rgba(26,26,255,0.2); }
+  .flexport-note { font-size: 0.75rem; opacity: 0.5; padding: 0.75rem 1.5rem 1rem; border-top: 1.5px solid rgba(0,0,0,0.08); font-style: italic; }
+
+  /* Option structure */
+  .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 1.25rem; }
+  .option-card { border: var(--border); padding: 1.5rem; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 0.75rem; }
+  .option-card.primary { background: var(--black); color: var(--white); }
+  .option-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+  .option-card.primary .option-label { color: var(--yellow); }
+  .option-title { font-weight: 900; font-size: 1.15rem; }
+  .option-body { font-size: 0.85rem; line-height: 1.6; opacity: 0.75; }
+  .option-card.primary .option-body { opacity: 0.65; }
+  .option-terms { display: flex; flex-direction: column; gap: 0.4rem; }
+  .option-term { display: flex; justify-content: space-between; align-items: baseline; padding: 0.4rem 0; border-bottom: 1px solid rgba(0,0,0,0.08); font-size: 0.82rem; }
+  .option-card.primary .option-term { border-bottom-color: rgba(255,255,255,0.1); }
+  .option-term-label { font-weight: 600; opacity: 0.6; }
+  .option-term-val { font-family: 'DM Mono', monospace; font-weight: 700; }
+  .option-card.primary .option-term-val { color: var(--yellow); }
+
+  /* Multi-company stack */
+  .stack-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 0; background: var(--black); color: white; border: var(--border); margin-top: 1.25rem; }
+  .stack-header div { padding: 0.6rem 0.9rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-right: 1px solid rgba(255,255,255,0.12); }
+  .stack-header div:last-child { border-right: none; }
+  .stack-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 0; border-left: var(--border); border-right: var(--border); border-bottom: 1.5px solid rgba(0,0,0,0.1); }
+  .stack-row:last-child { border-bottom: var(--border); }
+  .stack-row div { padding: 0.65rem 0.9rem; font-size: 0.83rem; border-right: 1px solid rgba(0,0,0,0.08); }
+  .stack-row div:last-child { border-right: none; }
+  .stack-row.total { background: #fef3c7; font-weight: 800; font-family: 'DM Mono', monospace; }
+  .stack-row.total div { font-size: 0.85rem; }
+  .green { color: #16a34a; font-weight: 700; }
+  .red { color: #dc2626; }
+  .mono { font-family: 'DM Mono', monospace; }
+
+  /* Alert box */
+  .alert { border: var(--border); padding: 1.25rem 1.5rem; margin-top: 1.25rem; display: flex; gap: 1rem; align-items: flex-start; box-shadow: var(--shadow-sm); }
+  .alert.warn { background: #fff7ed; border-left: 6px solid var(--orange); }
+  .alert.danger { background: #fef2f2; border-left: 6px solid #ef4444; }
+  .alert.info { background: #eff6ff; border-left: 6px solid var(--blue); }
+  .alert-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .alert-body { font-size: 0.88rem; line-height: 1.6; }
+  .alert-title { font-weight: 800; margin-bottom: 0.3rem; }
+
+  /* Footer */
+  footer { border-top: var(--border); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; background: var(--black); color: var(--white); margin-top: 4rem; }
+  footer a { color: var(--yellow); text-decoration: none; font-weight: 700; font-size: 0.8rem; }
+  .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.68rem; opacity: 0.4; }
+
+  @media (max-width: 700px) {
+    .masthead, .hero, .content { padding-left: 1rem; padding-right: 1rem; }
+    .paths-grid { grid-template-columns: 1fr; }
+    .option-grid { grid-template-columns: 1fr; }
+    .flexport-body { grid-template-columns: 1fr; }
+    .stack-header, .stack-row { grid-template-columns: 1fr 1fr; font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div>
+    <a href="../index.html" class="back-link">← Morning Paper Archive</a>
+    <div class="masthead-paper">Mango Research</div>
+    <div class="masthead-kicker">Deal Flow · IEEPA Claim Economics & Acquisition Structure</div>
+  </div>
+  <div>
+    <div class="masthead-date">Saturday, February 28, 2026</div>
+    <div class="masthead-tag">Investor Ready</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-label">Deal Flow Analysis · Part 2 of 2</div>
+  <h1 class="hero-headline">How to Buy a Tariff Refund Claim —<br><em>Start to Finish, Dollar by Dollar</em></h1>
+  <p class="hero-deck">The full transaction flow from importer outreach through claim acquisition, the three cost structures you'll face (outright purchase, option split, Flexport fee model), and what the economics look like across a portfolio of companies. Written for your investor conversation.</p>
+</section>
+
+<div class="content">
+
+  <!-- ── Section 01: Full Deal Flow ── -->
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">The Full Transaction Flow</h2>
+  </div>
+  <p class="section-sub">Every step from finding the importer to receiving the refund check — who does what, what documents get signed, what it costs at each stage.</p>
+
+  <div class="flow">
+
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-body">
+        <div class="flow-actor" style="color:#3b82f6;">You (Sourcer)</div>
+        <div class="flow-title">Identify the Importer via Customs Data</div>
+        <div class="flow-desc">Pull import records from Import Genius or Panjiva. Filter: China-origin goods, HTS codes for IEEPA-affected categories, date range April 2025–Feb 24 2026, importer of record field. Estimate claim size: import value × IEEPA rate (typically 7.5–145% depending on product + country of origin). Target sweet spot: $50K–$2M claims.</div>
+        <div class="flow-tags">
+          <span class="tag tag-money">Import Genius $299–599/mo</span>
+          <span class="tag tag-doc">Public CBP Data</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-body">
+        <div class="flow-actor" style="color:#3b82f6;">You (Sourcer)</div>
+        <div class="flow-title">Cold Outreach + Initial Qualification</div>
+        <div class="flow-desc">Cold email campaign using the Container HQ infrastructure (same domains, same Instantly.ai). Inbound lead confirms they're the Importer of Record. Key qualification: Are they IOR on the entry? Do they have ACE portal access? Are their entries liquidated or unliquidated? Get a rough tariff payment total from them or their customs broker report.</div>
+        <div class="flow-tags">
+          <span class="tag tag-doc">Instantly.ai outreach</span>
+          <span class="tag tag-legal">IOR verification</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-body">
+        <div class="flow-actor" style="color:#a855f7;">Trade Attorney / Customs Broker</div>
+        <div class="flow-title">Entry Audit & Claim Sizing</div>
+        <div class="flow-desc">A licensed customs attorney or broker pulls the importer's full entry summary from ACE. Separates IEEPA duties from other duties (Section 301, 232, etc.). Identifies which entries are liquidated (need protest within 180 days) vs. unliquidated (PSC route, easier). Produces a formal claim estimate. Cost: $500–$2,500 depending on complexity and number of entries.</div>
+        <div class="flow-tags">
+          <span class="tag tag-legal">$500–$2,500</span>
+          <span class="tag tag-doc">CBP ACE entry report</span>
+          <span class="tag tag-warn">180-day protest window</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-body">
+        <div class="flow-actor" style="color:#16a34a;">You + Investor</div>
+        <div class="flow-title">Sign Claim Purchase / Option Agreement</div>
+        <div class="flow-desc">The core transaction document. Two structures available: (A) Outright Purchase — investor buys the claim from the importer for cash today at a negotiated rate (currently 40–50¢). Or (B) Option Agreement — investor pays a smaller option fee (5–15¢) for the right to buy the claim at a fixed rate within a defined window. The Claim Purchase Agreement assigns the refund right from the importer to the buyer. Must be carefully drafted to survive government scrutiny. Legal cost: $3,000–$8,000 for a template; $500–$1,500 per deal on repeat transactions using existing template.</div>
+        <div class="flow-tags">
+          <span class="tag tag-legal">$3,000–$8,000 (first deal)</span>
+          <span class="tag tag-money">$500–$1,500/repeat</span>
+          <span class="tag tag-doc">Claim Assignment Agreement</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="flow-num">5</div>
+      <div class="flow-body">
+        <div class="flow-actor" style="color:#a855f7;">Trade Attorney</div>
+        <div class="flow-title">File CIT Lawsuit (Critical Step)</div>
+        <div class="flow-desc">Per McCune Wright research: the customs protest pathway (CBP Form 19) is likely INADEQUATE for IEEPA refunds. The real pathway is filing a lawsuit in the U.S. Court of International Trade. The government has agreed to refund CIT plaintiffs following a final, unappealable decision. If you're not a CIT plaintiff, the January 8, 2026 DOJ agreement doesn't cover you. This is the most important legal cost in the stack. Contingency firms: 20–25% of recovery, no upfront cost. Hourly firms: $350–$650/hr for trade attorneys. Estimated: $8,000–$25,000 to get into CIT as a plaintiff.</div>
+        <div class="flow-tags">
+          <span class="tag tag-legal">$8,000–$25,000 OR 20–25% contingency</span>
+          <span class="tag tag-warn">Must be CIT plaintiff to get refund</span>
+          <span class="tag tag-doc">CIT complaint filing</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="flow-num">6</div>
+      <div class="flow-body">
+        <div class="flow-actor" style="color:#f59e0b;">Government / CBP</div>
+        <div class="flow-title">Wait for Reliquidation + ACH Refund</div>
+        <div class="flow-desc">CBP processes reliquidation orders from the CIT. Refunds issued electronically via ACH (all refunds are now electronic per Feb 6, 2026 CBP rule). Timeline: unknown. Government is fighting it. Realistic estimate per every expert: 2–5 years from today. The January 8 DOJ stipulation gives CIT plaintiffs the clearest path — the government already said it won't contest the CIT's reliquidation authority. Refund arrives directly to whoever is listed as IOR — which must be the original importer, or the new assignee if the claim was properly transferred.</div>
+        <div class="flow-tags">
+          <span class="tag tag-warn">2–5 year timeline</span>
+          <span class="tag tag-money">ACH electronic refund</span>
+          <span class="tag tag-legal">CIT reliquidation order</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="flow-num">7</div>
+      <div class="flow-body">
+        <div class="flow-actor" style="color:#3b82f6;">You (Sourcer)</div>
+        <div class="flow-title">Collect Finder's Fee from Investor</div>
+        <div class="flow-desc">Your fee is paid by the investor/buyer at deal close (step 4), not when the refund arrives. Standard intermediation: 1–5% of the claim face value (not the purchase price). On a $200K claim: 2% = $4,000. On a $500K claim: 2% = $10,000. The investor bakes your fee into their acquisition cost. Your upside is volume — source 20 deals/month and 2% fees add up fast with zero capital at risk.</div>
+        <div class="flow-tags">
+          <span class="tag tag-money">1–5% of face value</span>
+          <span class="tag tag-money">Paid at close, not at refund</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Section 02: Three Acquisition Structures ── -->
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Three Ways to Acquire a Claim</h2>
+  </div>
+  <p class="section-sub">Same $300K claim. Three deal structures. Very different economics for the importer, investor, and you.</p>
+
+  <div class="paths-grid">
+
+    <div class="path-card">
+      <div class="path-label">Structure A</div>
+      <div class="path-title">Outright Purchase</div>
+      <div class="path-mechanic">Investor buys the claim outright today. Importer gets cash now, walks away. Investor takes all future upside and risk. Clean, simple, one transaction.</div>
+      <div class="path-math">
+Claim face value:     $300,000
+Purchase price (45¢): $135,000
+Your finder's fee (2%): $6,000
+Legal (audit + CIT):  $15,000
+Net investor in:      $156,000
+
+If refund comes:
+Full refund:          $300,000
+Net profit:           $144,000
+ROI:                  +92% (over ~3 yrs)
+IRR:                  ~24% annualized
+      </div>
+      <div class="path-verdict verdict-ok">⚠ Good returns but long wait. Capital locked 3–5 yrs.</div>
+    </div>
+
+    <div class="path-card featured">
+      <div class="path-label">Structure B — Recommended</div>
+      <div class="path-title">Option + Upside Split</div>
+      <div class="path-mechanic">Investor pays the importer a smaller option fee today (5–15¢) for the right to buy the claim at a fixed rate within a window. If refund becomes more certain (government capitulates, court rules), investor exercises at the pre-agreed price and gets most of the remaining upside. Importer gets cash now AND keeps a slice of the upside.</div>
+      <div class="path-math">
+Claim face value:       $300,000
+Option fee (10¢):       $30,000 → importer gets now
+Exercise price if exercised (40¢): $120,000
+Importer total if exercised: $150,000
+Importer upside split (20%): +$30,000 if refund > 80¢
+
+Your finder's fee (2%):   $6,000
+Legal:                    $15,000
+Investor net in:          $171,000
+
+If refund comes at 100¢:
+Refund:                 $300,000
+Investor net after split: $270,000
+Net profit:              ~$99,000
+ROI:                     +58% — lower, but importer stays cooperative
+      </div>
+      <div class="path-verdict verdict-good">✓ Best for deal volume. Importer buys in, less friction, more referrals.</div>
+    </div>
+
+    <div class="path-card">
+      <div class="path-label">Structure C</div>
+      <div class="path-title">Contingency + No Upfront</div>
+      <div class="path-mechanic">Importer keeps the claim, hires a contingency law firm. Firm advances all litigation costs. Importer keeps 75–85% of the full refund. No cash now. No investor needed. The "do it yourself with a lawyer" path.</div>
+      <div class="path-math">
+Claim face value:       $300,000
+Cash upfront:           $0
+Legal (contingency):    20–25% of recovery
+
+If full refund:
+Refund:                 $300,000
+Legal fee (22%):        -$66,000
+Importer nets:          $234,000 ✓ Most money
+But waits:              3–5 years ✗
+Risk if no refund:      $0 out of pocket ✓
+
+vs. Option B importer:  $150K–$180K, cash sooner
+      </div>
+      <div class="path-verdict verdict-bad">✗ No role for you. Best for importer who can wait. Worst for deal flow.</div>
+    </div>
+
+  </div>
+
+  <!-- ── Section 03: Flexport Fee Model ── -->
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">The Flexport Fee Model — What It Actually Means</h2>
+  </div>
+  <p class="section-sub">Flexport charges 10% of the refund amount + 3.5% of the duty paid per entry for filing. Here's how that stacks against your deal economics and whether it's competitive.</p>
+
+  <div class="flexport-box">
+    <div class="flexport-head">
+      <div>
+        <div class="flexport-head-badge">Flexport Fee Structure</div>
+        <div class="flexport-head-title">10% of Refund + 3.5% Filing Fee</div>
+      </div>
+    </div>
+    <div class="flexport-body">
+      <div>
+        <div class="flexport-fee">
+          <div class="flexport-fee-val">10%</div>
+          <div class="flexport-fee-label">Of total refund received</div>
+          <div class="flexport-fee-desc">Flexport's success fee — only charged if/when the refund actually comes in. On a $300K claim: $30,000 to Flexport.</div>
+        </div>
+        <br>
+        <div class="flexport-fee">
+          <div class="flexport-fee-val">3.5%</div>
+          <div class="flexport-fee-label">Of duties paid per entry (filing fee)</div>
+          <div class="flexport-fee-desc">Upfront filing/admin fee per entry. On a $300K claim: $10,500 upfront regardless of outcome. This is where Flexport makes money even if the refund fails.</div>
+        </div>
+      </div>
+      <div>
+        <div class="flexport-math">
+Example: $300,000 refund claim
+
+Flexport filing fee (3.5%):  -$10,500 (upfront)
+Flexport success fee (10%):  -$30,000 (at refund)
+Total Flexport takes:        -$40,500
+
+Importer nets:               $259,500
+vs. doing nothing:           $300,000
+vs. selling claim at 45¢:    $135,000 (now)
+vs. contingency law firm:    ~$234,000 (3-5 yrs)
+
+Flexport middle position:
+More than selling, less than DIY law
+Paid over time, not upfront (except 3.5%)
+        </div>
+        <div style="font-size:0.78rem;opacity:0.55;margin-top:0.75rem;line-height:1.5;">Note: Flexport is positioning this as a "managed service" — they handle the PSC/protest filing and work with CBP directly. They're NOT filing CIT lawsuits, which per McCune Wright is the more reliable path to recovery.</div>
+      </div>
+    </div>
+    <div class="flexport-note">Flexport's model works across multiple companies simultaneously since it's volume-driven. The 3.5% filing fee makes it profitable even with low refund rates. The 10% success fee is the real margin driver at scale.</div>
+  </div>
+
+  <div class="alert info" style="margin-top:1.25rem;">
+    <div class="alert-icon">💡</div>
+    <div class="alert-body">
+      <div class="alert-title">Can you replicate the Flexport model across multiple businesses?</div>
+      Yes — and it's actually more compelling than Flexport's because you can combine filing services with the option/upside split structure. Offer importers: "We file your claim (3.5% fee), take a 10% success fee, AND give you cash now via an option on 50% of the claim." The importer gets money today AND keeps upside. You get the filing fee revenue plus the investor pays you a finder's fee. Three revenue streams from one transaction.
+    </div>
+  </div>
+
+  <!-- ── Section 04: Multi-Company Portfolio ── -->
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">What It Looks Like Across a Portfolio</h2>
+  </div>
+  <p class="section-sub">10 companies, different claim sizes, different structures. Your finder's fee + filing fee revenue at scale. Investor's capital deployment and expected return.</p>
+
+  <div class="stack-header">
+    <div>Company / Type</div>
+    <div>Claim Size</div>
+    <div>Structure</div>
+    <div>Your Fee</div>
+    <div>Investor In</div>
+    <div>Investor Return</div>
+  </div>
+  <div class="stack-row">
+    <div>Apparel Importer (Tampa)</div>
+    <div class="mono">$85K</div>
+    <div>Option B</div>
+    <div class="mono green">$1,700</div>
+    <div class="mono">$38K</div>
+    <div class="mono">$47K</div>
+  </div>
+  <div class="stack-row">
+    <div>Electronics Distributor</div>
+    <div class="mono">$420K</div>
+    <div>Outright A</div>
+    <div class="mono green">$8,400</div>
+    <div class="mono">$200K</div>
+    <div class="mono">$220K</div>
+  </div>
+  <div class="stack-row">
+    <div>Furniture Importer</div>
+    <div class="mono">$175K</div>
+    <div>Option B</div>
+    <div class="mono green">$3,500</div>
+    <div class="mono">$80K</div>
+    <div class="mono">$95K</div>
+  </div>
+  <div class="stack-row">
+    <div>Auto Parts Co.</div>
+    <div class="mono">$1.1M</div>
+    <div>Outright A</div>
+    <div class="mono green">$22,000</div>
+    <div class="mono">$510K</div>
+    <div class="mono">$590K</div>
+  </div>
+  <div class="stack-row">
+    <div>Toy Manufacturer</div>
+    <div class="mono">$210K</div>
+    <div>Option B</div>
+    <div class="mono green">$4,200</div>
+    <div class="mono">$95K</div>
+    <div class="mono">$115K</div>
+  </div>
+  <div class="stack-row">
+    <div>Sporting Goods Brand</div>
+    <div class="mono">$95K</div>
+    <div>Option B</div>
+    <div class="mono green">$1,900</div>
+    <div class="mono">$43K</div>
+    <div class="mono">$52K</div>
+  </div>
+  <div class="stack-row">
+    <div>Machine Parts Importer</div>
+    <div class="mono">$340K</div>
+    <div>Outright A</div>
+    <div class="mono green">$6,800</div>
+    <div class="mono">$158K</div>
+    <div class="mono">$182K</div>
+  </div>
+  <div class="stack-row">
+    <div>Clothing Retailer (IOR)</div>
+    <div class="mono">$65K</div>
+    <div>Option B</div>
+    <div class="mono green">$1,300</div>
+    <div class="mono">$30K</div>
+    <div class="mono">$35K</div>
+  </div>
+  <div class="stack-row">
+    <div>Kitchen Appliance Co.</div>
+    <div class="mono">$490K</div>
+    <div>Outright A</div>
+    <div class="mono green">$9,800</div>
+    <div class="mono">$230K</div>
+    <div class="mono">$260K</div>
+  </div>
+  <div class="stack-row">
+    <div>Hardware Importer</div>
+    <div class="mono">$130K</div>
+    <div>Option B</div>
+    <div class="mono green">$2,600</div>
+    <div class="mono">$60K</div>
+    <div class="mono">$70K</div>
+  </div>
+  <div class="stack-row total">
+    <div>PORTFOLIO TOTAL (10 deals)</div>
+    <div>$3.11M</div>
+    <div>Mixed</div>
+    <div class="green">$62,200</div>
+    <div>$1.44M</div>
+    <div>$1.67M</div>
+  </div>
+
+  <div class="alert warn" style="margin-top:1rem;">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-body">
+      <div class="alert-title">Your $62K in finder's fees is paid at deal close — not contingent on refund timing</div>
+      Investor deploys $1.44M across 10 deals, expects ~$1.67M back (16% total return over 3–5 years, ~5% IRR). Not spectacular returns — but uncorrelated to markets and secured by a legal ruling. Your upside is volume: 10 deals/month = $620K/yr in fees with zero capital at risk.
+    </div>
+  </div>
+
+  <!-- ── Section 05: Option Structure for Your Investor ── -->
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Structuring It for Your Investor</h2>
+  </div>
+  <p class="section-sub">Two ways to pitch the investor. One has them deploy capital now. One gives them optionality.</p>
+
+  <div class="option-grid">
+
+    <div class="option-card primary">
+      <div class="option-label">Pitch A — Recommended</div>
+      <div class="option-title">Rolling Deal-by-Deal Fund</div>
+      <div class="option-body">You source deals, investor approves and funds each one individually. No committed fund — investor writes checks deal-by-deal with full information on each claim. You take a finder's fee per deal. Investor keeps all upside minus your fee.</div>
+      <div class="option-terms">
+        <div class="option-term"><span class="option-term-label">Your role</span><span class="option-term-val">Sourcer + qualifier</span></div>
+        <div class="option-term"><span class="option-term-label">Your fee</span><span class="option-term-val">2% of face value at close</span></div>
+        <div class="option-term"><span class="option-term-label">Investor commitment</span><span class="option-term-val">Per-deal, no minimum</span></div>
+        <div class="option-term"><span class="option-term-label">Legal</span><span class="option-term-val">Investor pays, per deal</span></div>
+        <div class="option-term"><span class="option-term-label">Refund upside</span><span class="option-term-val">100% to investor</span></div>
+        <div class="option-term"><span class="option-term-label">Your capital at risk</span><span class="option-term-val">$0</span></div>
+      </div>
+    </div>
+
+    <div class="option-card">
+      <div class="option-label">Pitch B — If Investor Wants More Upside for You</div>
+      <div class="option-title">Carried Interest Structure</div>
+      <div class="option-body">You source deals AND take a carried interest in each one. Investor puts up the capital. You get a carry on the upside. More complex to document but gives you skin in the game and bigger long-term returns.</div>
+      <div class="option-terms">
+        <div class="option-term"><span class="option-term-label">Your role</span><span class="option-term-val">Sourcer + co-investor</span></div>
+        <div class="option-term"><span class="option-term-label">Your fee</span><span class="option-term-val">1% finder + 15–20% carry</span></div>
+        <div class="option-term"><span class="option-term-label">Investor commitment</span><span class="option-term-val">100% of capital</span></div>
+        <div class="option-term"><span class="option-term-label">Legal</span><span class="option-term-val">Shared, per deal</span></div>
+        <div class="option-term"><span class="option-term-label">Refund upside</span><span class="option-term-val">80–85% investor / 15–20% you</span></div>
+        <div class="option-term"><span class="option-term-label">Your capital at risk</span><span class="option-term-val">$0 (carry only)</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Section 06: Key Legal Facts ── -->
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">The Legal Facts You Need to Know Cold</h2>
+  </div>
+
+  <div class="alert danger">
+    <div class="alert-icon">🚨</div>
+    <div class="alert-body">
+      <div class="alert-title">CBP Form 19 protest is NOT the right path for IEEPA refunds</div>
+      Per McCune Wright (trade litigation firm): "The customs protest pathway has been determined to be an inadequate pathway for IEEPA tariff recovery. Importers who assume they can file a protest and wait are likely to lose their claims entirely." The real path is filing a CIT lawsuit. The Jan 8 DOJ stipulation only covers CIT plaintiffs.
+    </div>
+  </div>
+
+  <div class="alert warn" style="margin-top:0.75rem;">
+    <div class="alert-icon">⏰</div>
+    <div class="alert-body">
+      <div class="alert-title">180-day protest window is ticking — but CIT has no stated deadline yet</div>
+      Liquidated entries: protest within 180 days of liquidation (CBP Form 19 — limited use, but file anyway as "belt and suspenders"). CIT lawsuit: no stated deadline yet but file ASAP to be a named plaintiff under the Jan 8 DOJ stipulation. Unliquidated entries: PSC route via ACE portal, 300 days from entry date or 15 days before liquidation.
+    </div>
+  </div>
+
+  <div class="alert info" style="margin-top:0.75rem;">
+    <div class="alert-icon">📋</div>
+    <div class="alert-body">
+      <div class="alert-title">Claim assignment is legally possible — but must be structured carefully</div>
+      The refund goes to whoever is the Importer of Record. To transfer the economic benefit, the claim purchase agreement must assign the right to receive and direct the refund. Orrick (Pasacreta's team) and Foley & Lardner are the two law firms most active in structuring these. Expect $3K–$8K for first-deal legal + $500–$1,500/repeat on a template. The assignment must survive potential government challenge — do not use a generic purchase agreement.
+    </div>
+  </div>
+
+  <div class="alert info" style="margin-top:0.75rem;">
+    <div class="alert-icon">💰</div>
+    <div class="alert-body">
+      <div class="alert-title">Total legal cost stack per deal (realistic)</div>
+      Entry audit (customs broker): $500–$2,500 &nbsp;|&nbsp; Claim purchase agreement: $500–$1,500 (template) &nbsp;|&nbsp; CIT plaintiff filing: $8,000–$25,000 or 20–25% contingency &nbsp;|&nbsp; <strong>Realistic all-in legal: $10,000–$30,000 for a $100K–$500K claim.</strong> At contingency: no upfront, 20–25% of recovery. Recommendation: use a contingency trade firm for the CIT piece, flat fee attorney for the purchase agreement.
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.05em;">Mango Research</div>
+    <a href="2026-02-28-ieepa-research.html">← Part 1: Overview & Angles</a> &nbsp;·&nbsp;
+    <a href="../index.html">← Archive</a>
+  </div>
+  <div class="footer-meta">
+    IEEPA DEAL FLOW & ECONOMICS · PART 2 OF 2 · 2026-02-28<br>
+    Research by Mango 🥭 · For internal use only · Not legal or financial advice
+  </div>
+</footer>
+
+</body>
+</html>
