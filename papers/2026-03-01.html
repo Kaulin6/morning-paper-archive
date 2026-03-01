@@ -1765,13 +1765,18 @@ function renderDemos(mvps) {
 
     for (const mvp of projMvps) {
       const isLive = !!(mvp.liveUrl);
+      const hasGH  = !!(mvp.githubUrl);
       const statusHtml = isLive
         ? `<span class="live-dot"></span><span class="live-badge">Live</span>`
         : `<span class="dead-dot"></span><span class="dead-badge">${mvp.status === 'built' ? 'Built' : 'Concept'}</span>`;
+      // Primary action: live demo if exists, otherwise GitHub, otherwise nothing
       const openBtn = isLive
         ? `<a class="neo-btn neo-btn-primary" href="${esc(mvp.liveUrl)}" target="_blank" rel="noopener">Open Demo →</a>`
-        : `<span class="neo-btn neo-btn-ghost" style="opacity:.3;pointer-events:none">No Live URL</span>`;
-      const ghBtn = mvp.githubUrl
+        : hasGH
+          ? `<a class="neo-btn neo-btn-primary" href="${esc(mvp.githubUrl)}" target="_blank" rel="noopener">View on GitHub →</a>`
+          : `<span class="neo-btn neo-btn-ghost" style="opacity:.35;pointer-events:none;">No URL yet</span>`;
+      // Secondary GitHub link only shown if there's also a live URL
+      const ghBtn = (isLive && hasGH)
         ? `<a class="neo-btn neo-btn-ghost" href="${esc(mvp.githubUrl)}" target="_blank" rel="noopener">GitHub ↗</a>`
         : '';
       const builtDate = mvp.builtDate ? `<span style="font-size:0.75rem;color:#333333;margin-left:auto;">${esc(mvp.builtDate)}</span>` : '';
