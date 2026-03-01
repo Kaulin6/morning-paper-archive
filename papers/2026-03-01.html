@@ -2121,7 +2121,7 @@ function renderProjectStatus(items) {
 function renderSparks(bookmarks) {
   const list = document.getElementById('sparks-list');
   if (!list || !bookmarks?.length) return;
-  const sparks = bookmarks.filter(b => b.enriched && b.ratings?.composite >= 3.5)
+  const sparks = bookmarks.filter(b => b.isSpark && b.ratings?.composite >= 3.5)
     .sort((a,b) => (b.ratings?.composite||0) - (a.ratings?.composite||0))
     .slice(0, 12);
   if (!sparks.length) { list.innerHTML = '<li style="color:#555;font-size:0.85rem;">No sparks yet.</li>'; return; }
@@ -2143,7 +2143,7 @@ function renderLibrary(bookmarks) {
   const tagline = document.getElementById('library-tagline');
   if (!bookmarks?.length) return;
   if (bar) {
-    const enriched = bookmarks.filter(b => b.enriched).length;
+    const enriched = bookmarks.filter(b => b.isSpark).length;
     bar.innerHTML = `<span>${bookmarks.length} bookmarks</span><span>${enriched} enriched</span><span>${bookmarks.filter(b=>b.ratings?.composite>=4).length} high-signal</span>`;
   }
   if (tagline) {
