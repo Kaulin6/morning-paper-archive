@@ -33,24 +33,24 @@ window.fetch = function(url, opts) {
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      /* Neo-Brutalism Palette */
-      --neo-cream:      #fffdf5;
-      --neo-yellow:     #ffd93d;
-      --neo-purple:     #f3e8ff;
+      /* Neo-Brutalism Palette — clean, no muddy browns */
+      --neo-cream:      #f8f8f8;
+      --neo-yellow:     #ffe94d;
+      --neo-purple:     #ede9ff;
       --neo-white:      #ffffff;
       --neo-black:      #000000;
-      --neo-amber:      #E8B84B;
+      --neo-amber:      #f5a623;
       --neo-green:      #22c55e;
-      --neo-red:        #ff6b6b;
+      --neo-red:        #ff4d4d;
 
       /* Section backgrounds */
       --bg-masthead:    #000000;
-      --bg-atf:         #fffdf5;
-      --bg-wire:        #ffd93d;
+      --bg-atf:         #f8f8f8;
+      --bg-wire:        #ffe94d;
       --bg-demos:       #ffffff;
       --bg-angle:       #000000;
-      --bg-proposals:   #f3e8ff;
-      --bg-sparks:      #fffdf5;
+      --bg-proposals:   #ede9ff;
+      --bg-sparks:      #f8f8f8;
       --bg-library:     #000000;
 
       /* Typography */
@@ -338,30 +338,30 @@ window.fetch = function(url, opts) {
     .pitch-item-red { font-size:0.75rem; color:rgba(240,170,170,0.6); line-height:1.5; padding-left:0.2rem; }
     .pitch-item-red em { color:rgba(240,170,170,0.85); font-style:normal; font-weight:600; }
     /* Racing System Logic */
-    .funnel-step { flex:1; min-width:140px; background:rgba(0,0,0,0.35); border:1px solid rgba(201,168,76,0.15); border-right:none; padding:1rem 0.9rem; position:relative; transition:background 0.2s; }
+    .funnel-step { flex:1; min-width:140px; background:rgba(0,0,0,0.35); border:1px solid rgba(79,142,247,0.15); border-right:none; padding:1rem 0.9rem; position:relative; transition:background 0.2s; }
     .funnel-step:first-child { border-radius:8px 0 0 8px; }
-    .funnel-step:last-child { border-right:1px solid rgba(201,168,76,0.3); border-radius:0 8px 8px 0; background:rgba(201,168,76,0.12); }
-    .funnel-step[data-highlight="1"] { background:rgba(201,168,76,0.15); border-color:rgba(201,168,76,0.4); }
-    .funnel-num { font-size:0.65rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--clr,#c9a84c); margin-bottom:0.35rem; }
-    .funnel-desc { font-size:0.73rem; color:rgba(200,168,76,0.6); line-height:1.5; margin-bottom:0.5rem; }
+    .funnel-step:last-child { border-right:1px solid rgba(79,142,247,0.3); border-radius:0 8px 8px 0; background:rgba(79,142,247,0.12); }
+    .funnel-step[data-highlight="1"] { background:rgba(79,142,247,0.15); border-color:rgba(79,142,247,0.4); }
+    .funnel-num { font-size:0.65rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--clr,#4f8ef7); margin-bottom:0.35rem; }
+    .funnel-desc { font-size:0.73rem; color:rgba(79,142,247,0.6); line-height:1.5; margin-bottom:0.5rem; }
     .funnel-drop { font-size:0.62rem; color:rgba(180,130,50,0.4); font-family:monospace; line-height:1.4; }
-    .signal-pill { background:rgba(0,0,0,0.35); border:1px solid rgba(201,168,76,0.12); border-radius:6px; padding:0.45rem 0.7rem; font-size:0.7rem; color:rgba(200,168,76,0.5); line-height:1.4; }
+    .signal-pill { background:rgba(0,0,0,0.35); border:1px solid rgba(79,142,247,0.12); border-radius:6px; padding:0.45rem 0.7rem; font-size:0.7rem; color:rgba(79,142,247,0.5); line-height:1.4; }
     /* Racing Intel */
     .racing-intel-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:0.75rem; margin-top:0.5rem; }
-    .racing-idea-card { background:rgba(201,168,76,0.06); border:1px solid rgba(201,168,76,0.2); border-radius:6px; padding:1rem 1.1rem; }
-    .racing-idea-cat { font-size:0.58rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:#c9a84c; margin-bottom:0.25rem; display:flex; align-items:center; gap:0.4rem; }
+    .racing-idea-card { background:rgba(79,142,247,0.06); border:1px solid rgba(79,142,247,0.2); border-radius:6px; padding:1rem 1.1rem; }
+    .racing-idea-cat { font-size:0.58rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:#4f8ef7; margin-bottom:0.25rem; display:flex; align-items:center; gap:0.4rem; }
     .racing-idea-priority { font-size:0.55rem; padding:1px 5px; border-radius:3px; font-weight:700; letter-spacing:0.08em; }
     .racing-idea-priority.high { background:rgba(240,79,79,0.25); color:#f04f4f; }
     .racing-idea-priority.medium { background:rgba(240,168,48,0.2); color:#f0a830; }
     .racing-idea-priority.low { background:rgba(100,100,120,0.2); color:#888; }
-    .racing-idea-title { font-size:0.9rem; font-weight:700; color:#e8c87a; margin-bottom:0.4rem; line-height:1.3; }
-    .racing-idea-hypothesis { font-size:0.78rem; line-height:1.55; color:rgba(232,200,122,0.55); margin-bottom:0.5rem; }
-    .racing-idea-impl { font-size:0.72rem; font-family:monospace; background:rgba(0,0,0,0.4); border-left:2px solid #c9a84c; padding:0.35rem 0.5rem; color:rgba(201,168,76,0.8); margin-bottom:0.4rem; line-height:1.5; }
+    .racing-idea-title { font-size:0.9rem; font-weight:700; color:#a5c8ff; margin-bottom:0.4rem; line-height:1.3; }
+    .racing-idea-hypothesis { font-size:0.78rem; line-height:1.55; color:rgba(165,200,255,0.55); margin-bottom:0.5rem; }
+    .racing-idea-impl { font-size:0.72rem; font-family:monospace; background:rgba(0,0,0,0.4); border-left:2px solid #4f8ef7; padding:0.35rem 0.5rem; color:rgba(79,142,247,0.8); margin-bottom:0.4rem; line-height:1.5; }
     .racing-idea-meta { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.4rem; }
-    .racing-meta-tag { font-size:0.6rem; color:rgba(200,168,76,0.4); background:rgba(201,168,76,0.07); border:1px solid rgba(201,168,76,0.12); border-radius:3px; padding:2px 6px; }
-    .racing-synthesis { background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.15); border-radius:6px; padding:0.85rem 1.1rem; margin-bottom:1rem; font-size:0.82rem; line-height:1.6; color:rgba(232,200,122,0.7); }
-    .racing-synthesis-label { font-size:0.58rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:#c9a84c; margin-bottom:0.3rem; }
-    .racing-meta-bar { display:flex; gap:1rem; margin-bottom:0.75rem; font-size:0.65rem; color:rgba(200,168,76,0.4); font-family:monospace; flex-wrap:wrap; }
+    .racing-meta-tag { font-size:0.6rem; color:rgba(79,142,247,0.4); background:rgba(79,142,247,0.07); border:1px solid rgba(79,142,247,0.12); border-radius:3px; padding:2px 6px; }
+    .racing-synthesis { background:rgba(79,142,247,0.08); border:1px solid rgba(79,142,247,0.15); border-radius:6px; padding:0.85rem 1.1rem; margin-bottom:1rem; font-size:0.82rem; line-height:1.6; color:rgba(165,200,255,0.7); }
+    .racing-synthesis-label { font-size:0.58rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:#4f8ef7; margin-bottom:0.3rem; }
+    .racing-meta-bar { display:flex; gap:1rem; margin-bottom:0.75rem; font-size:0.65rem; color:rgba(79,142,247,0.4); font-family:monospace; flex-wrap:wrap; }
 
     /* ── Reminders dark variant ─────────────────────────────── */
     .reminders-dark .reminder-card { background:#1a1a1a; border-color:rgba(255,255,255,0.1); box-shadow:none; }
@@ -1133,18 +1133,18 @@ window.fetch = function(url, opts) {
 </section>
 
 <!-- ── § Horse Racing System Logic ──────────────── -->
-<section class="section-block" id="racing-logic-section" style="background:#080603; border-top:1px solid #2a1a00;">
+<section class="section-block" id="racing-logic-section" style="background:#0a0d14; border-top:1px solid #1e2535;">
   <div class="section-inner">
     <div class="section-header reveal" style="color:#f0ebe0;">
-      <div class="section-num" style="color:#c9a84c; opacity:1;">📐 System Logic</div>
-      <div class="section-title" style="color:#e8c87a;">Fig Anomaly System — How It Works</div>
-      <div class="section-deck" style="color:rgba(200,168,76,0.45);">The decision tree from raw race card to executed bet. Every filter, every edge signal, every sizing rule.</div>
+      <div class="section-num" style="color:#4f8ef7; opacity:1;">📐 System Logic</div>
+      <div class="section-title" style="color:#a5c8ff;">Fig Anomaly System — How It Works</div>
+      <div class="section-deck" style="color:rgba(79,142,247,0.45);">The decision tree from raw race card to executed bet. Every filter, every edge signal, every sizing rule.</div>
     </div>
     <div id="racing-logic-content">
 
       <!-- Filter Funnel -->
       <div style="margin-bottom:2rem;">
-        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.9rem;">① The Filter Funnel — From 8 Horses to 1 Bet</div>
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#4f8ef7;margin-bottom:0.9rem;">① The Filter Funnel — From 8 Horses to 1 Bet</div>
         <div style="display:flex;align-items:stretch;gap:0;flex-wrap:wrap;">
           <div class="funnel-step" style="--clr:#8a7a5a;">
             <div class="funnel-num">All Races</div>
@@ -1156,7 +1156,7 @@ window.fetch = function(url, opts) {
             <div class="funnel-desc">Claiming or Allowance/AOC only. 4YO+ horses. Dirt surface only.</div>
             <div class="funnel-drop">↓ Drop: ~40% of remaining</div>
           </div>
-          <div class="funnel-step" style="--clr:#c9a84c;">
+          <div class="funnel-step" style="--clr:#4f8ef7;">
             <div class="funnel-num">Fig Anomaly</div>
             <div class="funnel-desc">Top horse fig ≥ 5pts above second-best. Top horse must be rankable (has fig).</div>
             <div class="funnel-drop">↓ Drop: most races — no clear edge</div>
@@ -1166,7 +1166,7 @@ window.fetch = function(url, opts) {
             <div class="funnel-desc">Top-fig horse must be ≥ 3/1 ML. Below 3/1 = market already knows, skip.</div>
             <div class="funnel-drop">↓ Drop: odds-on favorites</div>
           </div>
-          <div class="funnel-step" style="--clr:#e8c87a;" data-highlight="1">
+          <div class="funnel-step" style="--clr:#a5c8ff;" data-highlight="1">
             <div class="funnel-num" style="color:#fff;">✓ Bet</div>
             <div class="funnel-desc" style="color:rgba(255,255,255,0.8);">~2–4 qualifying races per day across all target tracks. This is the signal.</div>
             <div class="funnel-drop" style="color:rgba(255,255,255,0.4);">Avg 2.6 bets/day in backtest</div>
@@ -1176,7 +1176,7 @@ window.fetch = function(url, opts) {
 
       <!-- Odds Decision Tree -->
       <div style="margin-bottom:2rem;">
-        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.9rem;">② Odds Decision Tree — How Much to Bet</div>
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#4f8ef7;margin-bottom:0.9rem;">② Odds Decision Tree — How Much to Bet</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
           <div style="background:rgba(60,200,100,0.07);border:1px solid rgba(60,200,100,0.25);border-radius:8px;padding:1.1rem;">
             <div style="font-size:0.7rem;font-weight:800;letter-spacing:0.1em;color:#3ecf6a;margin-bottom:0.4rem;">3/1 – 8/1</div>
@@ -1188,10 +1188,10 @@ window.fetch = function(url, opts) {
             <div style="font-size:1.3rem;font-weight:700;color:#e8c0a0;margin-bottom:0.5rem;">⛔ Dead Zone — Skip</div>
             <div style="font-size:0.75rem;color:rgba(220,170,130,0.5);line-height:1.55;">18% win rate vs 45% at 5–8/1. Market correctly priced here. No edge. $0 wagered.</div>
           </div>
-          <div style="background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.25);border-radius:8px;padding:1.1rem;">
-            <div style="font-size:0.7rem;font-weight:800;letter-spacing:0.1em;color:#c9a84c;margin-bottom:0.4rem;">12/1+</div>
-            <div style="font-size:1.3rem;font-weight:700;color:#e8c87a;margin-bottom:0.5rem;">Show Only</div>
-            <div style="font-size:0.75rem;color:rgba(200,168,76,0.55);line-height:1.55;">$2 show only. Lower risk at long shots. Show still pays well in small fields. Can't trust win at this price.</div>
+          <div style="background:rgba(79,142,247,0.07);border:1px solid rgba(79,142,247,0.25);border-radius:8px;padding:1.1rem;">
+            <div style="font-size:0.7rem;font-weight:800;letter-spacing:0.1em;color:#4f8ef7;margin-bottom:0.4rem;">12/1+</div>
+            <div style="font-size:1.3rem;font-weight:700;color:#a5c8ff;margin-bottom:0.5rem;">Show Only</div>
+            <div style="font-size:0.75rem;color:rgba(79,142,247,0.55);line-height:1.55;">$2 show only. Lower risk at long shots. Show still pays well in small fields. Can't trust win at this price.</div>
           </div>
           <div style="background:rgba(80,120,200,0.07);border:1px solid rgba(80,120,200,0.2);border-radius:8px;padding:1.1rem;">
             <div style="font-size:0.7rem;font-weight:800;letter-spacing:0.1em;color:#7090e0;margin-bottom:0.4rem;">Brad Cox Exception</div>
@@ -1203,40 +1203,40 @@ window.fetch = function(url, opts) {
 
       <!-- Kelly Criterion -->
       <div style="margin-bottom:2rem;">
-        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.9rem;">③ Kelly Criterion — Bet Sizing</div>
-        <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:1.2rem;font-family:monospace;">
-          <div style="color:rgba(201,168,76,0.5);font-size:0.65rem;margin-bottom:0.6rem;">// Full Kelly = (edge × odds - (1 - edge)) / odds</div>
-          <div style="color:#e8c87a;font-size:0.85rem;margin-bottom:0.4rem;">edge = 0.335  <span style="color:rgba(201,168,76,0.4);">// 33.5% win rate from backtest</span></div>
-          <div style="color:#e8c87a;font-size:0.85rem;margin-bottom:0.4rem;">odds = 5.0    <span style="color:rgba(201,168,76,0.4);">// avg qualifying odds</span></div>
-          <div style="color:#e8c87a;font-size:0.85rem;margin-bottom:0.6rem;">kelly = (0.335 × 5.0 - 0.665) / 5.0 = <span style="color:#3ecf6a;font-weight:700;">0.202</span> <span style="color:rgba(201,168,76,0.4);">// 20.2% of bankroll</span></div>
-          <div style="color:rgba(201,168,76,0.5);font-size:0.65rem;margin-bottom:0.4rem;">// Quarter-Kelly for safety:</div>
-          <div style="color:#e8c87a;font-size:0.85rem;">bet_size = 0.25 × kelly × bankroll = <span style="color:#3ecf6a;font-weight:700;">~$2.50</span> <span style="color:rgba(201,168,76,0.4);">// on $50 bankroll, capped at $10</span></div>
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#4f8ef7;margin-bottom:0.9rem;">③ Kelly Criterion — Bet Sizing</div>
+        <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(79,142,247,0.2);border-radius:8px;padding:1.2rem;font-family:monospace;">
+          <div style="color:rgba(79,142,247,0.5);font-size:0.65rem;margin-bottom:0.6rem;">// Full Kelly = (edge × odds - (1 - edge)) / odds</div>
+          <div style="color:#a5c8ff;font-size:0.85rem;margin-bottom:0.4rem;">edge = 0.335  <span style="color:rgba(79,142,247,0.4);">// 33.5% win rate from backtest</span></div>
+          <div style="color:#a5c8ff;font-size:0.85rem;margin-bottom:0.4rem;">odds = 5.0    <span style="color:rgba(79,142,247,0.4);">// avg qualifying odds</span></div>
+          <div style="color:#a5c8ff;font-size:0.85rem;margin-bottom:0.6rem;">kelly = (0.335 × 5.0 - 0.665) / 5.0 = <span style="color:#3ecf6a;font-weight:700;">0.202</span> <span style="color:rgba(79,142,247,0.4);">// 20.2% of bankroll</span></div>
+          <div style="color:rgba(79,142,247,0.5);font-size:0.65rem;margin-bottom:0.4rem;">// Quarter-Kelly for safety:</div>
+          <div style="color:#a5c8ff;font-size:0.85rem;">bet_size = 0.25 × kelly × bankroll = <span style="color:#3ecf6a;font-weight:700;">~$2.50</span> <span style="color:rgba(79,142,247,0.4);">// on $50 bankroll, capped at $10</span></div>
         </div>
-        <div style="font-size:0.72rem;color:rgba(200,168,76,0.45);margin-top:0.5rem;line-height:1.5;">Quarter-Kelly means we're betting 25% of what math says we should — conservative, protects against variance. As bankroll grows, bet size scales up automatically. Unspent daily budget carries over.</div>
+        <div style="font-size:0.72rem;color:rgba(79,142,247,0.45);margin-top:0.5rem;line-height:1.5;">Quarter-Kelly means we're betting 25% of what math says we should — conservative, protects against variance. As bankroll grows, bet size scales up automatically. Unspent daily budget carries over.</div>
       </div>
 
       <!-- Edge Proof Flow -->
       <div style="margin-bottom:1rem;">
-        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.9rem;">④ Edge Proof — How We Know It's Not Luck</div>
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#4f8ef7;margin-bottom:0.9rem;">④ Edge Proof — How We Know It's Not Luck</div>
         <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;">
-          <div style="flex:1;min-width:160px;background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.15);border-radius:8px;padding:1rem;">
-            <div style="font-size:0.7rem;font-weight:700;color:#c9a84c;margin-bottom:0.3rem;">Step 1</div>
-            <div style="font-size:0.8rem;font-weight:700;color:#e8c87a;margin-bottom:0.3rem;">Run Real System</div>
-            <div style="font-size:0.7rem;color:rgba(200,168,76,0.5);line-height:1.5;">Apply all filters. Record ROI across 7 months of data. Actual result: +68.1% full, +12.2% ex-hot-streak.</div>
+          <div style="flex:1;min-width:160px;background:rgba(0,0,0,0.3);border:1px solid rgba(79,142,247,0.15);border-radius:8px;padding:1rem;">
+            <div style="font-size:0.7rem;font-weight:700;color:#4f8ef7;margin-bottom:0.3rem;">Step 1</div>
+            <div style="font-size:0.8rem;font-weight:700;color:#a5c8ff;margin-bottom:0.3rem;">Run Real System</div>
+            <div style="font-size:0.7rem;color:rgba(79,142,247,0.5);line-height:1.5;">Apply all filters. Record ROI across 7 months of data. Actual result: +68.1% full, +12.2% ex-hot-streak.</div>
           </div>
-          <div style="color:#c9a84c;font-size:1.2rem;align-self:center;">→</div>
-          <div style="flex:1;min-width:160px;background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.15);border-radius:8px;padding:1rem;">
-            <div style="font-size:0.7rem;font-weight:700;color:#c9a84c;margin-bottom:0.3rem;">Step 2</div>
-            <div style="font-size:0.8rem;font-weight:700;color:#e8c87a;margin-bottom:0.3rem;">Permutation Test</div>
-            <div style="font-size:0.7rem;color:rgba(200,168,76,0.5);line-height:1.5;">Shuffle win/loss labels 10,000 times in same qualifying races. Build null ROI distribution. Ask: where does our real ROI land?</div>
+          <div style="color:#4f8ef7;font-size:1.2rem;align-self:center;">→</div>
+          <div style="flex:1;min-width:160px;background:rgba(0,0,0,0.3);border:1px solid rgba(79,142,247,0.15);border-radius:8px;padding:1rem;">
+            <div style="font-size:0.7rem;font-weight:700;color:#4f8ef7;margin-bottom:0.3rem;">Step 2</div>
+            <div style="font-size:0.8rem;font-weight:700;color:#a5c8ff;margin-bottom:0.3rem;">Permutation Test</div>
+            <div style="font-size:0.7rem;color:rgba(79,142,247,0.5);line-height:1.5;">Shuffle win/loss labels 10,000 times in same qualifying races. Build null ROI distribution. Ask: where does our real ROI land?</div>
           </div>
-          <div style="color:#c9a84c;font-size:1.2rem;align-self:center;">→</div>
-          <div style="flex:1;min-width:160px;background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.15);border-radius:8px;padding:1rem;">
-            <div style="font-size:0.7rem;font-weight:700;color:#c9a84c;margin-bottom:0.3rem;">Step 3</div>
-            <div style="font-size:0.8rem;font-weight:700;color:#e8c87a;margin-bottom:0.3rem;">Bootstrap CI</div>
-            <div style="font-size:0.7rem;color:rgba(200,168,76,0.5);line-height:1.5;">Resample days 5,000 times. Build 90% confidence interval. Result: [+38%, +99%]. P(ROI&gt;0) = 100% full / 85% ex-hot.</div>
+          <div style="color:#4f8ef7;font-size:1.2rem;align-self:center;">→</div>
+          <div style="flex:1;min-width:160px;background:rgba(0,0,0,0.3);border:1px solid rgba(79,142,247,0.15);border-radius:8px;padding:1rem;">
+            <div style="font-size:0.7rem;font-weight:700;color:#4f8ef7;margin-bottom:0.3rem;">Step 3</div>
+            <div style="font-size:0.8rem;font-weight:700;color:#a5c8ff;margin-bottom:0.3rem;">Bootstrap CI</div>
+            <div style="font-size:0.7rem;color:rgba(79,142,247,0.5);line-height:1.5;">Resample days 5,000 times. Build 90% confidence interval. Result: [+38%, +99%]. P(ROI&gt;0) = 100% full / 85% ex-hot.</div>
           </div>
-          <div style="color:#c9a84c;font-size:1.2rem;align-self:center;">→</div>
+          <div style="color:#4f8ef7;font-size:1.2rem;align-self:center;">→</div>
           <div style="flex:1;min-width:160px;background:rgba(60,200,100,0.08);border:1px solid rgba(60,200,100,0.3);border-radius:8px;padding:1rem;">
             <div style="font-size:0.7rem;font-weight:700;color:#3ecf6a;margin-bottom:0.3rem;">Verdict</div>
             <div style="font-size:0.8rem;font-weight:700;color:#e8f0d0;margin-bottom:0.3rem;">Edge Confirmed</div>
@@ -1247,16 +1247,16 @@ window.fetch = function(url, opts) {
 
       <!-- Key Signals Table -->
       <div style="margin-top:1.5rem;">
-        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.7rem;">⚡ Top Edge Signals (from 7-month backtest)</div>
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#4f8ef7;margin-bottom:0.7rem;">⚡ Top Edge Signals (from 7-month backtest)</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.5rem;">
-          <div class="signal-pill">Wed/Sat cards → <strong style="color:#e8c87a;">47% win rate</strong></div>
-          <div class="signal-pill">6–8/1 odds zone → <strong style="color:#e8c87a;">+153% ROI</strong></div>
-          <div class="signal-pill">8–11pt fig gap → <strong style="color:#e8c87a;">+102% ROI</strong></div>
-          <div class="signal-pill">Field size 10+ → <strong style="color:#e8c87a;">+128% ROI</strong></div>
-          <div class="signal-pill">Rank 6+ ML diverge → <strong style="color:#e8c87a;">+201% ROI</strong></div>
-          <div class="signal-pill">Oaklawn Park → <strong style="color:#e8c87a;">+107% ROI</strong></div>
-          <div class="signal-pill">Aqueduct → <strong style="color:#e8c87a;">+80% ROI</strong></div>
-          <div class="signal-pill">Fig 100–109 band → <strong style="color:#e8c87a;">+94.8% ROI</strong></div>
+          <div class="signal-pill">Wed/Sat cards → <strong style="color:#a5c8ff;">47% win rate</strong></div>
+          <div class="signal-pill">6–8/1 odds zone → <strong style="color:#a5c8ff;">+153% ROI</strong></div>
+          <div class="signal-pill">8–11pt fig gap → <strong style="color:#a5c8ff;">+102% ROI</strong></div>
+          <div class="signal-pill">Field size 10+ → <strong style="color:#a5c8ff;">+128% ROI</strong></div>
+          <div class="signal-pill">Rank 6+ ML diverge → <strong style="color:#a5c8ff;">+201% ROI</strong></div>
+          <div class="signal-pill">Oaklawn Park → <strong style="color:#a5c8ff;">+107% ROI</strong></div>
+          <div class="signal-pill">Aqueduct → <strong style="color:#a5c8ff;">+80% ROI</strong></div>
+          <div class="signal-pill">Fig 100–109 band → <strong style="color:#a5c8ff;">+94.8% ROI</strong></div>
           <div class="signal-pill">15+pt gap ⚠️ → <strong style="color:#d4704a;">+33.9% ROI (worst)</strong></div>
           <div class="signal-pill">Thursday → <strong style="color:#d4704a;">18.6% win rate (fade)</strong></div>
         </div>
@@ -1267,7 +1267,7 @@ window.fetch = function(url, opts) {
 </section>
 
 <!-- ── § Fig System Pitch ──────────────────────── -->
-<section class="section-block" id="fig-pitch-section" style="background:#07060a; border-top:1px solid #1a1530;">
+<section class="section-block" id="fig-pitch-section" style="background:#09080f; border-top:1px solid #1e1a35;">
   <div class="section-inner">
     <div class="section-header reveal">
       <div class="section-num" style="color:#a78bfa; opacity:1;">🏇 The Pitch</div>
@@ -1359,12 +1359,12 @@ window.fetch = function(url, opts) {
 </section>
 
 <!-- ── § Horse Racing Intelligence ──────────────── -->
-<section class="section-block" id="racing-intel-section" style="background:#0c0a06; border-top:1px solid #2a2010; display:none;">
+<section class="section-block" id="racing-intel-section" style="background:#080c14; border-top:1px solid #1a2035; display:none;">
   <div class="section-inner">
     <div class="section-header reveal" style="color:#f0ebe0;">
-      <div class="section-num" style="color:#c9a84c; opacity:1;">⚡ Fig System</div>
-      <div class="section-title" style="color:#e8c87a;">Racing Intelligence</div>
-      <div class="section-deck" style="color:rgba(200,168,76,0.45);">Speed figure anomaly system — subagent-generated hypotheses from the last 9 hours of data analysis.</div>
+      <div class="section-num" style="color:#4f8ef7; opacity:1;">⚡ Fig System</div>
+      <div class="section-title" style="color:#a5c8ff;">Racing Intelligence</div>
+      <div class="section-deck" style="color:rgba(79,142,247,0.45);">Speed figure anomaly system — subagent-generated hypotheses from the last 9 hours of data analysis.</div>
     </div>
     <div id="racing-intel-grid"></div>
   </div>
@@ -1957,7 +1957,7 @@ function renderHorseRacingBacktest(bt) {
     <div style="font-family:var(--mono);font-size:.65rem;color:rgba(200,240,150,0.3);line-height:1.8;">
       📅 ${bt.date_range?.start} → ${bt.date_range?.end} &nbsp;·&nbsp; ${bt.n_races?.toLocaleString()} total races scanned &nbsp;·&nbsp;
       $50/day bankroll sim · Best: ${best?.label} → deposited $${best?.total_deposited} → final $${best?.final_bankroll} (+$${best?.profit})
-      &nbsp;·&nbsp; <a href="https://kaulin6.github.io/fig-anomaly-viz/strategy-dashboard.html" target="_blank" style="color:#c9a84c;text-decoration:none;">Full Dashboard ↗</a>
+      &nbsp;·&nbsp; <a href="https://kaulin6.github.io/fig-anomaly-viz/strategy-dashboard.html" target="_blank" style="color:#4f8ef7;text-decoration:none;">Full Dashboard ↗</a>
     </div>
   `;
 }
