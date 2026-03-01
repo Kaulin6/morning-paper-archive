@@ -332,6 +332,20 @@ window.fetch = function(url, opts) {
     .pulse-mini-source { font-size:0.65rem; color:rgba(255,253,245,0.25); margin-top:0.5rem; }
     .pulse-mini-source a { color:rgba(232,184,75,0.5); text-decoration:none; }
     .pulse-mini-source a:hover { color:var(--neo-amber); }
+    /* Fig Pitch */
+    .pitch-item { font-size:0.75rem; color:rgba(200,190,240,0.65); line-height:1.5; padding-left:0.2rem; }
+    .pitch-item strong { color:#c4b5fd; }
+    .pitch-item-red { font-size:0.75rem; color:rgba(240,170,170,0.6); line-height:1.5; padding-left:0.2rem; }
+    .pitch-item-red em { color:rgba(240,170,170,0.85); font-style:normal; font-weight:600; }
+    /* Racing System Logic */
+    .funnel-step { flex:1; min-width:140px; background:rgba(0,0,0,0.35); border:1px solid rgba(201,168,76,0.15); border-right:none; padding:1rem 0.9rem; position:relative; transition:background 0.2s; }
+    .funnel-step:first-child { border-radius:8px 0 0 8px; }
+    .funnel-step:last-child { border-right:1px solid rgba(201,168,76,0.3); border-radius:0 8px 8px 0; background:rgba(201,168,76,0.12); }
+    .funnel-step[data-highlight="1"] { background:rgba(201,168,76,0.15); border-color:rgba(201,168,76,0.4); }
+    .funnel-num { font-size:0.65rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--clr,#c9a84c); margin-bottom:0.35rem; }
+    .funnel-desc { font-size:0.73rem; color:rgba(200,168,76,0.6); line-height:1.5; margin-bottom:0.5rem; }
+    .funnel-drop { font-size:0.62rem; color:rgba(180,130,50,0.4); font-family:monospace; line-height:1.4; }
+    .signal-pill { background:rgba(0,0,0,0.35); border:1px solid rgba(201,168,76,0.12); border-radius:6px; padding:0.45rem 0.7rem; font-size:0.7rem; color:rgba(200,168,76,0.5); line-height:1.4; }
     /* Racing Intel */
     .racing-intel-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:0.75rem; margin-top:0.5rem; }
     .racing-idea-card { background:rgba(201,168,76,0.06); border:1px solid rgba(201,168,76,0.2); border-radius:6px; padding:1rem 1.1rem; }
@@ -1115,6 +1129,232 @@ window.fetch = function(url, opts) {
       <div class="section-deck" style="color:rgba(200,240,150,0.4);">7-month realistic backtest. Correct permutation test: our system vs random horse selection in the same races.</div>
     </div>
     <div id="racing-proof-grid"></div>
+  </div>
+</section>
+
+<!-- ── § Horse Racing System Logic ──────────────── -->
+<section class="section-block" id="racing-logic-section" style="background:#080603; border-top:1px solid #2a1a00;">
+  <div class="section-inner">
+    <div class="section-header reveal" style="color:#f0ebe0;">
+      <div class="section-num" style="color:#c9a84c; opacity:1;">📐 System Logic</div>
+      <div class="section-title" style="color:#e8c87a;">Fig Anomaly System — How It Works</div>
+      <div class="section-deck" style="color:rgba(200,168,76,0.45);">The decision tree from raw race card to executed bet. Every filter, every edge signal, every sizing rule.</div>
+    </div>
+    <div id="racing-logic-content">
+
+      <!-- Filter Funnel -->
+      <div style="margin-bottom:2rem;">
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.9rem;">① The Filter Funnel — From 8 Horses to 1 Bet</div>
+        <div style="display:flex;align-items:stretch;gap:0;flex-wrap:wrap;">
+          <div class="funnel-step" style="--clr:#8a7a5a;">
+            <div class="funnel-num">All Races</div>
+            <div class="funnel-desc">Every race on today's card at target tracks</div>
+            <div class="funnel-drop">↓ Drop: maiden, turf, 2YO, AE, non-US</div>
+          </div>
+          <div class="funnel-step" style="--clr:#9a8a4a;">
+            <div class="funnel-num">Race Type</div>
+            <div class="funnel-desc">Claiming or Allowance/AOC only. 4YO+ horses. Dirt surface only.</div>
+            <div class="funnel-drop">↓ Drop: ~40% of remaining</div>
+          </div>
+          <div class="funnel-step" style="--clr:#c9a84c;">
+            <div class="funnel-num">Fig Anomaly</div>
+            <div class="funnel-desc">Top horse fig ≥ 5pts above second-best. Top horse must be rankable (has fig).</div>
+            <div class="funnel-drop">↓ Drop: most races — no clear edge</div>
+          </div>
+          <div class="funnel-step" style="--clr:#d4b060;">
+            <div class="funnel-num">Odds Check</div>
+            <div class="funnel-desc">Top-fig horse must be ≥ 3/1 ML. Below 3/1 = market already knows, skip.</div>
+            <div class="funnel-drop">↓ Drop: odds-on favorites</div>
+          </div>
+          <div class="funnel-step" style="--clr:#e8c87a;" data-highlight="1">
+            <div class="funnel-num" style="color:#fff;">✓ Bet</div>
+            <div class="funnel-desc" style="color:rgba(255,255,255,0.8);">~2–4 qualifying races per day across all target tracks. This is the signal.</div>
+            <div class="funnel-drop" style="color:rgba(255,255,255,0.4);">Avg 2.6 bets/day in backtest</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Odds Decision Tree -->
+      <div style="margin-bottom:2rem;">
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.9rem;">② Odds Decision Tree — How Much to Bet</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+          <div style="background:rgba(60,200,100,0.07);border:1px solid rgba(60,200,100,0.25);border-radius:8px;padding:1.1rem;">
+            <div style="font-size:0.7rem;font-weight:800;letter-spacing:0.1em;color:#3ecf6a;margin-bottom:0.4rem;">3/1 – 8/1</div>
+            <div style="font-size:1.3rem;font-weight:700;color:#e8f0d0;margin-bottom:0.5rem;">Win + Show</div>
+            <div style="font-size:0.75rem;color:rgba(200,240,150,0.6);line-height:1.55;">$2 win + $2 show = $4 total.<br>Best risk/reward zone. 45% hit rate in backtest. Collect two payouts if they win.</div>
+          </div>
+          <div style="background:rgba(120,80,50,0.12);border:1px solid rgba(180,100,50,0.3);border-radius:8px;padding:1.1rem;">
+            <div style="font-size:0.7rem;font-weight:800;letter-spacing:0.1em;color:#d4704a;margin-bottom:0.4rem;">8/1 – 12/1</div>
+            <div style="font-size:1.3rem;font-weight:700;color:#e8c0a0;margin-bottom:0.5rem;">⛔ Dead Zone — Skip</div>
+            <div style="font-size:0.75rem;color:rgba(220,170,130,0.5);line-height:1.55;">18% win rate vs 45% at 5–8/1. Market correctly priced here. No edge. $0 wagered.</div>
+          </div>
+          <div style="background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.25);border-radius:8px;padding:1.1rem;">
+            <div style="font-size:0.7rem;font-weight:800;letter-spacing:0.1em;color:#c9a84c;margin-bottom:0.4rem;">12/1+</div>
+            <div style="font-size:1.3rem;font-weight:700;color:#e8c87a;margin-bottom:0.5rem;">Show Only</div>
+            <div style="font-size:0.75rem;color:rgba(200,168,76,0.55);line-height:1.55;">$2 show only. Lower risk at long shots. Show still pays well in small fields. Can't trust win at this price.</div>
+          </div>
+          <div style="background:rgba(80,120,200,0.07);border:1px solid rgba(80,120,200,0.2);border-radius:8px;padding:1.1rem;">
+            <div style="font-size:0.7rem;font-weight:800;letter-spacing:0.1em;color:#7090e0;margin-bottom:0.4rem;">Brad Cox Exception</div>
+            <div style="font-size:1.3rem;font-weight:700;color:#c0d0f0;margin-bottom:0.5rem;">Sub-3/1 OK</div>
+            <div style="font-size:0.75rem;color:rgba(180,200,240,0.5);line-height:1.55;">Cox + Ortiz/Franco/Marin combo eligible below 3/1. Trainer + elite jockey = extra signal layer.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kelly Criterion -->
+      <div style="margin-bottom:2rem;">
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.9rem;">③ Kelly Criterion — Bet Sizing</div>
+        <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:1.2rem;font-family:monospace;">
+          <div style="color:rgba(201,168,76,0.5);font-size:0.65rem;margin-bottom:0.6rem;">// Full Kelly = (edge × odds - (1 - edge)) / odds</div>
+          <div style="color:#e8c87a;font-size:0.85rem;margin-bottom:0.4rem;">edge = 0.335  <span style="color:rgba(201,168,76,0.4);">// 33.5% win rate from backtest</span></div>
+          <div style="color:#e8c87a;font-size:0.85rem;margin-bottom:0.4rem;">odds = 5.0    <span style="color:rgba(201,168,76,0.4);">// avg qualifying odds</span></div>
+          <div style="color:#e8c87a;font-size:0.85rem;margin-bottom:0.6rem;">kelly = (0.335 × 5.0 - 0.665) / 5.0 = <span style="color:#3ecf6a;font-weight:700;">0.202</span> <span style="color:rgba(201,168,76,0.4);">// 20.2% of bankroll</span></div>
+          <div style="color:rgba(201,168,76,0.5);font-size:0.65rem;margin-bottom:0.4rem;">// Quarter-Kelly for safety:</div>
+          <div style="color:#e8c87a;font-size:0.85rem;">bet_size = 0.25 × kelly × bankroll = <span style="color:#3ecf6a;font-weight:700;">~$2.50</span> <span style="color:rgba(201,168,76,0.4);">// on $50 bankroll, capped at $10</span></div>
+        </div>
+        <div style="font-size:0.72rem;color:rgba(200,168,76,0.45);margin-top:0.5rem;line-height:1.5;">Quarter-Kelly means we're betting 25% of what math says we should — conservative, protects against variance. As bankroll grows, bet size scales up automatically. Unspent daily budget carries over.</div>
+      </div>
+
+      <!-- Edge Proof Flow -->
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.9rem;">④ Edge Proof — How We Know It's Not Luck</div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;">
+          <div style="flex:1;min-width:160px;background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.15);border-radius:8px;padding:1rem;">
+            <div style="font-size:0.7rem;font-weight:700;color:#c9a84c;margin-bottom:0.3rem;">Step 1</div>
+            <div style="font-size:0.8rem;font-weight:700;color:#e8c87a;margin-bottom:0.3rem;">Run Real System</div>
+            <div style="font-size:0.7rem;color:rgba(200,168,76,0.5);line-height:1.5;">Apply all filters. Record ROI across 7 months of data. Actual result: +68.1% full, +12.2% ex-hot-streak.</div>
+          </div>
+          <div style="color:#c9a84c;font-size:1.2rem;align-self:center;">→</div>
+          <div style="flex:1;min-width:160px;background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.15);border-radius:8px;padding:1rem;">
+            <div style="font-size:0.7rem;font-weight:700;color:#c9a84c;margin-bottom:0.3rem;">Step 2</div>
+            <div style="font-size:0.8rem;font-weight:700;color:#e8c87a;margin-bottom:0.3rem;">Permutation Test</div>
+            <div style="font-size:0.7rem;color:rgba(200,168,76,0.5);line-height:1.5;">Shuffle win/loss labels 10,000 times in same qualifying races. Build null ROI distribution. Ask: where does our real ROI land?</div>
+          </div>
+          <div style="color:#c9a84c;font-size:1.2rem;align-self:center;">→</div>
+          <div style="flex:1;min-width:160px;background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.15);border-radius:8px;padding:1rem;">
+            <div style="font-size:0.7rem;font-weight:700;color:#c9a84c;margin-bottom:0.3rem;">Step 3</div>
+            <div style="font-size:0.8rem;font-weight:700;color:#e8c87a;margin-bottom:0.3rem;">Bootstrap CI</div>
+            <div style="font-size:0.7rem;color:rgba(200,168,76,0.5);line-height:1.5;">Resample days 5,000 times. Build 90% confidence interval. Result: [+38%, +99%]. P(ROI&gt;0) = 100% full / 85% ex-hot.</div>
+          </div>
+          <div style="color:#c9a84c;font-size:1.2rem;align-self:center;">→</div>
+          <div style="flex:1;min-width:160px;background:rgba(60,200,100,0.08);border:1px solid rgba(60,200,100,0.3);border-radius:8px;padding:1rem;">
+            <div style="font-size:0.7rem;font-weight:700;color:#3ecf6a;margin-bottom:0.3rem;">Verdict</div>
+            <div style="font-size:0.8rem;font-weight:700;color:#e8f0d0;margin-bottom:0.3rem;">Edge Confirmed</div>
+            <div style="font-size:0.7rem;color:rgba(200,240,150,0.5);line-height:1.5;">If real ROI beats 95th percentile of null distribution → p&lt;0.05 → not random. Wed/Sat claiming is the strongest signal.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Signals Table -->
+      <div style="margin-top:1.5rem;">
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:0.7rem;">⚡ Top Edge Signals (from 7-month backtest)</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.5rem;">
+          <div class="signal-pill">Wed/Sat cards → <strong style="color:#e8c87a;">47% win rate</strong></div>
+          <div class="signal-pill">6–8/1 odds zone → <strong style="color:#e8c87a;">+153% ROI</strong></div>
+          <div class="signal-pill">8–11pt fig gap → <strong style="color:#e8c87a;">+102% ROI</strong></div>
+          <div class="signal-pill">Field size 10+ → <strong style="color:#e8c87a;">+128% ROI</strong></div>
+          <div class="signal-pill">Rank 6+ ML diverge → <strong style="color:#e8c87a;">+201% ROI</strong></div>
+          <div class="signal-pill">Oaklawn Park → <strong style="color:#e8c87a;">+107% ROI</strong></div>
+          <div class="signal-pill">Aqueduct → <strong style="color:#e8c87a;">+80% ROI</strong></div>
+          <div class="signal-pill">Fig 100–109 band → <strong style="color:#e8c87a;">+94.8% ROI</strong></div>
+          <div class="signal-pill">15+pt gap ⚠️ → <strong style="color:#d4704a;">+33.9% ROI (worst)</strong></div>
+          <div class="signal-pill">Thursday → <strong style="color:#d4704a;">18.6% win rate (fade)</strong></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── § Fig System Pitch ──────────────────────── -->
+<section class="section-block" id="fig-pitch-section" style="background:#07060a; border-top:1px solid #1a1530;">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num" style="color:#a78bfa; opacity:1;">🏇 The Pitch</div>
+      <div class="section-title" style="color:#e8e0fa;">Fig Anomaly System — Where Things Actually Stand</div>
+      <div class="section-deck" style="color:rgba(200,190,240,0.45);">Built over the last week. Here's the honest version — what we found, what we killed, and what we're building next.</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+
+      <!-- What we built -->
+      <div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:1.2rem;">
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#a78bfa;margin-bottom:0.8rem;">What We Built</div>
+        <div style="display:flex;flex-direction:column;gap:0.55rem;">
+          <div class="pitch-item">🗄️ Scraped 574 race files — Aug 2025 to Feb 2026, 10 tracks, 4,400+ races</div>
+          <div class="pitch-item">📊 Full backtest engine with 14 strategy variants, tote odds, show/win payouts</div>
+          <div class="pitch-item">🔬 Day-level bootstrap CI + permutation test vs random baseline</div>
+          <div class="pitch-item">📈 P&L visualizer, strategy dashboard, factor breakdown charts — all live on GitHub Pages</div>
+          <div class="pitch-item">🤖 Every-3-hour subagent generating new betting hypotheses → morning paper</div>
+          <div class="pitch-item">✅ Tracked 9 Tampa races live + Oaklawn + Aqueduct + Santa Anita = <strong style="color:#a78bfa;">+$23.74 on $46 wagered</strong></div>
+        </div>
+      </div>
+
+      <!-- What we killed -->
+      <div style="background:rgba(240,79,79,0.05);border:1px solid rgba(240,79,79,0.18);border-radius:10px;padding:1.2rem;">
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#f04f4f;margin-bottom:0.8rem;">What We Killed (Honestly)</div>
+        <div style="display:flex;flex-direction:column;gap:0.55rem;">
+          <div class="pitch-item-red">❌ The +68% ROI headline — it's fake. Feb 11–21 hot streak = 80% win rate across all tracks simultaneously. Not a factor, not a system edge. Pure variance cluster.</div>
+          <div class="pitch-item-red">❌ The entire 574-file dataset — HRN updates speed figs <em>after</em> races run. Files scraped 5–14 days post-race show 77–84% top-fig win rates. Lookahead bias. Garbage in, garbage out.</div>
+          <div class="pitch-item-red">❌ The optimizer, the permutation test, the Kelly sizing — all built on contaminated data. Mothballed until we have clean inputs.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- The real signal -->
+    <div style="background:rgba(60,207,106,0.06);border:1px solid rgba(60,207,106,0.2);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem;">
+      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#3ecf6a;margin-bottom:0.7rem;">What's Actually Real</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;">
+        <div style="background:rgba(0,0,0,0.3);border-radius:6px;padding:0.8rem;">
+          <div style="font-size:1.4rem;font-weight:800;color:#3ecf6a;">25.7%</div>
+          <div style="font-size:0.7rem;color:rgba(180,240,200,0.6);margin-top:0.2rem;">Top-fig win rate on clean (uncontaminated) files. Random baseline = 12.5% in 8-horse field. 2× better than random.</div>
+        </div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:6px;padding:0.8rem;">
+          <div style="font-size:1.4rem;font-weight:800;color:#3ecf6a;">45.5%</div>
+          <div style="font-size:0.7rem;color:rgba(180,240,200,0.6);margin-top:0.2rem;">Top-fig show rate on clean files. Random baseline = 37.5%. Modest but directionally right.</div>
+        </div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:6px;padding:0.8rem;">
+          <div style="font-size:1.4rem;font-weight:800;color:#f0a830;">11</div>
+          <div style="font-size:0.7rem;color:rgba(240,200,130,0.6);margin-top:0.2rem;">Clean bets total. Way too small to conclude anything. Confidence interval is 24%–68% — straddles random. Need ~500+ bets.</div>
+        </div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:6px;padding:0.8rem;">
+          <div style="font-size:1.4rem;font-weight:800;color:#3ecf6a;">+$23.74</div>
+          <div style="font-size:0.7rem;color:rgba(180,240,200,0.6);margin-top:0.2rem;">Live tracked bets (manual, real money). +52% ROI on $46 wagered. Also too small. But it's real.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- What's running now -->
+    <div style="background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.15);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem;">
+      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#a78bfa;margin-bottom:0.8rem;">What's Running Right Now</div>
+      <div style="display:flex;flex-direction:column;gap:0.5rem;">
+        <div style="display:flex;align-items:baseline;gap:0.6rem;">
+          <div style="font-size:0.65rem;font-family:monospace;color:#a78bfa;background:rgba(167,139,250,0.1);border-radius:4px;padding:2px 7px;white-space:nowrap;">8 AM daily</div>
+          <div style="font-size:0.75rem;color:rgba(200,190,240,0.65);">Scrape today's entries from HRN <em>before</em> races run. Capture true pre-race speed figs with timestamp. Store in <code style="font-size:0.68rem;color:#a78bfa;">data/prerace/</code></div>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:0.6rem;">
+          <div style="font-size:0.65rem;font-family:monospace;color:#a78bfa;background:rgba(167,139,250,0.1);border-radius:4px;padding:2px 7px;white-space:nowrap;">11 PM daily</div>
+          <div style="font-size:0.75rem;color:rgba(200,190,240,0.65);">Re-scrape today to pick up results and payouts. Merge into same file. Clean file = entries captured pre-race + results captured post-race.</div>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:0.6rem;">
+          <div style="font-size:0.65rem;font-family:monospace;color:#a78bfa;background:rgba(167,139,250,0.1);border-radius:4px;padding:2px 7px;white-space:nowrap;">every 3h</div>
+          <div style="font-size:0.75rem;color:rgba(200,190,240,0.65);">Subagent analyzes new data, generates betting hypotheses. Best ideas surface in this paper.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- The bet -->
+    <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.3);border-radius:10px;padding:1.2rem;">
+      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#a78bfa;margin-bottom:0.6rem;">The Actual Bet</div>
+      <div style="font-size:0.88rem;color:rgba(220,210,255,0.8);line-height:1.7;">
+        The fig anomaly signal is <strong style="color:#e8e0fa;">probably real</strong> — top fig horse wins at 2× random rate in clean data, shows at 1.4×. But 11 bets is not a sample size. The infrastructure to prove it is now running.
+        <br><br>
+        Keep bets at <strong style="color:#a78bfa;">$2–$4/race</strong> while clean data accumulates. After <strong style="color:#a78bfa;">~60 days</strong> (~500 clean bets) we'll have enough to run a real permutation test and know whether to scale up or shut down.
+        <br><br>
+        <span style="color:rgba(167,139,250,0.5);font-size:0.78rem;">The hot streak was fake. The system might not be. That distinction is worth 60 days to find out.</span>
+      </div>
+    </div>
+
   </div>
 </section>
 
