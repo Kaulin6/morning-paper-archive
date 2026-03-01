@@ -33,25 +33,30 @@ window.fetch = function(url, opts) {
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      /* Neo-Brutalism Palette — clean, no muddy browns */
-      --neo-cream:      #f8f8f8;
+      /* Clean, high-contrast palette — no muddy tones */
+      --neo-cream:      #fafafa;
       --neo-yellow:     #ffe94d;
-      --neo-purple:     #ede9ff;
+      --neo-purple:     #f0ecff;
       --neo-white:      #ffffff;
       --neo-black:      #000000;
       --neo-amber:      #f5a623;
       --neo-green:      #22c55e;
-      --neo-red:        #ff4d4d;
+      --neo-red:        #ff4040;
 
-      /* Section backgrounds */
-      --bg-masthead:    #000000;
-      --bg-atf:         #f8f8f8;
+      /* Section backgrounds — deliberate contrast rhythm */
+      --bg-masthead:    #0a0a0a;
+      --bg-atf:         #ffffff;
       --bg-wire:        #ffe94d;
-      --bg-demos:       #ffffff;
-      --bg-angle:       #000000;
-      --bg-proposals:   #ede9ff;
-      --bg-sparks:      #f8f8f8;
-      --bg-library:     #000000;
+      --bg-demos:       #f5f5f5;
+      --bg-angle:       #0a0a0a;
+      --bg-proposals:   #f0ecff;
+      --bg-sparks:      #ffffff;
+      --bg-library:     #0a0a0a;
+
+      /* Racing sections — unified dark slate, single accent */
+      --bg-racing:      #0d1117;
+      --racing-accent:  #4f8ef7;
+      --racing-border:  #1e2a3a;
 
       /* Typography */
       --font-display: "Space Grotesk", -apple-system, sans-serif;
@@ -192,7 +197,11 @@ window.fetch = function(url, opts) {
     /* ─── Section Wrapper ─────────────────────────────────── */
     .section-block {
       border-bottom: var(--neo-border-thick);
-      padding: 4rem 2rem;
+      padding: 4.5rem 2rem;
+    }
+    /* Tighter padding for dense data sections */
+    .section-block.dense {
+      padding: 2.5rem 2rem;
     }
     .section-inner {
       max-width: 1180px;
@@ -326,15 +335,15 @@ window.fetch = function(url, opts) {
 
     /* ── Pulse mini grid (inside Intelligence section) ─────── */
     .pulse-mini-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:0.6rem; }
-    .pulse-mini-card { border:1px solid rgba(255,255,255,0.1); padding:1rem 1.1rem; background:rgba(255,255,255,0.04); }
+    .pulse-mini-card { border:2px solid #000; padding:1rem 1.1rem; background:#fff; box-shadow:3px 3px 0 #000; }
     .pulse-mini-topic { font-size:0.6rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--neo-amber); margin-bottom:0.35rem; }
-    .pulse-mini-insight { font-size:0.82rem; line-height:1.5; color:rgba(255,253,245,0.55); }
-    .pulse-mini-source { font-size:0.65rem; color:rgba(255,253,245,0.25); margin-top:0.5rem; }
-    .pulse-mini-source a { color:rgba(232,184,75,0.5); text-decoration:none; }
-    .pulse-mini-source a:hover { color:var(--neo-amber); }
+    .pulse-mini-insight { font-size:0.82rem; line-height:1.5; color:rgba(0,0,0,0.65); }
+    .pulse-mini-source { font-size:0.65rem; color:rgba(0,0,0,0.3); margin-top:0.5rem; }
+    .pulse-mini-source a { color:var(--neo-amber); text-decoration:none; font-weight:700; }
+    .pulse-mini-source a:hover { text-decoration:underline; }
     /* Fig Pitch */
-    .pitch-item { font-size:0.75rem; color:rgba(200,190,240,0.65); line-height:1.5; padding-left:0.2rem; }
-    .pitch-item strong { color:#c4b5fd; }
+    .pitch-item { font-size:0.75rem; color:rgba(165,200,255,0.65); line-height:1.5; padding-left:0.2rem; }
+    .pitch-item strong { color:#a5c8ff; }
     .pitch-item-red { font-size:0.75rem; color:rgba(240,170,170,0.6); line-height:1.5; padding-left:0.2rem; }
     .pitch-item-red em { color:rgba(240,170,170,0.85); font-style:normal; font-weight:600; }
     /* Racing System Logic */
@@ -364,24 +373,24 @@ window.fetch = function(url, opts) {
     .racing-meta-bar { display:flex; gap:1rem; margin-bottom:0.75rem; font-size:0.65rem; color:rgba(79,142,247,0.4); font-family:monospace; flex-wrap:wrap; }
 
     /* ── Reminders dark variant ─────────────────────────────── */
-    .reminders-dark .reminder-card { background:#1a1a1a; border-color:rgba(255,255,255,0.1); box-shadow:none; }
-    .reminders-dark .reminder-headline { color:#f0ebe0; }
-    .reminders-dark .reminder-body { color:rgba(240,235,224,0.45); }
-    .reminders-dark .reminder-project { color:rgba(255,255,255,0.25); }
-    .reminders-dark .reminder-obsidian a { color:rgba(255,255,255,0.25); }
+    .reminders-dark .reminder-card { background:#fff; border-color:#000; }
+    .reminders-dark .reminder-headline { color:#000; }
+    .reminders-dark .reminder-body { color:rgba(0,0,0,0.6); }
+    .reminders-dark .reminder-project { color:rgba(0,0,0,0.35); }
+    .reminders-dark .reminder-obsidian a { color:rgba(0,0,0,0.3); }
     .reminders-dark .reminder-obsidian a:hover { color:var(--neo-amber); }
 
     /* ── Editorial Picks ─────────────────────────────────── */
     .editorial-picks-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:0.5rem; }
-    .editorial-pick-card { border:3px solid rgba(255,255,255,0.12); padding:1.5rem; display:flex; flex-direction:column; gap:0.75rem; background:rgba(255,255,255,0.04); transition:border-color 0.15s; text-decoration:none; color:inherit; }
-    .editorial-pick-card:hover { border-color:var(--neo-amber); }
+    .editorial-pick-card { border:3px solid #000; box-shadow:5px 5px 0 #000; padding:1.5rem; display:flex; flex-direction:column; gap:0.75rem; background:#fff; transition:transform 0.12s, box-shadow 0.12s; text-decoration:none; color:inherit; }
+    .editorial-pick-card:hover { transform:translate(-2px,-2px); box-shadow:7px 7px 0 #000; }
     .ep-topic { font-size:0.6rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--neo-amber); }
-    .ep-headline { font-weight:900; font-size:1.05rem; line-height:1.25; color:#fffdf5; }
-    .ep-synthesis { font-size:0.84rem; line-height:1.6; color:rgba(255,253,245,0.55); }
+    .ep-headline { font-weight:900; font-size:1.05rem; line-height:1.25; color:#000; }
+    .ep-synthesis { font-size:0.84rem; line-height:1.6; color:rgba(0,0,0,0.6); }
     .ep-relevant { display:flex; gap:0.4rem; flex-wrap:wrap; }
-    .ep-tag { font-size:0.58rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; background:rgba(232,184,75,0.15); border:1px solid rgba(232,184,75,0.3); color:var(--neo-amber); padding:0.1rem 0.4rem; }
-    .ep-source { font-size:0.7rem; color:rgba(255,253,245,0.35); margin-top:auto; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.07); display:flex; align-items:center; gap:0.4rem; }
-    .ep-source a { color:var(--neo-amber); text-decoration:none; }
+    .ep-tag { font-size:0.58rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; background:#fff8e0; border:1.5px solid var(--neo-amber); color:#000; padding:0.1rem 0.4rem; }
+    .ep-source { font-size:0.7rem; color:rgba(0,0,0,0.35); margin-top:auto; padding-top:0.5rem; border-top:2px solid rgba(0,0,0,0.08); display:flex; align-items:center; gap:0.4rem; }
+    .ep-source a { color:var(--neo-amber); text-decoration:none; font-weight:700; }
     .ep-source a:hover { text-decoration:underline; }
 
     /* ── Project Reminders ───────────────────────────────── */
@@ -1108,12 +1117,12 @@ window.fetch = function(url, opts) {
 </section>
 
 <!-- ── § Intelligence (Deep Reads + Pulse) ──────── -->
-<section class="section-block" style="background:#000;">
+<section class="section-block" style="background:#f7f7f7; border-top:8px solid #000;">
   <div class="section-inner">
-    <div class="section-header reveal" style="color:#f0ebe0;">
+    <div class="section-header reveal">
       <div class="section-num" style="color:var(--neo-amber); opacity:1;">Intelligence</div>
-      <div class="section-title" style="color:#f0ebe0;">What's Moving</div>
-      <div class="section-deck" style="color:rgba(255,253,245,0.35);">Two synthesized reads + live market signals — relevant to your businesses.</div>
+      <div class="section-title">What's Moving</div>
+      <div class="section-deck">Two synthesized reads + live market signals — relevant to your businesses.</div>
     </div>
     <div id="editorial-picks-grid" class="editorial-picks-grid" style="margin-bottom:1.5rem;"></div>
     <div id="pulse-grid" class="pulse-mini-grid"></div>
@@ -1133,7 +1142,7 @@ window.fetch = function(url, opts) {
 </section>
 
 <!-- ── § Horse Racing System Logic ──────────────── -->
-<section class="section-block" id="racing-logic-section" style="background:#0a0d14; border-top:1px solid #1e2535;">
+<section class="section-block" id="racing-logic-section" style="background:var(--bg-racing); border-top:1px solid var(--racing-border);">
   <div class="section-inner">
     <div class="section-header reveal" style="color:#f0ebe0;">
       <div class="section-num" style="color:#4f8ef7; opacity:1;">📐 System Logic</div>
@@ -1267,26 +1276,26 @@ window.fetch = function(url, opts) {
 </section>
 
 <!-- ── § Fig System Pitch ──────────────────────── -->
-<section class="section-block" id="fig-pitch-section" style="background:#09080f; border-top:1px solid #1e1a35;">
+<section class="section-block" id="fig-pitch-section" style="background:var(--bg-racing); border-top:1px solid var(--racing-border);">
   <div class="section-inner">
     <div class="section-header reveal">
-      <div class="section-num" style="color:#a78bfa; opacity:1;">🏇 The Pitch</div>
-      <div class="section-title" style="color:#e8e0fa;">Fig Anomaly System — Where Things Actually Stand</div>
-      <div class="section-deck" style="color:rgba(200,190,240,0.45);">Built over the last week. Here's the honest version — what we found, what we killed, and what we're building next.</div>
+      <div class="section-num" style="color:#4f8ef7; opacity:1;">🏇 The Pitch</div>
+      <div class="section-title" style="color:#c8deff;">Fig Anomaly System — Where Things Actually Stand</div>
+      <div class="section-deck" style="color:rgba(165,200,255,0.45);">Built over the last week. Here's the honest version — what we found, what we killed, and what we're building next.</div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
 
       <!-- What we built -->
-      <div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:1.2rem;">
-        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#a78bfa;margin-bottom:0.8rem;">What We Built</div>
+      <div style="background:rgba(79,142,247,0.06);border:1px solid rgba(79,142,247,0.2);border-radius:10px;padding:1.2rem;">
+        <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#4f8ef7;margin-bottom:0.8rem;">What We Built</div>
         <div style="display:flex;flex-direction:column;gap:0.55rem;">
           <div class="pitch-item">🗄️ Scraped 574 race files — Aug 2025 to Feb 2026, 10 tracks, 4,400+ races</div>
           <div class="pitch-item">📊 Full backtest engine with 14 strategy variants, tote odds, show/win payouts</div>
           <div class="pitch-item">🔬 Day-level bootstrap CI + permutation test vs random baseline</div>
           <div class="pitch-item">📈 P&L visualizer, strategy dashboard, factor breakdown charts — all live on GitHub Pages</div>
           <div class="pitch-item">🤖 Every-3-hour subagent generating new betting hypotheses → morning paper</div>
-          <div class="pitch-item">✅ Tracked 9 Tampa races live + Oaklawn + Aqueduct + Santa Anita = <strong style="color:#a78bfa;">+$23.74 on $46 wagered</strong></div>
+          <div class="pitch-item">✅ Tracked 9 Tampa races live + Oaklawn + Aqueduct + Santa Anita = <strong style="color:#4f8ef7;">+$23.74 on $46 wagered</strong></div>
         </div>
       </div>
 
@@ -1325,33 +1334,33 @@ window.fetch = function(url, opts) {
     </div>
 
     <!-- What's running now -->
-    <div style="background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.15);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem;">
-      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#a78bfa;margin-bottom:0.8rem;">What's Running Right Now</div>
+    <div style="background:rgba(79,142,247,0.05);border:1px solid rgba(79,142,247,0.15);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem;">
+      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#4f8ef7;margin-bottom:0.8rem;">What's Running Right Now</div>
       <div style="display:flex;flex-direction:column;gap:0.5rem;">
         <div style="display:flex;align-items:baseline;gap:0.6rem;">
-          <div style="font-size:0.65rem;font-family:monospace;color:#a78bfa;background:rgba(167,139,250,0.1);border-radius:4px;padding:2px 7px;white-space:nowrap;">8 AM daily</div>
-          <div style="font-size:0.75rem;color:rgba(200,190,240,0.65);">Scrape today's entries from HRN <em>before</em> races run. Capture true pre-race speed figs with timestamp. Store in <code style="font-size:0.68rem;color:#a78bfa;">data/prerace/</code></div>
+          <div style="font-size:0.65rem;font-family:monospace;color:#4f8ef7;background:rgba(79,142,247,0.1);border-radius:4px;padding:2px 7px;white-space:nowrap;">8 AM daily</div>
+          <div style="font-size:0.75rem;color:rgba(165,200,255,0.65);">Scrape today's entries from HRN <em>before</em> races run. Capture true pre-race speed figs with timestamp. Store in <code style="font-size:0.68rem;color:#4f8ef7;">data/prerace/</code></div>
         </div>
         <div style="display:flex;align-items:baseline;gap:0.6rem;">
-          <div style="font-size:0.65rem;font-family:monospace;color:#a78bfa;background:rgba(167,139,250,0.1);border-radius:4px;padding:2px 7px;white-space:nowrap;">11 PM daily</div>
-          <div style="font-size:0.75rem;color:rgba(200,190,240,0.65);">Re-scrape today to pick up results and payouts. Merge into same file. Clean file = entries captured pre-race + results captured post-race.</div>
+          <div style="font-size:0.65rem;font-family:monospace;color:#4f8ef7;background:rgba(79,142,247,0.1);border-radius:4px;padding:2px 7px;white-space:nowrap;">11 PM daily</div>
+          <div style="font-size:0.75rem;color:rgba(165,200,255,0.65);">Re-scrape today to pick up results and payouts. Merge into same file. Clean file = entries captured pre-race + results captured post-race.</div>
         </div>
         <div style="display:flex;align-items:baseline;gap:0.6rem;">
-          <div style="font-size:0.65rem;font-family:monospace;color:#a78bfa;background:rgba(167,139,250,0.1);border-radius:4px;padding:2px 7px;white-space:nowrap;">every 3h</div>
-          <div style="font-size:0.75rem;color:rgba(200,190,240,0.65);">Subagent analyzes new data, generates betting hypotheses. Best ideas surface in this paper.</div>
+          <div style="font-size:0.65rem;font-family:monospace;color:#4f8ef7;background:rgba(79,142,247,0.1);border-radius:4px;padding:2px 7px;white-space:nowrap;">every 3h</div>
+          <div style="font-size:0.75rem;color:rgba(165,200,255,0.65);">Subagent analyzes new data, generates betting hypotheses. Best ideas surface in this paper.</div>
         </div>
       </div>
     </div>
 
     <!-- The bet -->
-    <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.3);border-radius:10px;padding:1.2rem;">
-      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#a78bfa;margin-bottom:0.6rem;">The Actual Bet</div>
+    <div style="background:rgba(79,142,247,0.08);border:1px solid rgba(79,142,247,0.3);border-radius:10px;padding:1.2rem;">
+      <div style="font-size:0.6rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#4f8ef7;margin-bottom:0.6rem;">The Actual Bet</div>
       <div style="font-size:0.88rem;color:rgba(220,210,255,0.8);line-height:1.7;">
-        The fig anomaly signal is <strong style="color:#e8e0fa;">probably real</strong> — top fig horse wins at 2× random rate in clean data, shows at 1.4×. But 11 bets is not a sample size. The infrastructure to prove it is now running.
+        The fig anomaly signal is <strong style="color:#c8deff;">probably real</strong> — top fig horse wins at 2× random rate in clean data, shows at 1.4×. But 11 bets is not a sample size. The infrastructure to prove it is now running.
         <br><br>
-        Keep bets at <strong style="color:#a78bfa;">$2–$4/race</strong> while clean data accumulates. After <strong style="color:#a78bfa;">~60 days</strong> (~500 clean bets) we'll have enough to run a real permutation test and know whether to scale up or shut down.
+        Keep bets at <strong style="color:#4f8ef7;">$2–$4/race</strong> while clean data accumulates. After <strong style="color:#4f8ef7;">~60 days</strong> (~500 clean bets) we'll have enough to run a real permutation test and know whether to scale up or shut down.
         <br><br>
-        <span style="color:rgba(167,139,250,0.5);font-size:0.78rem;">The hot streak was fake. The system might not be. That distinction is worth 60 days to find out.</span>
+        <span style="color:rgba(79,142,247,0.5);font-size:0.78rem;">The hot streak was fake. The system might not be. That distinction is worth 60 days to find out.</span>
       </div>
     </div>
 
@@ -1359,7 +1368,7 @@ window.fetch = function(url, opts) {
 </section>
 
 <!-- ── § Horse Racing Intelligence ──────────────── -->
-<section class="section-block" id="racing-intel-section" style="background:#080c14; border-top:1px solid #1a2035; display:none;">
+<section class="section-block" id="racing-intel-section" style="background:var(--bg-racing); border-top:1px solid var(--racing-border); display:none;">
   <div class="section-inner">
     <div class="section-header reveal" style="color:#f0ebe0;">
       <div class="section-num" style="color:#4f8ef7; opacity:1;">⚡ Fig System</div>
@@ -1371,11 +1380,11 @@ window.fetch = function(url, opts) {
 </section>
 
 <!-- ── § Project Reminders ─────────────────────── -->
-<section class="section-block" style="background:#0a0a0a;">
+<section class="section-block" style="background:#fff3e0; border-top:8px solid #000;">
   <div class="section-inner">
-    <div class="section-header reveal" style="color:#f0ebe0;">
+    <div class="section-header reveal">
       <div class="section-num" style="color:#ff4d00; opacity:1;">Reminders</div>
-      <div class="section-title" style="color:#f0ebe0;">Don't Sleep On These</div>
+      <div class="section-title">Don't Sleep On These</div>
       <div class="section-deck" style="color:rgba(240,235,224,0.35);">Your projects — what's left, why it matters.</div>
     </div>
     <div id="reminders-grid" class="reminders-grid reminders-dark"></div>
@@ -1451,10 +1460,10 @@ window.fetch = function(url, opts) {
 </section>
 
 <!-- ── § Project Status ────────────────────────── -->
-<section class="section-block" style="background:#111;">
+<section class="section-block" style="background:#0a0a0a;">
   <div class="section-inner">
     <div class="section-header reveal" style="color:#f0ebe0;">
-      <div class="section-num" style="color:#ff4d00; opacity:1;">Status</div>
+      <div class="section-num" style="color:var(--neo-amber); opacity:1;">Status</div>
       <div class="section-title" style="color:#f0ebe0;">Project Status</div>
       <div class="section-deck" style="color:rgba(240,235,224,0.4);">Where things stand across the portfolio.</div>
     </div>
