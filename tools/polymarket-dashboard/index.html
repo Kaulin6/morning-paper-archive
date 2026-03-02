@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>POLYMARKET INTELLIGENCE — LIVE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:      #050505;
+  --bg2:     #0a0a0a;
+  --bg3:     #111111;
+  --bg4:     #1a1a1a;
+  --border:  #1e1e1e;
+  --green:   #00ff88;
+  --red:     #ff3333;
+  --amber:   #ffaa00;
+  --blue:    #00aaff;
+  --white:   #e8e8e8;
+  --muted:   #555;
+  --mono:    'DM Mono', monospace;
+  --sans:    'DM Sans', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--bg); color: var(--white); font-family: var(--sans); overflow: hidden; }
+
+/* ─── LAYOUT ─────────────────────────────────────────────────────────── */
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ─── HEADER ─────────────────────────────────────────────────────────── */
+#header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; height: 44px; border-bottom: 1px solid var(--border);
+  background: var(--bg2); flex-shrink: 0; gap: 16px;
+}
+#header-left { display: flex; align-items: center; gap: 16px; }
+#logo { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--green); letter-spacing: 2px; white-space: nowrap; }
+#status-bar { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.status-item { display: flex; align-items: center; gap: 5px; }
+.pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+#refresh-countdown { font-family: var(--mono); font-size: 11px; color: var(--amber); background: rgba(255,170,0,.1); padding: 2px 8px; border-radius: 3px; border: 1px solid rgba(255,170,0,.2); }
+#last-updated { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.stat-chip { font-family: var(--mono); font-size: 11px; padding: 2px 8px; border-radius: 2px; border: 1px solid var(--border); white-space: nowrap; }
+.stat-chip span { color: var(--green); }
+
+/* ─── TABS ───────────────────────────────────────────────────────────── */
+#tabs {
+  display: flex; align-items: center; gap: 0;
+  border-bottom: 1px solid var(--border); background: var(--bg2); flex-shrink: 0;
+  padding: 0 20px;
+}
+.tab {
+  font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: .5px;
+  padding: 10px 16px; cursor: pointer; border-bottom: 2px solid transparent;
+  color: var(--muted); transition: all .15s; white-space: nowrap; text-transform: uppercase;
+}
+.tab:hover { color: var(--white); }
+.tab.active { color: var(--green); border-bottom-color: var(--green); }
+.tab-badge { background: var(--amber); color: #000; font-size: 9px; font-weight: 600;
+  padding: 1px 5px; border-radius: 2px; margin-left: 5px; font-family: var(--mono); }
+
+/* ─── MAIN AREA ──────────────────────────────────────────────────────── */
+#main { display: flex; flex: 1; overflow: hidden; }
+#content { flex: 1; overflow-y: auto; padding: 0; }
+#content::-webkit-scrollbar { width: 4px; }
+#content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ─── PANEL SLIDES ───────────────────────────────────────────────────── */
+#detail-panel {
+  width: 0; overflow: hidden; transition: width .25s ease;
+  background: var(--bg2); border-left: 1px solid var(--border); flex-shrink: 0;
+  display: flex; flex-direction: column;
+}
+#detail-panel.open { width: 420px; }
+#detail-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+#detail-close { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; line-height: 1; }
+#detail-close:hover { color: var(--white); }
+#detail-body { flex: 1; overflow-y: auto; padding: 16px; }
+#detail-body::-webkit-scrollbar { width: 3px; }
+#detail-body::-webkit-scrollbar-thumb { background: var(--border); }
+
+/* ─── TABLES ─────────────────────────────────────────────────────────── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table thead th {
+  font-family: var(--sans); font-size: 10px; font-weight: 600; letter-spacing: .8px;
+  text-transform: uppercase; color: var(--muted); padding: 8px 12px; text-align: left;
+  border-bottom: 1px solid var(--border); background: var(--bg2); position: sticky; top: 0; z-index: 5;
+  white-space: nowrap;
+}
+.data-table thead th.right { text-align: right; }
+.data-table tbody tr {
+  border-bottom: 1px solid #0e0e0e; cursor: pointer; transition: background .1s;
+}
+.data-table tbody tr:hover { background: var(--bg3); }
+.data-table tbody tr.selected { background: rgba(0,255,136,.06); border-left: 2px solid var(--green); }
+.data-table tbody td { padding: 9px 12px; vertical-align: middle; }
+.data-table tbody td.right { text-align: right; }
+.num { font-family: var(--mono); }
+.price-yes { font-family: var(--mono); color: var(--green); font-weight: 500; }
+.price-no { font-family: var(--mono); color: var(--red); font-weight: 500; }
+.price-sum-ok { font-family: var(--mono); color: var(--muted); }
+.price-sum-arb { font-family: var(--mono); color: var(--amber); font-weight: 600; animation: arb-pulse 1.5s infinite; }
+@keyframes arb-pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+.tag { display: inline-block; font-size: 10px; font-family: var(--mono); padding: 1px 5px; border-radius: 2px; margin: 1px; }
+.sig-certain { background: rgba(0,255,136,.15); color: var(--green); }
+.sig-live { background: rgba(255,170,0,.15); color: var(--amber); }
+.sig-expiring { background: rgba(255,51,51,.15); color: var(--red); }
+
+/* ─── ARB SCANNER ────────────────────────────────────────────────────── */
+.arb-profit { font-family: var(--mono); color: var(--amber); font-weight: 600; }
+.risk-note { font-size: 10px; color: var(--muted); font-style: italic; }
+
+/* ─── SECTION HEADERS ────────────────────────────────────────────────── */
+.section-header {
+  padding: 12px 20px; border-bottom: 1px solid var(--border);
+  font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--muted); background: var(--bg);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.section-header-left { display: flex; align-items: center; gap: 10px; }
+
+/* ─── EMPTY STATE ────────────────────────────────────────────────────── */
+.empty { padding: 60px 20px; text-align: center; color: var(--muted); font-family: var(--mono); font-size: 13px; }
+.loading { padding: 40px 20px; text-align: center; color: var(--muted); font-family: var(--mono); font-size: 12px; }
+.loading::after { content: ''; animation: dots 1.5s infinite; }
+@keyframes dots { 0%{content:'.'} 33%{content:'..'} 66%{content:'...'} }
+
+/* ─── VOLUME CHART ───────────────────────────────────────────────────── */
+#volume-tab { padding: 0; }
+#chart-container { padding: 20px; max-height: 320px; }
+#volumeChart { max-height: 300px; }
+.spike-badge { background: rgba(255,170,0,.2); color: var(--amber); font-size: 10px;
+  font-family: var(--mono); padding: 2px 6px; border-radius: 2px; border: 1px solid rgba(255,170,0,.3); }
+
+/* ─── MARKET DETAIL ──────────────────────────────────────────────────── */
+.detail-question { font-size: 14px; font-weight: 500; line-height: 1.5; margin-bottom: 16px; color: var(--white); }
+.detail-price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.detail-price-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 14px; text-align: center; }
+.detail-price-label { font-size: 10px; font-family: var(--sans); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.detail-price-value { font-family: var(--mono); font-size: 28px; font-weight: 500; }
+.detail-price-value.yes { color: var(--green); }
+.detail-price-value.no { color: var(--red); }
+.detail-meta { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.detail-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.detail-meta-label { color: var(--muted); font-family: var(--sans); }
+.detail-meta-value { font-family: var(--mono); font-weight: 500; }
+.detail-section-title { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+.order-book { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.ob-side { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 10px; }
+.ob-title { font-size: 10px; letter-spacing: .8px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+.ob-title.bids { color: var(--green); }
+.ob-title.asks { color: var(--red); }
+.ob-row { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; padding: 3px 0; }
+.ob-price { color: var(--white); }
+.ob-size { color: var(--muted); }
+.detail-actions { display: flex; gap: 8px; margin-top: 12px; }
+.btn { font-family: var(--sans); font-size: 12px; font-weight: 500; padding: 8px 14px;
+  border-radius: 3px; border: 1px solid; cursor: pointer; transition: all .15s; letter-spacing: .3px; }
+.btn-primary { background: rgba(0,255,136,.1); border-color: var(--green); color: var(--green); }
+.btn-primary:hover { background: rgba(0,255,136,.2); }
+.btn-secondary { background: rgba(255,255,255,.05); border-color: var(--border); color: var(--white); }
+.btn-secondary:hover { background: rgba(255,255,255,.1); }
+.btn-watch { background: rgba(255,170,0,.1); border-color: var(--amber); color: var(--amber); }
+.btn-watch:hover { background: rgba(255,170,0,.2); }
+
+/* ─── WATCHLIST / POSITIONS ──────────────────────────────────────────── */
+.watchlist-card {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
+  padding: 14px 16px; margin: 0 20px 8px; display: flex; justify-content: space-between; align-items: center;
+}
+.watchlist-question { font-size: 13px; font-weight: 500; flex: 1; margin-right: 16px; line-height: 1.4; }
+.watchlist-prices { font-family: var(--mono); font-size: 13px; display: flex; gap: 12px; align-items: center; }
+.wl-remove { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; margin-left: 8px; }
+.wl-remove:hover { color: var(--red); }
+
+.position-card {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
+  padding: 14px 16px; margin: 0 20px 8px;
+}
+.pos-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.pos-question { font-size: 12px; font-weight: 500; flex: 1; line-height: 1.4; }
+.pos-remove { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; }
+.pos-remove:hover { color: var(--red); }
+.pos-stats { display: flex; gap: 20px; font-family: var(--mono); font-size: 12px; }
+.pos-stat { display: flex; flex-direction: column; gap: 2px; }
+.pos-stat-label { font-size: 10px; color: var(--muted); font-family: var(--sans); letter-spacing: .5px; text-transform: uppercase; }
+.pnl-pos { color: var(--green); }
+.pnl-neg { color: var(--red); }
+
+/* ─── ADD POSITION FORM ──────────────────────────────────────────────── */
+.add-form { margin: 16px 20px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 16px; }
+.add-form h4 { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; font-weight: 600; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.form-field { display: flex; flex-direction: column; gap: 4px; }
+.form-field label { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+.form-field input, .form-field select {
+  background: var(--bg4); border: 1px solid var(--border); color: var(--white);
+  font-family: var(--mono); font-size: 12px; padding: 6px 8px; border-radius: 3px; outline: none;
+  transition: border .15s;
+}
+.form-field input:focus, .form-field select:focus { border-color: var(--green); }
+.form-field input::placeholder { color: var(--muted); }
+
+/* ─── RESOLUTION PLAYS ───────────────────────────────────────────────── */
+.res-card {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
+  padding: 14px 16px; margin: 0 20px 8px; cursor: pointer; transition: background .1s;
+}
+.res-card:hover { background: var(--bg4); }
+.res-question { font-size: 13px; font-weight: 500; margin-bottom: 8px; line-height: 1.4; }
+.res-stats { display: flex; gap: 16px; align-items: center; }
+.res-stat { font-family: var(--mono); font-size: 12px; }
+.res-hours { color: var(--red); font-weight: 600; }
+.res-price-yes { color: var(--green); }
+.hours-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.hours-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--red), var(--amber)); }
+
+/* ─── SCROLLBAR ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ─── HYPERLIQUID STRIP ──────────────────────────────────────────────── */
+#hl-strip {
+  display: flex; align-items: center; gap: 16px; overflow-x: auto; padding: 6px 20px;
+  border-bottom: 1px solid var(--border); background: var(--bg2); flex-shrink: 0;
+  font-family: var(--mono); font-size: 11px;
+}
+#hl-strip::-webkit-scrollbar { height: 2px; }
+.hl-item { display: flex; gap: 5px; align-items: center; white-space: nowrap; }
+.hl-sym { color: var(--muted); }
+.hl-pos { color: var(--green); }
+.hl-neg { color: var(--red); }
+
+/* ─── PORTFOLIO SUMMARY ──────────────────────────────────────────────── */
+.portfolio-summary {
+  display: flex; gap: 20px; padding: 12px 20px; background: var(--bg2);
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.ps-item { display: flex; flex-direction: column; gap: 2px; }
+.ps-label { font-size: 10px; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; }
+.ps-value { font-family: var(--mono); font-size: 16px; font-weight: 500; }
+
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div id="header">
+    <div id="header-left">
+      <div id="logo">◈ POLYMARKET INTEL</div>
+      <div id="status-bar">
+        <div class="status-item">
+          <div class="pulse"></div>
+          <span>LIVE</span>
+        </div>
+        <div class="stat-chip">MARKETS: <span id="market-count">—</span></div>
+        <div class="stat-chip">ARB OPP: <span id="arb-count" style="color:var(--amber)">—</span></div>
+        <div class="stat-chip">RESOLUTION: <span id="res-count" style="color:var(--red)">—</span></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="last-updated">—</div>
+      <div id="refresh-countdown">30s</div>
+    </div>
+  </div>
+
+  <!-- HYPERLIQUID STRIP -->
+  <div id="hl-strip"><span style="color:var(--muted);font-size:10px;letter-spacing:.5px">HL FUNDING:</span></div>
+
+  <!-- TABS -->
+  <div id="tabs">
+    <div class="tab active" data-tab="scanner">Scanner</div>
+    <div class="tab" data-tab="arb">Arb <span id="arb-badge" class="tab-badge">0</span></div>
+    <div class="tab" data-tab="resolution">Resolution <span id="res-badge" class="tab-badge">0</span></div>
+    <div class="tab" data-tab="volume">Volume Spikes</div>
+    <div class="tab" data-tab="watchlist">Watchlist <span id="wl-badge" class="tab-badge">0</span></div>
+    <div class="tab" data-tab="positions">Positions <span id="pos-badge" class="tab-badge">0</span></div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="content">
+
+      <!-- SCANNER TAB -->
+      <div id="tab-scanner" class="tab-panel">
+        <div class="section-header">
+          <div class="section-header-left">
+            <span>TOP 50 ACTIVE MARKETS — SORTED BY VOLUME</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">CLICK ROW FOR DETAIL</span>
+        </div>
+        <div id="scanner-body"><div class="loading">Loading markets</div></div>
+      </div>
+
+      <!-- ARB TAB -->
+      <div id="tab-arb" class="tab-panel" style="display:none">
+        <div class="section-header">
+          <div class="section-header-left">
+            <span>ARB OPPORTUNITIES — YES + NO &lt; $0.97</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--amber)">BIGGEST GAP FIRST</span>
+        </div>
+        <div id="arb-body"><div class="loading">Loading</div></div>
+      </div>
+
+      <!-- RESOLUTION TAB -->
+      <div id="tab-resolution" class="tab-panel" style="display:none">
+        <div class="section-header">
+          <span>RESOLUTION PLAYS — ENDING IN &lt;72H — PRICE $0.10–$0.90</span>
+        </div>
+        <div id="resolution-body" style="padding:12px 0"><div class="loading">Loading</div></div>
+      </div>
+
+      <!-- VOLUME TAB -->
+      <div id="tab-volume" class="tab-panel" style="display:none">
+        <div class="section-header">
+          <span>VOLUME SPIKE DETECTOR — TOP 10 BY VOLUME</span>
+        </div>
+        <div id="chart-container"><canvas id="volumeChart"></canvas></div>
+        <div id="volume-body"><div class="loading">Loading</div></div>
+      </div>
+
+      <!-- WATCHLIST TAB -->
+      <div id="tab-watchlist" class="tab-panel" style="display:none">
+        <div class="section-header"><span>WATCHLIST</span></div>
+        <div id="watchlist-body" style="padding:12px 0"><div class="empty">No markets watched yet.<br/>Click a market row → Watch button.</div></div>
+      </div>
+
+      <!-- POSITIONS TAB -->
+      <div id="tab-positions" class="tab-panel" style="display:none">
+        <div id="portfolio-summary-bar" class="portfolio-summary" style="display:none">
+          <div class="ps-item"><div class="ps-label">Total Cost</div><div class="ps-value num" id="ps-cost">$0</div></div>
+          <div class="ps-item"><div class="ps-label">Current Value</div><div class="ps-value num" id="ps-value">$0</div></div>
+          <div class="ps-item"><div class="ps-label">Unrealized PnL</div><div class="ps-value num" id="ps-pnl">$0</div></div>
+        </div>
+        <div class="section-header"><span>POSITION TRACKER</span></div>
+        <div class="add-form">
+          <h4>Add Position</h4>
+          <div class="form-grid">
+            <div class="form-field" style="grid-column:1/-1">
+              <label>Market (search)</label>
+              <input id="pos-search" type="text" placeholder="Type to search markets…" autocomplete="off" />
+              <div id="pos-suggestions" style="position:relative"></div>
+            </div>
+            <div class="form-field">
+              <label>Side</label>
+              <select id="pos-side"><option value="YES">YES</option><option value="NO">NO</option></select>
+            </div>
+            <div class="form-field">
+              <label>Entry Price ($)</label>
+              <input id="pos-entry" type="number" step="0.01" min="0" max="1" placeholder="0.65" />
+            </div>
+            <div class="form-field">
+              <label>Size ($)</label>
+              <input id="pos-size" type="number" step="1" min="0" placeholder="100" />
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="addPosition()">+ Add Position</button>
+        </div>
+        <div id="positions-body" style="padding:12px 0"></div>
+      </div>
+
+    </div>
+
+    <!-- DETAIL PANEL -->
+    <div id="detail-panel">
+      <div id="detail-header">
+        <span style="font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">MARKET DETAIL</span>
+        <button id="detail-close" onclick="closeDetail()">✕</button>
+      </div>
+      <div id="detail-body">
+        <div class="empty" style="padding-top:40px">Select a market</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let markets = [];
+let hlData = null;
+let selectedMarketId = null;
+let refreshTimer = 30;
+let refreshInterval = null;
+let countdownInterval = null;
+let volumeChart = null;
+let watchlist = JSON.parse(localStorage.getItem('pm_watchlist') || '[]');
+let positions = JSON.parse(localStorage.getItem('pm_positions') || '[]');
+let positionMarket = null; // selected market for position form
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).style.display = '';
+    if (tab.dataset.tab === 'volume') renderVolumeChart();
+    if (tab.dataset.tab === 'watchlist') renderWatchlist();
+    if (tab.dataset.tab === 'positions') renderPositions();
+  });
+});
+
+// ─── FETCH ────────────────────────────────────────────────────────────────────
+async function fetchMarkets() {
+  const r = await fetch('/api/markets');
+  if (!r.ok) throw new Error('Markets fetch failed');
+  const data = await r.json();
+  return data.data || data.results || data || [];
+}
+
+async function fetchHyperliquid() {
+  try {
+    const r = await fetch('/api/hyperliquid', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'metaAndAssetCtxs' })
+    });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
+}
+
+async function fetchOrderBook(tokenId) {
+  const r = await fetch('/api/book?token_id=' + tokenId);
+  if (!r.ok) return null;
+  return await r.json();
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function fmt(n, dec = 2) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return Number(n).toFixed(dec);
+}
+function fmtVol(v) {
+  v = Number(v);
+  if (isNaN(v)) return '—';
+  if (v >= 1e6) return '$' + (v / 1e6).toFixed(2) + 'M';
+  if (v >= 1e3) return '$' + (v / 1e3).toFixed(1) + 'K';
+  return '$' + v.toFixed(0);
+}
+function daysTo(dateStr) {
+  if (!dateStr) return null;
+  const now = Date.now();
+  const end = new Date(dateStr).getTime();
+  return (end - now) / 86400000;
+}
+function hoursTo(dateStr) {
+  if (!dateStr) return null;
+  const now = Date.now();
+  const end = new Date(dateStr).getTime();
+  return (end - now) / 3600000;
+}
+function truncate(s, n) {
+  if (!s) return '—';
+  return s.length > n ? s.slice(0, n) + '…' : s;
+}
+
+function getYesNoTokens(market) {
+  const tokens = market.tokens || [];
+  const yes = tokens.find(t => t.outcome === 'Yes' || t.outcome === 'YES') || tokens[0];
+  const no = tokens.find(t => t.outcome === 'No' || t.outcome === 'NO') || tokens[1];
+  return { yes, no };
+}
+
+function getYesPrice(market) {
+  const { yes } = getYesNoTokens(market);
+  return yes ? parseFloat(yes.price || 0) : null;
+}
+function getNoPrice(market) {
+  const { no } = getYesNoTokens(market);
+  return no ? parseFloat(no.price || 0) : null;
+}
+
+function resolutionSignal(market) {
+  const yp = getYesPrice(market);
+  const days = daysTo(market.end_date_iso || market.end_date);
+  if (yp === null) return '';
+  if (yp > 0.90 || yp < 0.10) return '<span class="tag sig-certain">🟢 CERTAIN</span>';
+  if (days !== null && days < 3 && yp > 0.15 && yp < 0.85) return '<span class="tag sig-expiring">🔴 EXPIRING</span>';
+  if (yp >= 0.20 && yp <= 0.80) return '<span class="tag sig-live">🟡 LIVE</span>';
+  return '';
+}
+
+// ─── MAIN REFRESH ─────────────────────────────────────────────────────────────
+async function refresh() {
+  try {
+    [markets, hlData] = await Promise.all([fetchMarkets(), fetchHyperliquid()]);
+    renderAll();
+    document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    resetCountdown();
+  } catch (e) {
+    console.error('Refresh error:', e);
+    document.getElementById('last-updated').textContent = 'Error: ' + e.message;
+  }
+}
+
+function renderAll() {
+  renderScanner();
+  renderArb();
+  renderResolution();
+  if (!document.getElementById('tab-volume').style.display || document.getElementById('tab-volume').style.display === '') renderVolumeChart();
+  renderHLStrip();
+  updateCounts();
+  if (selectedMarketId) {
+    const m = markets.find(m => m.condition_id === selectedMarketId);
+    if (m) renderDetail(m, false);
+  }
+  renderWatchlist();
+  renderPositions();
+}
+
+function updateCounts() {
+  const arb = getArbMarkets();
+  const res = getResolutionPlays();
+  document.getElementById('market-count').textContent = markets.length;
+  document.getElementById('arb-count').textContent = arb.length;
+  document.getElementById('res-count').textContent = res.length;
+  document.getElementById('arb-badge').textContent = arb.length;
+  document.getElementById('res-badge').textContent = res.length;
+  document.getElementById('wl-badge').textContent = watchlist.length;
+  document.getElementById('pos-badge').textContent = positions.length;
+}
+
+function resetCountdown() {
+  refreshTimer = 30;
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    refreshTimer--;
+    document.getElementById('refresh-countdown').textContent = refreshTimer + 's';
+    if (refreshTimer <= 0) {
+      refreshTimer = 30;
+      refresh();
+    }
+  }, 1000);
+}
+
+// ─── SCANNER ──────────────────────────────────────────────────────────────────
+function renderScanner() {
+  const body = document.getElementById('scanner-body');
+  if (!markets.length) { body.innerHTML = '<div class="empty">No data</div>'; return; }
+  body.innerHTML = `
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:35%">Question</th>
+          <th class="right">YES</th>
+          <th class="right">NO</th>
+          <th class="right">SUM</th>
+          <th class="right">Volume 24h</th>
+          <th class="right">Days</th>
+          <th>Signal</th>
+        </tr>
+      </thead>
+      <tbody id="scanner-rows"></tbody>
+    </table>`;
+  const tbody = document.getElementById('scanner-rows');
+  markets.forEach(m => {
+    const yp = getYesPrice(m);
+    const np = getNoPrice(m);
+    const sum = (yp !== null && np !== null) ? yp + np : null;
+    const days = daysTo(m.end_date_iso || m.end_date);
+    const isArb = sum !== null && sum < 0.97;
+    const isSelected = m.condition_id === selectedMarketId;
+    const tr = document.createElement('tr');
+    if (isSelected) tr.classList.add('selected');
+    tr.innerHTML = `
+      <td title="${(m.question||'').replace(/"/g,"'")}">${truncate(m.question, 62)}</td>
+      <td class="right"><span class="price-yes">${yp !== null ? '$'+fmt(yp) : '—'}</span></td>
+      <td class="right"><span class="price-no">${np !== null ? '$'+fmt(np) : '—'}</span></td>
+      <td class="right"><span class="${isArb ? 'price-sum-arb' : 'price-sum-ok'}">${sum !== null ? '$'+fmt(sum) : '—'}</span></td>
+      <td class="right num">${fmtVol(m.volume_24hr || m.volume24hr || m.volume)}</td>
+      <td class="right num" style="color:${days !== null && days < 3 ? 'var(--red)' : 'var(--muted)'}">${days !== null ? days.toFixed(1) : '—'}</td>
+      <td>${resolutionSignal(m)}</td>`;
+    tr.onclick = () => openDetail(m);
+    tbody.appendChild(tr);
+  });
+}
+
+// ─── ARB ──────────────────────────────────────────────────────────────────────
+function getArbMarkets() {
+  return markets.filter(m => {
+    const yp = getYesPrice(m), np = getNoPrice(m);
+    return yp !== null && np !== null && (yp + np) < 0.97;
+  }).sort((a, b) => {
+    const ga = (getYesPrice(a) + getNoPrice(a));
+    const gb = (getYesPrice(b) + getNoPrice(b));
+    return ga - gb; // smallest sum = biggest arb
+  });
+}
+
+function renderArb() {
+  const arb = getArbMarkets();
+  const body = document.getElementById('arb-body');
+  if (!arb.length) { body.innerHTML = '<div class="empty">No arb opportunities found. Markets are efficient right now.</div>'; return; }
+  body.innerHTML = `
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:32%">Question</th>
+          <th class="right">YES</th>
+          <th class="right">NO</th>
+          <th class="right">Cost</th>
+          <th class="right">Profit/$100</th>
+          <th class="right">Days</th>
+          <th>Risk</th>
+        </tr>
+      </thead>
+      <tbody id="arb-rows"></tbody>
+    </table>`;
+  const tbody = document.getElementById('arb-rows');
+  arb.forEach(m => {
+    const yp = getYesPrice(m), np = getNoPrice(m);
+    const sum = yp + np;
+    const profit = ((1 - sum) / sum) * 100;
+    const days = daysTo(m.end_date_iso || m.end_date);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td title="${(m.question||'').replace(/"/g,"'")}">${truncate(m.question, 55)}</td>
+      <td class="right"><span class="price-yes">$${fmt(yp)}</span></td>
+      <td class="right"><span class="price-no">$${fmt(np)}</span></td>
+      <td class="right"><span class="price-sum-arb">$${fmt(sum)}</span></td>
+      <td class="right"><span class="arb-profit">+$${fmt(profit)}</span></td>
+      <td class="right num" style="color:${days !== null && days < 3 ? 'var(--red)' : 'var(--muted)'}">${days !== null ? days.toFixed(1) : '—'}</td>
+      <td><span class="risk-note">${sum < 0.90 ? '⚠️ High slip risk' : sum < 0.95 ? 'Moderate' : 'Low'}</span></td>`;
+    tr.onclick = () => openDetail(m);
+    tbody.appendChild(tr);
+  });
+}
+
+// ─── RESOLUTION PLAYS ─────────────────────────────────────────────────────────
+function getResolutionPlays() {
+  return markets.filter(m => {
+    const hours = hoursTo(m.end_date_iso || m.end_date);
+    const yp = getYesPrice(m);
+    return hours !== null && hours > 0 && hours < 72 && yp !== null && yp >= 0.10 && yp <= 0.90;
+  }).sort((a, b) => {
+    const ha = hoursTo(a.end_date_iso || a.end_date);
+    const hb = hoursTo(b.end_date_iso || b.end_date);
+    return ha - hb;
+  });
+}
+
+function renderResolution() {
+  const plays = getResolutionPlays();
+  const body = document.getElementById('resolution-body');
+  if (!plays.length) { body.innerHTML = '<div class="empty">No resolution plays right now.</div>'; return; }
+  body.innerHTML = '';
+  plays.forEach(m => {
+    const hours = hoursTo(m.end_date_iso || m.end_date);
+    const yp = getYesPrice(m);
+    const pct = Math.min(100, (hours / 72) * 100);
+    const div = document.createElement('div');
+    div.className = 'res-card';
+    div.innerHTML = `
+      <div class="res-question">${m.question || '—'}</div>
+      <div class="res-stats">
+        <span class="res-stat res-hours">⏱ ${hours.toFixed(1)}h</span>
+        <span class="res-stat res-price-yes">YES $${fmt(yp)}</span>
+        <span class="res-stat" style="color:var(--muted)">NO $${fmt(getNoPrice(m))}</span>
+        <div class="hours-bar" style="flex:1"><div class="hours-bar-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;font-family:var(--mono)">
+        Vol: ${fmtVol(m.volume_24hr || m.volume24hr || m.volume)}
+      </div>`;
+    div.onclick = () => openDetail(m);
+    body.appendChild(div);
+  });
+}
+
+// ─── VOLUME CHART ─────────────────────────────────────────────────────────────
+function renderVolumeChart() {
+  if (!markets.length) return;
+  const top10 = [...markets]
+    .sort((a,b) => (parseFloat(b.volume_24hr||b.volume24hr||b.volume||0)) - (parseFloat(a.volume_24hr||a.volume24hr||a.volume||0)))
+    .slice(0, 10);
+
+  const labels = top10.map(m => truncate(m.question, 30));
+  const vols = top10.map(m => parseFloat(m.volume_24hr || m.volume24hr || m.volume || 0));
+  const maxVol = Math.max(...vols);
+  const bgColors = vols.map(v => v > maxVol * 0.5 ? 'rgba(255,170,0,0.7)' : 'rgba(0,255,136,0.5)');
+
+  if (volumeChart) volumeChart.destroy();
+  const ctx = document.getElementById('volumeChart').getContext('2d');
+  volumeChart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: '24h Volume', data: vols, backgroundColor: bgColors, borderWidth: 0 }] },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => fmtVol(ctx.raw) } }
+      },
+      scales: {
+        x: { ticks: { color: '#555', font: { family: 'DM Mono', size: 10 } }, grid: { color: '#111' } },
+        y: { ticks: { color: '#555', font: { family: 'DM Mono', size: 10 }, callback: v => fmtVol(v) }, grid: { color: '#111' } }
+      }
+    }
+  });
+
+  // Volume spike table
+  const vbody = document.getElementById('volume-body');
+  vbody.innerHTML = `
+    <table class="data-table">
+      <thead><tr>
+        <th>Question</th>
+        <th class="right">Volume</th>
+        <th class="right">YES</th>
+        <th class="right">NO</th>
+        <th>Spike</th>
+      </tr></thead>
+      <tbody>
+        ${top10.map((m, i) => {
+          const v = parseFloat(m.volume_24hr || m.volume24hr || m.volume || 0);
+          const isSpike = v > maxVol * 0.4;
+          const yp = getYesPrice(m), np = getNoPrice(m);
+          return `<tr onclick="openDetail(markets[${markets.indexOf(m)}])">
+            <td>${truncate(m.question, 55)}</td>
+            <td class="right num">${fmtVol(v)}</td>
+            <td class="right"><span class="price-yes">${yp!==null?'$'+fmt(yp):'—'}</span></td>
+            <td class="right"><span class="price-no">${np!==null?'$'+fmt(np):'—'}</span></td>
+            <td>${isSpike ? '<span class="spike-badge">⚡ SPIKE</span>' : ''}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ─── HYPERLIQUID STRIP ────────────────────────────────────────────────────────
+function renderHLStrip() {
+  if (!hlData || !Array.isArray(hlData)) return;
+  const [meta, assetCtxs] = hlData;
+  if (!meta || !assetCtxs) return;
+  const universe = meta.universe || [];
+  const strip = document.getElementById('hl-strip');
+  const label = strip.querySelector('span');
+  strip.innerHTML = '';
+  if (label) strip.appendChild(label);
+  else { const s = document.createElement('span'); s.style = 'color:var(--muted);font-size:10px;letter-spacing:.5px'; s.textContent = 'HL FUNDING:'; strip.appendChild(s); }
+  universe.slice(0, 20).forEach((coin, i) => {
+    const ctx = assetCtxs[i];
+    if (!ctx) return;
+    const funding = parseFloat(ctx.funding || 0);
+    const pct = (funding * 100).toFixed(4);
+    const div = document.createElement('div');
+    div.className = 'hl-item';
+    div.innerHTML = `<span class="hl-sym">${coin.name}</span><span class="${funding >= 0 ? 'hl-pos' : 'hl-neg'}">${funding >= 0 ? '+' : ''}${pct}%</span>`;
+    strip.appendChild(div);
+  });
+}
+
+// ─── DETAIL PANEL ─────────────────────────────────────────────────────────────
+function openDetail(market) {
+  selectedMarketId = market.condition_id;
+  document.querySelectorAll('.data-table tbody tr').forEach(tr => tr.classList.remove('selected'));
+  document.getElementById('detail-panel').classList.add('open');
+  renderDetail(market, true);
+}
+
+function closeDetail() {
+  selectedMarketId = null;
+  document.getElementById('detail-panel').classList.remove('open');
+  document.querySelectorAll('.data-table tbody tr').forEach(tr => tr.classList.remove('selected'));
+}
+
+async function renderDetail(market, fetchBook) {
+  const yp = getYesPrice(market);
+  const np = getNoPrice(market);
+  const days = daysTo(market.end_date_iso || market.end_date);
+  const hours = hoursTo(market.end_date_iso || market.end_date);
+  const vol = parseFloat(market.volume_24hr || market.volume24hr || market.volume || 0);
+  const wlIdx = watchlist.indexOf(market.condition_id);
+  const inWl = wlIdx !== -1;
+  const link = `https://polymarket.com/event/${market.market_slug || market.condition_id}`;
+  const { yes: yesToken, no: noToken } = getYesNoTokens(market);
+
+  document.getElementById('detail-body').innerHTML = `
+    <div class="detail-question">${market.question || '—'}</div>
+    <div class="detail-price-grid">
+      <div class="detail-price-card">
+        <div class="detail-price-label">YES</div>
+        <div class="detail-price-value yes">${yp !== null ? '$'+fmt(yp) : '—'}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;font-family:var(--mono)">${yp !== null ? (yp*100).toFixed(1)+'% implied' : ''}</div>
+      </div>
+      <div class="detail-price-card">
+        <div class="detail-price-label">NO</div>
+        <div class="detail-price-value no">${np !== null ? '$'+fmt(np) : '—'}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;font-family:var(--mono)">${np !== null ? (np*100).toFixed(1)+'% implied' : ''}</div>
+      </div>
+    </div>
+    <div class="detail-meta">
+      <div class="detail-meta-row"><span class="detail-meta-label">Volume 24h</span><span class="detail-meta-value">${fmtVol(vol)}</span></div>
+      <div class="detail-meta-row"><span class="detail-meta-label">Days to Resolution</span><span class="detail-meta-value" style="color:${days!==null&&days<3?'var(--red)':'var(--white)'}">${days !== null ? days.toFixed(1)+' days ('+hours.toFixed(0)+'h)' : '—'}</span></div>
+      <div class="detail-meta-row"><span class="detail-meta-label">YES+NO Sum</span><span class="detail-meta-value" style="color:${yp!==null&&np!==null&&yp+np<0.97?'var(--amber)':'var(--white)'}">${yp!==null&&np!==null ? '$'+fmt(yp+np) : '—'}</span></div>
+      <div class="detail-meta-row"><span class="detail-meta-label">Market ID</span><span class="detail-meta-value" style="font-size:10px;color:var(--muted)">${(market.condition_id||'').slice(0,16)}…</span></div>
+    </div>
+    <div class="detail-section-title">ORDER BOOK</div>
+    <div id="ob-container" class="order-book">
+      <div class="ob-side"><div class="ob-title bids">BIDS (YES)</div><div id="ob-bids"><div style="font-size:10px;color:var(--muted)">Loading…</div></div></div>
+      <div class="ob-side"><div class="ob-title asks">ASKS (YES)</div><div id="ob-asks"><div style="font-size:10px;color:var(--muted)">Loading…</div></div></div>
+    </div>
+    <div class="detail-actions">
+      <a href="${link}" target="_blank" class="btn btn-primary" style="text-decoration:none">↗ View on Polymarket</a>
+      <button class="btn ${inWl ? 'btn-secondary' : 'btn-watch'}" onclick="toggleWatch('${market.condition_id}')" id="watch-btn">
+        ${inWl ? '★ Watching' : '☆ Watch'}
+      </button>
+    </div>`;
+
+  // Fetch order book async
+  if (fetchBook && yesToken && yesToken.token_id) {
+    fetchOrderBook(yesToken.token_id).then(book => {
+      if (!book) return;
+      const bids = (book.bids || []).slice(0, 5);
+      const asks = (book.asks || []).slice(0, 5);
+      const bidEl = document.getElementById('ob-bids');
+      const askEl = document.getElementById('ob-asks');
+      if (bidEl) bidEl.innerHTML = bids.length ? bids.map(b => `<div class="ob-row"><span class="ob-price" style="color:var(--green)">$${fmt(b.price)}</span><span class="ob-size">${fmt(b.size,0)}</span></div>`).join('') : '<div style="font-size:10px;color:var(--muted)">No bids</div>';
+      if (askEl) askEl.innerHTML = asks.length ? asks.map(a => `<div class="ob-row"><span class="ob-price" style="color:var(--red)">$${fmt(a.price)}</span><span class="ob-size">${fmt(a.size,0)}</span></div>`).join('') : '<div style="font-size:10px;color:var(--muted)">No asks</div>';
+    }).catch(() => {});
+  }
+}
+
+// ─── WATCHLIST ────────────────────────────────────────────────────────────────
+function toggleWatch(conditionId) {
+  const idx = watchlist.indexOf(conditionId);
+  if (idx === -1) watchlist.push(conditionId);
+  else watchlist.splice(idx, 1);
+  localStorage.setItem('pm_watchlist', JSON.stringify(watchlist));
+  updateCounts();
+  const m = markets.find(m => m.condition_id === conditionId);
+  if (m) renderDetail(m, false);
+  renderWatchlist();
+}
+
+function renderWatchlist() {
+  const body = document.getElementById('watchlist-body');
+  const wlMarkets = watchlist.map(id => markets.find(m => m.condition_id === id)).filter(Boolean);
+  if (!wlMarkets.length) {
+    body.innerHTML = '<div class="empty">No markets watched yet.<br/>Click a market row → Watch button.</div>';
+    return;
+  }
+  body.innerHTML = wlMarkets.map((m, i) => {
+    const yp = getYesPrice(m), np = getNoPrice(m);
+    return `<div class="watchlist-card">
+      <div class="watchlist-question">${truncate(m.question, 70)}</div>
+      <div class="watchlist-prices">
+        <span class="price-yes">${yp!==null?'$'+fmt(yp):'—'}</span>
+        <span style="color:var(--muted)">/</span>
+        <span class="price-no">${np!==null?'$'+fmt(np):'—'}</span>
+        <button class="wl-remove" onclick="event.stopPropagation();toggleWatch('${m.condition_id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── POSITIONS ────────────────────────────────────────────────────────────────
+function addPosition() {
+  const market = positionMarket;
+  const side = document.getElementById('pos-side').value;
+  const entry = parseFloat(document.getElementById('pos-entry').value);
+  const size = parseFloat(document.getElementById('pos-size').value);
+  if (!market || isNaN(entry) || isNaN(size) || entry <= 0 || size <= 0) {
+    alert('Select a market and fill all fields.');
+    return;
+  }
+  positions.push({ conditionId: market.condition_id, question: market.question, side, entry, size, addedAt: Date.now() });
+  localStorage.setItem('pm_positions', JSON.stringify(positions));
+  positionMarket = null;
+  document.getElementById('pos-search').value = '';
+  document.getElementById('pos-entry').value = '';
+  document.getElementById('pos-size').value = '';
+  document.getElementById('pos-suggestions').innerHTML = '';
+  updateCounts();
+  renderPositions();
+}
+
+function removePosition(i) {
+  positions.splice(i, 1);
+  localStorage.setItem('pm_positions', JSON.stringify(positions));
+  updateCounts();
+  renderPositions();
+}
+
+function renderPositions() {
+  const body = document.getElementById('positions-body');
+  if (!positions.length) { body.innerHTML = '<div class="empty">No positions yet.</div>'; return; }
+  let totalCost = 0, totalValue = 0;
+  const cards = positions.map((p, i) => {
+    const m = markets.find(m => m.condition_id === p.conditionId);
+    const curPrice = m ? (p.side === 'YES' ? getYesPrice(m) : getNoPrice(m)) : null;
+    const shares = p.size / p.entry;
+    const curValue = curPrice !== null ? shares * curPrice : null;
+    const pnl = curValue !== null ? curValue - p.size : null;
+    const pct = pnl !== null ? (pnl / p.size * 100) : null;
+    totalCost += p.size;
+    if (curValue !== null) totalValue += curValue;
+    return `<div class="position-card">
+      <div class="pos-header">
+        <div class="pos-question">${truncate(p.question, 70)}</div>
+        <button class="pos-remove" onclick="removePosition(${i})">✕</button>
+      </div>
+      <div class="pos-stats">
+        <div class="pos-stat"><div class="pos-stat-label">Side</div><div style="color:${p.side==='YES'?'var(--green)':'var(--red)'};font-family:var(--mono)">${p.side}</div></div>
+        <div class="pos-stat"><div class="pos-stat-label">Entry</div><div class="num">$${fmt(p.entry)}</div></div>
+        <div class="pos-stat"><div class="pos-stat-label">Size</div><div class="num">$${fmt(p.size)}</div></div>
+        <div class="pos-stat"><div class="pos-stat-label">Current</div><div class="num">${curPrice!==null?'$'+fmt(curPrice):'—'}</div></div>
+        <div class="pos-stat"><div class="pos-stat-label">PnL</div><div class="num ${pnl===null?'':pnl>=0?'pnl-pos':'pnl-neg'}">${pnl!==null?(pnl>=0?'+':'')+('$'+fmt(pnl))+' ('+fmt(pct,1)+'%)':'—'}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+  body.innerHTML = cards;
+  const pnlTotal = totalValue - totalCost;
+  const summaryBar = document.getElementById('portfolio-summary-bar');
+  summaryBar.style.display = 'flex';
+  document.getElementById('ps-cost').textContent = '$' + fmt(totalCost);
+  document.getElementById('ps-value').textContent = '$' + fmt(totalValue || 0);
+  document.getElementById('ps-pnl').textContent = (pnlTotal >= 0 ? '+' : '') + '$' + fmt(pnlTotal);
+  document.getElementById('ps-pnl').style.color = pnlTotal >= 0 ? 'var(--green)' : 'var(--red)';
+}
+
+// ─── POSITION SEARCH AUTOCOMPLETE ────────────────────────────────────────────
+document.getElementById('pos-search').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  const suggestions = document.getElementById('pos-suggestions');
+  if (!q || q.length < 2) { suggestions.innerHTML = ''; return; }
+  const matches = markets.filter(m => m.question && m.question.toLowerCase().includes(q)).slice(0, 5);
+  if (!matches.length) { suggestions.innerHTML = ''; return; }
+  suggestions.innerHTML = `<div style="position:absolute;z-index:100;background:var(--bg3);border:1px solid var(--border);border-radius:3px;width:100%;margin-top:2px">
+    ${matches.map((m, i) => `<div data-idx="${i}" class="suggestion-item" style="padding:8px 10px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border)" onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background=''">${truncate(m.question, 80)}</div>`).join('')}
+  </div>`;
+  suggestions.querySelectorAll('.suggestion-item').forEach((el, i) => {
+    el.onclick = () => {
+      positionMarket = matches[i];
+      document.getElementById('pos-search').value = truncate(matches[i].question, 60);
+      suggestions.innerHTML = '';
+    };
+  });
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+refresh();
+setInterval(refresh, 30000);
+</script>
+</body>
+</html>

@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birddog Cash Buyer Network | Tampa</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f14;
+    --bg2: #16161f;
+    --bg3: #1e1e2a;
+    --border: #2a2a3a;
+    --purple: #7c3aed;
+    --purple-light: #9d6ff0;
+    --purple-dim: rgba(124,58,237,0.15);
+    --green: #10b981;
+    --green-dim: rgba(16,185,129,0.15);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.15);
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+  }
+
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; }
+
+  /* ── Layout ── */
+  .app { display: flex; flex-direction: column; min-height: 100vh; }
+
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 1.1rem; letter-spacing: -0.02em;
+  }
+  header .logo .icon { font-size: 1.4rem; }
+  header .subtitle { color: var(--text3); font-size: 0.78rem; margin-left: 4px; }
+  header .stats-pill {
+    margin-left: auto;
+    display: flex; gap: 16px; align-items: center;
+  }
+  .stat-mini { text-align: center; }
+  .stat-mini .num { font-size: 1.1rem; font-weight: 700; color: var(--purple-light); }
+  .stat-mini .lbl { font-size: 0.65rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* ── Tabs ── */
+  nav {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    padding: 0 24px;
+    gap: 0;
+  }
+  nav button {
+    background: none; border: none; color: var(--text3);
+    padding: 14px 20px; cursor: pointer; font-family: inherit;
+    font-size: 0.88rem; font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s; white-space: nowrap;
+    display: flex; align-items: center; gap: 7px;
+  }
+  nav button:hover { color: var(--text); }
+  nav button.active { color: var(--purple-light); border-bottom-color: var(--purple); }
+
+  .tab-content { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; width: 100%; }
+  .tab-content.active { display: block; }
+
+  /* ── Filter Bar ── */
+  .filter-bar {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px;
+    display: flex; gap: 14px; align-items: flex-end;
+    flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .filter-group { display: flex; flex-direction: column; gap: 5px; min-width: 120px; }
+  .filter-group label { font-size: 0.72rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; }
+  .filter-group input, .filter-group select {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    border-radius: 7px; padding: 7px 10px; font-family: inherit; font-size: 0.85rem;
+    outline: none; transition: border-color 0.15s;
+  }
+  .filter-group input:focus, .filter-group select:focus { border-color: var(--purple); }
+  .filter-group input::placeholder { color: var(--text3); }
+
+  /* Range */
+  .range-group { min-width: 160px; }
+  .range-row { display: flex; gap: 6px; }
+  .range-row input { width: 75px; }
+
+  /* Checkboxes */
+  .cb-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+  .cb-label { display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 0.83rem; color: var(--text2); }
+  .cb-label input { accent-color: var(--purple); width: 14px; height: 14px; }
+
+  /* ── Buyer Cards ── */
+  .buyer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .buyer-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: border-color 0.15s, transform 0.1s;
+    position: relative;
+  }
+  .buyer-card:hover { border-color: var(--purple); transform: translateY(-1px); }
+  .buyer-card.verified { border-left: 3px solid var(--green); }
+
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .card-name { font-weight: 600; font-size: 0.98rem; }
+  .card-company { color: var(--text2); font-size: 0.82rem; margin-top: 2px; }
+  .verified-badge {
+    background: var(--green-dim); color: var(--green);
+    font-size: 0.68rem; font-weight: 600; padding: 3px 8px;
+    border-radius: 100px; white-space: nowrap; letter-spacing: 0.03em;
+  }
+
+  .card-phone {
+    font-size: 0.9rem; color: var(--purple-light); cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: color 0.15s;
+  }
+  .card-phone:hover { color: var(--purple); }
+  .card-phone .copy-hint { font-size: 0.7rem; color: var(--text3); }
+
+  .zip-row { display: flex; gap: 5px; flex-wrap: wrap; }
+  .zip-badge {
+    background: var(--purple-dim); color: var(--purple-light);
+    font-size: 0.7rem; padding: 2px 7px; border-radius: 4px; font-weight: 500;
+  }
+
+  .price-range { font-size: 0.82rem; color: var(--text2); }
+  .price-range strong { color: var(--green); }
+
+  .criteria-text { font-size: 0.78rem; color: var(--text3); line-height: 1.4; }
+
+  .card-meta { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .source-badge {
+    font-size: 0.68rem; font-weight: 600; padding: 3px 8px; border-radius: 100px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .source-craigslist { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .source-reia { background: rgba(16,185,129,0.15); color: var(--green); }
+  .source-biggerpockets { background: rgba(124,58,237,0.15); color: var(--purple-light); }
+  .source-google { background: rgba(99,179,237,0.15); color: #63b3ed; }
+  .source-manual { background: rgba(100,116,139,0.15); color: var(--text3); }
+
+  .card-stats { display: flex; gap: 12px; font-size: 0.75rem; color: var(--text3); }
+  .card-stats span strong { color: var(--amber); }
+
+  .card-actions { display: flex; gap: 8px; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 8px; border: none;
+    cursor: pointer; font-family: inherit; font-size: 0.83rem; font-weight: 600;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .btn-primary { background: var(--purple); color: white; }
+  .btn-primary:hover { background: var(--purple-light); }
+  .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text2); }
+  .btn-ghost:hover { border-color: var(--purple); color: var(--purple-light); }
+  .btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .btn-danger:hover { background: rgba(239,68,68,0.25); }
+  .btn-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+  .btn-green:hover { background: rgba(16,185,129,0.3); }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px; backdrop-filter: blur(4px);
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px; width: 100%; max-width: 640px;
+    max-height: 90vh; overflow-y: auto;
+    transform: translateY(20px); transition: transform 0.2s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+  .close-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 1.3rem; padding: 4px; }
+  .close-btn:hover { color: var(--text); }
+
+  /* ── Forms ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid.full { grid-template-columns: 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.span2 { grid-column: span 2; }
+  .form-group label { font-size: 0.75rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: 9px 12px; font-family: inherit; font-size: 0.88rem;
+    outline: none; transition: border-color 0.15s; width: 100%;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--purple); }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+  /* ── Section headers ── */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+  .section-title { font-size: 1.1rem; font-weight: 700; }
+  .section-count { color: var(--text3); font-size: 0.85rem; margin-left: 8px; }
+
+  /* ── Scraper section ── */
+  .scraper-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 16px;
+  }
+  .scraper-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .scraper-desc { font-size: 0.82rem; color: var(--text3); margin-bottom: 14px; line-height: 1.5; }
+  .scrape-results { margin-top: 16px; }
+  .result-item {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+  }
+  .result-item-info { flex: 1; }
+  .result-item-title { font-weight: 600; font-size: 0.88rem; margin-bottom: 4px; }
+  .result-item-details { font-size: 0.78rem; color: var(--text3); line-height: 1.4; }
+
+  .google-links { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .google-link-btn {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 16px;
+    color: var(--text); text-decoration: none; font-size: 0.88rem;
+    transition: border-color 0.15s;
+  }
+  .google-link-btn:hover { border-color: var(--purple); color: var(--purple-light); }
+  .google-icon { font-size: 1.1rem; }
+
+  .reia-list { display: flex; flex-direction: column; gap: 10px; }
+  .reia-item {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px;
+  }
+  .reia-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+  .reia-details { font-size: 0.8rem; color: var(--text3); line-height: 1.5; }
+  .reia-website { color: var(--purple-light); text-decoration: none; }
+  .reia-website:hover { text-decoration: underline; }
+
+  /* ── Blast tab ── */
+  .blast-container { display: grid; grid-template-columns: 1fr 360px; gap: 20px; }
+  @media (max-width: 900px) { .blast-container { grid-template-columns: 1fr; } }
+
+  .match-panel {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; height: fit-content; position: sticky; top: 84px;
+  }
+  .match-count {
+    font-size: 2rem; font-weight: 700; color: var(--purple-light);
+    margin-bottom: 4px;
+  }
+  .match-label { color: var(--text3); font-size: 0.82rem; margin-bottom: 16px; }
+  .match-list { display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto; }
+  .match-item {
+    background: var(--bg3); border-radius: 8px; padding: 10px 12px;
+    font-size: 0.82rem; display: flex; flex-direction: column; gap: 2px;
+  }
+  .match-item-name { font-weight: 600; }
+  .match-item-meta { color: var(--text3); }
+
+  .generated-messages { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .msg-item {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px;
+  }
+  .msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .msg-buyer { font-weight: 600; font-size: 0.88rem; }
+  .msg-type { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; }
+  .msg-text { font-size: 0.8rem; color: var(--text2); line-height: 1.5; margin-bottom: 8px; white-space: pre-wrap; }
+
+  /* ── Deal History ── */
+  .deals-table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th {
+    background: var(--bg3); color: var(--text3); font-weight: 600;
+    text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border);
+    text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; white-space: nowrap;
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text2); }
+  tr:hover td { background: var(--bg2); }
+  .outcome-badge {
+    font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 100px;
+    text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .outcome-closed { background: var(--green-dim); color: var(--green); }
+  .outcome-pending { background: var(--amber-dim); color: var(--amber); }
+  .outcome-passed { background: rgba(239,68,68,0.15); color: var(--red); }
+  .outcome-none { background: var(--bg3); color: var(--text3); }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 18px;
+  }
+  .stat-card .num { font-size: 2rem; font-weight: 700; color: var(--purple-light); }
+  .stat-card .lbl { color: var(--text3); font-size: 0.8rem; margin-top: 2px; }
+
+  /* ── Toasts ── */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 18px;
+    font-size: 0.85rem; color: var(--text); min-width: 220px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: slideIn 0.2s ease, fadeOut 0.3s ease 2.7s forwards;
+  }
+  .toast.success { border-left: 3px solid var(--green); }
+  .toast.error { border-left: 3px solid var(--red); }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
+
+  /* ── Misc ── */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+  .empty-state h3 { font-size: 1rem; color: var(--text2); margin-bottom: 6px; }
+
+  .loader { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  select option { background: var(--bg3); }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  .import-form {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+    margin-top: 14px;
+  }
+  .import-form h4 { font-size: 0.88rem; margin-bottom: 12px; color: var(--text2); }
+
+  .prop-types-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .prop-type-cb { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.82rem; color: var(--text2); }
+  .prop-type-cb input { accent-color: var(--purple); }
+
+  .sep { height: 1px; background: var(--border); margin: 20px 0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <span class="icon">🏠</span>
+      <div>
+        Birddog Cash Buyer Network
+        <span class="subtitle">Tampa, FL</span>
+      </div>
+    </div>
+    <div class="stats-pill">
+      <div class="stat-mini"><div class="num" id="h-buyers">–</div><div class="lbl">Buyers</div></div>
+      <div class="stat-mini"><div class="num" id="h-deals">–</div><div class="lbl">Deals Sent</div></div>
+      <div class="stat-mini"><div class="num" id="h-closed">–</div><div class="lbl">Closed</div></div>
+      <button class="btn btn-primary btn-sm" onclick="openAddBuyerModal()">+ Add Buyer</button>
+    </div>
+  </header>
+
+  <!-- Nav Tabs -->
+  <nav>
+    <button class="active" onclick="switchTab('network', this)">🗂 Buyer Network</button>
+    <button onclick="switchTab('find', this)">🔍 Find Buyers</button>
+    <button onclick="switchTab('blast', this)">📨 Blast a Deal</button>
+    <button onclick="switchTab('history', this)">📊 Deal History</button>
+  </nav>
+
+  <!-- ═══ TAB 1: BUYER NETWORK ═══ -->
+  <div class="tab-content active" id="tab-network">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group" style="flex:1; min-width:160px;">
+        <label>Search</label>
+        <input type="text" id="f-search" placeholder="Name, company, criteria…" oninput="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <label>Zip Code</label>
+        <input type="text" id="f-zip" placeholder="33610" maxlength="5" oninput="applyFilters()">
+      </div>
+      <div class="filter-group range-group">
+        <label>Price Range ($K)</label>
+        <div class="range-row">
+          <input type="number" id="f-min" placeholder="Min" oninput="applyFilters()">
+          <input type="number" id="f-max" placeholder="Max" oninput="applyFilters()">
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>Source</label>
+        <select id="f-source" onchange="applyFilters()">
+          <option value="">All Sources</option>
+          <option value="craigslist">Craigslist</option>
+          <option value="reia">REIA</option>
+          <option value="biggerpockets">BiggerPockets</option>
+          <option value="google">Google</option>
+          <option value="manual">Manual</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Property Type</label>
+        <select id="f-type" onchange="applyFilters()">
+          <option value="">All Types</option>
+          <option value="SFR">SFR</option>
+          <option value="MFR">Multi-Family</option>
+          <option value="duplex">Duplex</option>
+          <option value="triplex">Triplex</option>
+          <option value="condo">Condo</option>
+        </select>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="clearFilters()">Clear</button>
+    </div>
+
+    <div class="section-header">
+      <div><span class="section-title">Buyer Network</span><span class="section-count" id="buyer-count"></span></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="exportBuyerCSV()">📥 Export CSV</button>
+      </div>
+    </div>
+
+    <div class="buyer-grid" id="buyer-grid">
+      <div class="empty-state" style="grid-column:1/-1;"><div class="loader"></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 2: FIND BUYERS ═══ -->
+  <div class="tab-content" id="tab-find">
+    <div class="section-header">
+      <span class="section-title">Find Buyers</span>
+    </div>
+
+    <!-- Craigslist Scraper -->
+    <div class="scraper-card">
+      <div class="scraper-title">🟠 Craigslist Tampa Scraper</div>
+      <p class="scraper-desc">Automatically fetches listings from Tampa Craigslist for "we buy houses" and "cash for houses". Extracts phones, emails, and zip codes.</p>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="cl-btn" onclick="runCraigslist()">🔄 Run Craigslist Search</button>
+        <span id="cl-status" style="font-size:0.8rem;color:var(--text3);"></span>
+      </div>
+      <div id="cl-results" class="scrape-results"></div>
+    </div>
+
+    <!-- Google Links -->
+    <div class="scraper-card">
+      <div class="scraper-title">🟢 Google Search Links</div>
+      <p class="scraper-desc">Click each link below to open a Google search in a new tab. Copy business names, phones, and websites into the import form below.</p>
+      <div class="google-links">
+        <a class="google-link-btn" href="https://www.google.com/search?q=we+buy+houses+tampa+fl+cash" target="_blank" rel="noopener">
+          <span class="google-icon">🔍</span>
+          <span>we buy houses tampa fl cash</span>
+          <span style="margin-left:auto;font-size:0.75rem;color:var(--text3);">↗ Open</span>
+        </a>
+        <a class="google-link-btn" href="https://www.google.com/search?q=cash+home+buyers+tampa+florida" target="_blank" rel="noopener">
+          <span class="google-icon">🔍</span>
+          <span>cash home buyers tampa florida</span>
+          <span style="margin-left:auto;font-size:0.75rem;color:var(--text3);">↗ Open</span>
+        </a>
+        <a class="google-link-btn" href="https://www.google.com/search?q=wholesale+real+estate+buyers+tampa+fl" target="_blank" rel="noopener">
+          <span class="google-icon">🔍</span>
+          <span>wholesale real estate buyers tampa fl</span>
+          <span style="margin-left:auto;font-size:0.75rem;color:var(--text3);">↗ Open</span>
+        </a>
+      </div>
+
+      <!-- Quick Import Form -->
+      <div class="import-form">
+        <h4>📋 Paste-In Import — Add from Google Results</h4>
+        <div class="form-grid">
+          <div class="form-group"><label>Name / Business</label><input type="text" id="gi-name" placeholder="Tampa Cash Buyers LLC"></div>
+          <div class="form-group"><label>Phone</label><input type="text" id="gi-phone" placeholder="813-555-0000"></div>
+          <div class="form-group"><label>Email</label><input type="email" id="gi-email" placeholder="contact@..."></div>
+          <div class="form-group"><label>Website</label><input type="text" id="gi-website" placeholder="https://..."></div>
+          <div class="form-group span2"><label>Notes / Buy Criteria</label><textarea id="gi-notes" rows="2" placeholder="What they buy, where, conditions..."></textarea></div>
+        </div>
+        <div class="form-actions" style="margin-top:12px;">
+          <button class="btn btn-primary btn-sm" onclick="importGoogleLead()">+ Import Lead</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REIA Sources -->
+    <div class="scraper-card">
+      <div class="scraper-title">🏛 Tampa REIA Sources</div>
+      <p class="scraper-desc">Real Estate Investor Association contacts and meeting locations. Attend these to build your buyer list in person.</p>
+      <div class="reia-list">
+        <div class="reia-item">
+          <div class="reia-name">Tampa Bay Real Estate Investors Alliance</div>
+          <div class="reia-details">
+            🌐 <a href="https://tampareia.com" target="_blank" class="reia-website">tampareia.com</a> · Monthly meetings in Tampa<br>
+            Largest REIA in the area — great for building cash buyer contacts
+          </div>
+        </div>
+        <div class="reia-item">
+          <div class="reia-name">Greater Tampa Bay RE Club</div>
+          <div class="reia-details">
+            🌐 <a href="https://biggerpockets.com/forums/tampa-bay-fl" target="_blank" class="reia-website">biggerpockets.com/forums/tampa-bay-fl</a><br>
+            Active forums + local meetups. Check for wholesale-focused sub-groups.
+          </div>
+        </div>
+        <div class="reia-item">
+          <div class="reia-name">Tampa Wholesale Facebook Group</div>
+          <div class="reia-details">
+            📱 Manual source — search "Tampa wholesale real estate" on Facebook<br>
+            Add members directly to your buyer list as manual entries
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 3: BLAST A DEAL ═══ -->
+  <div class="tab-content" id="tab-blast">
+    <div class="section-header">
+      <span class="section-title">Blast a Deal</span>
+    </div>
+    <div class="blast-container">
+      <!-- Form -->
+      <div>
+        <div class="scraper-card">
+          <div class="scraper-title">📋 Property Details</div>
+          <div class="form-grid" style="margin-top:12px;">
+            <div class="form-group span2"><label>Property Address *</label><input type="text" id="b-address" placeholder="1234 W Main St, Tampa FL 33610" oninput="updateMatchCount()"></div>
+            <div class="form-group"><label>Asking Price *</label><input type="number" id="b-price" placeholder="185000" oninput="updateMatchCount()"></div>
+            <div class="form-group"><label>ARV (After Repair Value)</label><input type="number" id="b-arv" placeholder="260000"></div>
+            <div class="form-group"><label>Beds</label><input type="number" id="b-beds" placeholder="3" min="0" max="20"></div>
+            <div class="form-group"><label>Baths</label><input type="number" id="b-baths" placeholder="2" min="0" max="20" step="0.5"></div>
+            <div class="form-group"><label>Sqft</label><input type="number" id="b-sqft" placeholder="1200"></div>
+            <div class="form-group"><label>Condition (1–10)</label><input type="number" id="b-condition" placeholder="5" min="1" max="10"></div>
+            <div class="form-group">
+              <label>Zip Code</label>
+              <input type="text" id="b-zip" placeholder="33610" maxlength="5" oninput="updateMatchCount()">
+            </div>
+            <div class="form-group">
+              <label>Property Type</label>
+              <select id="b-type" onchange="updateMatchCount()">
+                <option value="">Any</option>
+                <option value="SFR">SFR</option>
+                <option value="MFR">Multi-Family</option>
+                <option value="duplex">Duplex</option>
+                <option value="triplex">Triplex</option>
+                <option value="condo">Condo</option>
+              </select>
+            </div>
+          </div>
+          <div class="sep"></div>
+          <div class="scraper-title" style="margin-bottom:10px;">✨ Key Features</div>
+          <div class="prop-types-grid">
+            <label class="prop-type-cb"><input type="checkbox" value="Renovated Kitchen"> Renovated Kitchen</label>
+            <label class="prop-type-cb"><input type="checkbox" value="New Roof"> New Roof</label>
+            <label class="prop-type-cb"><input type="checkbox" value="New HVAC"> New HVAC</label>
+            <label class="prop-type-cb"><input type="checkbox" value="Updated Bathrooms"> Updated Baths</label>
+            <label class="prop-type-cb"><input type="checkbox" value="New Flooring"> New Flooring</label>
+            <label class="prop-type-cb"><input type="checkbox" value="Large Lot"> Large Lot</label>
+            <label class="prop-type-cb"><input type="checkbox" value="Corner Lot"> Corner Lot</label>
+            <label class="prop-type-cb"><input type="checkbox" value="Pool"> Pool</label>
+            <label class="prop-type-cb"><input type="checkbox" value="Garage"> Garage</label>
+            <label class="prop-type-cb"><input type="checkbox" value="No HOA"> No HOA</label>
+            <label class="prop-type-cb"><input type="checkbox" value="Move-In Ready"> Move-In Ready</label>
+            <label class="prop-type-cb"><input type="checkbox" value="Tenant Occupied"> Tenant Occupied</label>
+          </div>
+
+          <div class="sep"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="generateMessages()">⚡ Generate Messages</button>
+            <button class="btn btn-ghost" onclick="copyAllSMS()" id="copy-sms-btn" style="display:none">📋 Copy All SMS</button>
+            <button class="btn btn-ghost" onclick="exportEmailCSV()" id="export-email-btn" style="display:none">📥 Export Email CSV</button>
+            <button class="btn btn-green" onclick="logBlast()" id="log-blast-btn" style="display:none">✅ Log Blast to DB</button>
+          </div>
+        </div>
+
+        <!-- Generated messages -->
+        <div id="generated-messages" class="generated-messages" style="display:none"></div>
+      </div>
+
+      <!-- Match Panel -->
+      <div>
+        <div class="match-panel">
+          <div class="match-count" id="match-count">–</div>
+          <div class="match-label">buyers match this deal</div>
+          <div class="match-list" id="match-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 4: DEAL HISTORY ═══ -->
+  <div class="tab-content" id="tab-history">
+    <div class="stats-grid" id="stats-grid"></div>
+
+    <div class="section-header">
+      <span class="section-title">Buyer Reliability Rankings</span>
+    </div>
+    <div id="reliability-table" class="deals-table-wrap" style="margin-bottom:24px;"></div>
+
+    <div class="section-header">
+      <span class="section-title">All Deals Sent</span>
+    </div>
+    <div id="deals-table" class="deals-table-wrap"></div>
+  </div>
+</div>
+
+<!-- ═══ Add/Edit Buyer Modal ═══ -->
+<div class="modal-overlay" id="buyer-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modal-title-text">Add Buyer</span>
+      <button class="close-btn" onclick="closeModal('buyer-modal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Name *</label><input type="text" id="m-name" placeholder="Marcus Johnson"></div>
+      <div class="form-group"><label>Company</label><input type="text" id="m-company" placeholder="MJ Properties LLC"></div>
+      <div class="form-group"><label>Phone</label><input type="text" id="m-phone" placeholder="813-555-0000"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="m-email" placeholder="buyer@company.com"></div>
+      <div class="form-group"><label>Website</label><input type="text" id="m-website" placeholder="https://..."></div>
+      <div class="form-group">
+        <label>Source</label>
+        <select id="m-source">
+          <option value="manual">Manual</option>
+          <option value="craigslist">Craigslist</option>
+          <option value="reia">REIA</option>
+          <option value="biggerpockets">BiggerPockets</option>
+          <option value="google">Google</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Min Price</label><input type="number" id="m-min" placeholder="80000"></div>
+      <div class="form-group"><label>Max Price</label><input type="number" id="m-max" placeholder="300000"></div>
+      <div class="form-group span2">
+        <label>Target Zip Codes (comma-separated)</label>
+        <input type="text" id="m-zips" placeholder="33610, 33612, 33619">
+      </div>
+      <div class="form-group span2">
+        <label>Property Types</label>
+        <div class="cb-group">
+          <label class="cb-label"><input type="checkbox" value="SFR" class="pt-cb"> SFR</label>
+          <label class="cb-label"><input type="checkbox" value="MFR" class="pt-cb"> Multi-Family</label>
+          <label class="cb-label"><input type="checkbox" value="duplex" class="pt-cb"> Duplex</label>
+          <label class="cb-label"><input type="checkbox" value="triplex" class="pt-cb"> Triplex</label>
+          <label class="cb-label"><input type="checkbox" value="condo" class="pt-cb"> Condo</label>
+        </div>
+      </div>
+      <div class="form-group span2"><label>Buy Criteria / Notes</label><textarea id="m-criteria" rows="3" placeholder="What they buy, area preferences, conditions…"></textarea></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('buyer-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBuyer()">Save Buyer</button>
+    </div>
+    <input type="hidden" id="m-id" value="">
+  </div>
+</div>
+
+<!-- ═══ Update Deal Modal ═══ -->
+<div class="modal-overlay" id="deal-modal">
+  <div class="modal">
+    <div class="modal-title">
+      Update Deal Outcome
+      <button class="close-btn" onclick="closeModal('deal-modal')">✕</button>
+    </div>
+    <div class="form-grid full">
+      <div class="form-group">
+        <label>Response</label>
+        <select id="d-response">
+          <option value="">No Response</option>
+          <option value="yes">Yes – Interested</option>
+          <option value="no">No – Not Interested</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Outcome</label>
+        <select id="d-outcome">
+          <option value="">Pending</option>
+          <option value="closed">Closed ✅</option>
+          <option value="passed">Passed ❌</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="d-notes" rows="3"></textarea></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('deal-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDeal()">Update</button>
+    </div>
+    <input type="hidden" id="d-id" value="">
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toasts"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  State
+// ═══════════════════════════════════════════════════════════
+let allBuyers = [];
+let filteredBuyers = [];
+let matchedBuyers = [];
+let lastGeneratedMessages = [];
+
+// ═══════════════════════════════════════════════════════════
+//  Init
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  loadBuyers();
+  loadStats();
+});
+
+// ═══════════════════════════════════════════════════════════
+//  Tabs
+// ═══════════════════════════════════════════════════════════
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+
+  if (id === 'history') loadHistory();
+  if (id === 'blast') updateMatchCount();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Buyer Network
+// ═══════════════════════════════════════════════════════════
+async function loadBuyers() {
+  const res = await fetch('/api/buyers');
+  allBuyers = await res.json();
+  filteredBuyers = [...allBuyers];
+  renderBuyers();
+  loadStats();
+}
+
+function applyFilters() {
+  const search = document.getElementById('f-search').value.toLowerCase();
+  const zip = document.getElementById('f-zip').value.trim();
+  const min = parseFloat(document.getElementById('f-min').value) * 1000 || 0;
+  const max = parseFloat(document.getElementById('f-max').value) * 1000 || Infinity;
+  const source = document.getElementById('f-source').value;
+  const type = document.getElementById('f-type').value;
+
+  filteredBuyers = allBuyers.filter(b => {
+    if (search && !(
+      (b.name||'').toLowerCase().includes(search) ||
+      (b.company||'').toLowerCase().includes(search) ||
+      (b.buy_criteria||'').toLowerCase().includes(search)
+    )) return false;
+    if (zip && !b.target_zips.includes(zip)) return false;
+    if (min && b.max_price < min) return false;
+    if (max < Infinity && b.min_price > max) return false;
+    if (source && b.source !== source) return false;
+    if (type && !b.property_types.includes(type)) return false;
+    return true;
+  });
+  renderBuyers();
+}
+
+function clearFilters() {
+  ['f-search','f-zip','f-min','f-max'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-source').value = '';
+  document.getElementById('f-type').value = '';
+  filteredBuyers = [...allBuyers];
+  renderBuyers();
+}
+
+function renderBuyers() {
+  const grid = document.getElementById('buyer-grid');
+  document.getElementById('buyer-count').textContent = ` (${filteredBuyers.length})`;
+
+  if (!filteredBuyers.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <div class="icon">🏠</div>
+      <h3>No buyers found</h3>
+      <p>Try adjusting your filters or add a new buyer</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filteredBuyers.map(b => `
+    <div class="buyer-card ${b.verified ? 'verified' : ''}">
+      <div class="card-header">
+        <div>
+          <div class="card-name">${esc(b.name)}</div>
+          <div class="card-company">${esc(b.company||'')}</div>
+        </div>
+        ${b.verified ? '<span class="verified-badge">✓ Verified</span>' : ''}
+      </div>
+
+      ${b.phone ? `<div class="card-phone" onclick="copyText('${esc(b.phone)}', this)">
+        📞 ${esc(b.phone)} <span class="copy-hint">click to copy</span>
+      </div>` : ''}
+
+      ${b.target_zips && b.target_zips.length ? `<div class="zip-row">
+        ${b.target_zips.map(z => `<span class="zip-badge">${z}</span>`).join('')}
+      </div>` : ''}
+
+      ${(b.min_price||b.max_price) ? `<div class="price-range">
+        <strong>$${fmtPrice(b.min_price)} – $${fmtPrice(b.max_price)}</strong>
+        ${b.property_types && b.property_types.length ? `· ${b.property_types.join(', ')}` : ''}
+      </div>` : ''}
+
+      ${b.buy_criteria ? `<div class="criteria-text">"${esc(b.buy_criteria)}"</div>` : ''}
+
+      <div class="card-meta">
+        <span class="source-badge source-${b.source||'manual'}">${b.source||'manual'}</span>
+        <div class="card-stats">
+          <span>Deals: <strong>${b.deals_sent||0}</strong></span>
+          <span>Response: <strong>${b.response_rate ? b.response_rate.toFixed(0)+'%' : '–'}</strong></span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn btn-primary btn-sm" onclick="openBlastModal(${b.id})">📨 Send Deal</button>
+        <button class="btn btn-ghost btn-sm" onclick="openEditBuyerModal(${b.id})">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteBuyer(${b.id})">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openBlastModal(buyerId) {
+  switchTab('blast', document.querySelector('nav button:nth-child(3)'));
+  // Pre-fill with single buyer
+  matchedBuyers = allBuyers.filter(b => b.id === buyerId);
+  renderMatchPanel();
+  document.getElementById('match-count').textContent = 1;
+  toast('Buyer pre-selected for blast — fill in property details', 'success');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Add / Edit Buyer Modal
+// ═══════════════════════════════════════════════════════════
+function openAddBuyerModal() {
+  document.getElementById('modal-title-text').textContent = 'Add Buyer';
+  document.getElementById('m-id').value = '';
+  ['m-name','m-company','m-phone','m-email','m-website','m-zips','m-criteria'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('m-source').value = 'manual';
+  document.getElementById('m-min').value = '';
+  document.getElementById('m-max').value = '';
+  document.querySelectorAll('.pt-cb').forEach(cb => cb.checked = false);
+  openModal('buyer-modal');
+}
+
+function openEditBuyerModal(id) {
+  const b = allBuyers.find(x => x.id === id);
+  if (!b) return;
+  document.getElementById('modal-title-text').textContent = 'Edit Buyer';
+  document.getElementById('m-id').value = id;
+  document.getElementById('m-name').value = b.name || '';
+  document.getElementById('m-company').value = b.company || '';
+  document.getElementById('m-phone').value = b.phone || '';
+  document.getElementById('m-email').value = b.email || '';
+  document.getElementById('m-website').value = b.website || '';
+  document.getElementById('m-source').value = b.source || 'manual';
+  document.getElementById('m-min').value = b.min_price || '';
+  document.getElementById('m-max').value = b.max_price || '';
+  document.getElementById('m-zips').value = (b.target_zips || []).join(', ');
+  document.getElementById('m-criteria').value = b.buy_criteria || '';
+  document.querySelectorAll('.pt-cb').forEach(cb => {
+    cb.checked = (b.property_types || []).includes(cb.value);
+  });
+  openModal('buyer-modal');
+}
+
+async function saveBuyer() {
+  const id = document.getElementById('m-id').value;
+  const data = {
+    name: document.getElementById('m-name').value,
+    company: document.getElementById('m-company').value,
+    phone: document.getElementById('m-phone').value,
+    email: document.getElementById('m-email').value,
+    website: document.getElementById('m-website').value,
+    source: document.getElementById('m-source').value,
+    min_price: parseFloat(document.getElementById('m-min').value) || null,
+    max_price: parseFloat(document.getElementById('m-max').value) || null,
+    target_zips: document.getElementById('m-zips').value.split(',').map(z => z.trim()).filter(Boolean),
+    property_types: [...document.querySelectorAll('.pt-cb:checked')].map(cb => cb.value),
+    buy_criteria: document.getElementById('m-criteria').value,
+    verified: 0
+  };
+  if (!data.name) { toast('Name is required', 'error'); return; }
+
+  const url = id ? `/api/buyers/${id}` : '/api/buyers';
+  const method = id ? 'PUT' : 'POST';
+  await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+  closeModal('buyer-modal');
+  loadBuyers();
+  toast(id ? 'Buyer updated' : 'Buyer added', 'success');
+}
+
+async function deleteBuyer(id) {
+  if (!confirm('Delete this buyer?')) return;
+  await fetch(`/api/buyers/${id}`, { method: 'DELETE' });
+  loadBuyers();
+  toast('Buyer deleted', 'success');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Find Buyers – Craigslist
+// ═══════════════════════════════════════════════════════════
+async function runCraigslist() {
+  const btn = document.getElementById('cl-btn');
+  const status = document.getElementById('cl-status');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span> Scraping…';
+  status.textContent = '';
+
+  try {
+    const res = await fetch('/api/scrape/craigslist', { method: 'POST' });
+    const data = await res.json();
+    status.textContent = `Found ${data.count} listings`;
+    renderCraigslistResults(data.results || []);
+  } catch (e) {
+    status.textContent = 'Scrape failed — Craigslist may be blocking. Try manually.';
+    toast('Scrape error: ' + e.message, 'error');
+  }
+  btn.disabled = false;
+  btn.textContent = '🔄 Run Again';
+}
+
+function renderCraigslistResults(results) {
+  const div = document.getElementById('cl-results');
+  if (!results.length) {
+    div.innerHTML = '<p style="color:var(--text3);font-size:0.82rem;margin-top:10px;">No listings found. Craigslist may be blocking automated requests — try the Google links instead.</p>';
+    return;
+  }
+  div.innerHTML = results.map((r, i) => `
+    <div class="result-item">
+      <div class="result-item-info">
+        <div class="result-item-title"><a href="${r.href}" target="_blank" style="color:var(--purple-light);text-decoration:none;">${esc(r.title)}</a></div>
+        <div class="result-item-details">
+          ${r.phones.length ? '📞 ' + r.phones.join(', ') + '<br>' : ''}
+          ${r.emails.length ? '✉️ ' + r.emails.join(', ') + '<br>' : ''}
+          ${r.zips.length ? '📍 Zips: ' + [...new Set(r.zips)].join(', ') : ''}
+        </div>
+      </div>
+      <button class="btn btn-green btn-sm" onclick="importCraigslistLead(${i}, ${JSON.stringify(r).replace(/"/g,'&quot;')})">+ Import</button>
+    </div>
+  `).join('');
+  window._clResults = results;
+}
+
+async function importCraigslistLead(i, r) {
+  if (!r && window._clResults) r = window._clResults[i];
+  await fetch('/api/import-lead', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      name: r.title || 'CL Lead',
+      phone: (r.phones || [])[0] || '',
+      email: (r.emails || [])[0] || '',
+      notes: r.body,
+      source: 'craigslist'
+    })
+  });
+  loadBuyers();
+  toast('Lead imported!', 'success');
+}
+
+async function importGoogleLead() {
+  const name = document.getElementById('gi-name').value;
+  const phone = document.getElementById('gi-phone').value;
+  const email = document.getElementById('gi-email').value;
+  const website = document.getElementById('gi-website').value;
+  const notes = document.getElementById('gi-notes').value;
+  if (!name) { toast('Name is required', 'error'); return; }
+
+  await fetch('/api/import-lead', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ name, phone, email, notes: (website ? 'Website: '+website+'\n' : '') + notes, source: 'google' })
+  });
+  ['gi-name','gi-phone','gi-email','gi-website','gi-notes'].forEach(id => document.getElementById(id).value = '');
+  loadBuyers();
+  toast('Google lead imported!', 'success');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Blast a Deal
+// ═══════════════════════════════════════════════════════════
+async function updateMatchCount() {
+  const zip = document.getElementById('b-zip').value.trim();
+  const price = parseFloat(document.getElementById('b-price').value);
+  const type = document.getElementById('b-type').value;
+
+  if (!zip && !price) {
+    matchedBuyers = [];
+    document.getElementById('match-count').textContent = '–';
+    document.getElementById('match-list').innerHTML = '<p style="color:var(--text3);font-size:0.8rem;">Enter zip and price to see matches</p>';
+    return;
+  }
+
+  const res = await fetch('/api/buyers/match', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ zip, price, property_type: type })
+  });
+  matchedBuyers = await res.json();
+  document.getElementById('match-count').textContent = matchedBuyers.length;
+  renderMatchPanel();
+}
+
+function renderMatchPanel() {
+  const list = document.getElementById('match-list');
+  list.innerHTML = matchedBuyers.map(b => `
+    <div class="match-item">
+      <div class="match-item-name">${esc(b.name)}</div>
+      <div class="match-item-meta">${esc(b.company||'')} · ${b.phone||''}</div>
+    </div>
+  `).join('') || '<p style="color:var(--text3);font-size:0.8rem;">No matches yet</p>';
+}
+
+function generateMessages() {
+  if (!matchedBuyers.length) { toast('No matched buyers — fill in zip and price first', 'error'); return; }
+  const address = document.getElementById('b-address').value;
+  const price = parseInt(document.getElementById('b-price').value)||0;
+  const arv = parseInt(document.getElementById('b-arv').value)||0;
+  const beds = document.getElementById('b-beds').value;
+  const baths = document.getElementById('b-baths').value;
+  const sqft = document.getElementById('b-sqft').value;
+  const features = [...document.querySelectorAll('.prop-types-grid input:checked')].map(c=>c.value);
+
+  if (!address) { toast('Address is required', 'error'); return; }
+
+  lastGeneratedMessages = matchedBuyers.map(b => {
+    const sms = `Hey ${b.name.split(' ')[0]}, I have a deal that matches your buy box: ${address}, ${beds}bd/${baths}ba, ${sqft}sqft, asking $${price.toLocaleString()} (ARV: $${arv.toLocaleString()}). As-is, cash close 14 days.${features.length ? ' ' + features.join(', ') + '.' : ''} Interested? - Kaulin`;
+    const email_subject = `Deal Alert: ${address}`;
+    const email_body = `Hi ${b.name},\n\nI have a deal I think matches your buy criteria:\n\n📍 Address: ${address}\n🛏 ${beds} bed / 🛁 ${baths} bath / 📐 ${sqft} sqft\n💰 Asking: $${price.toLocaleString()}\n📊 ARV: $${arv.toLocaleString()}\n${features.length ? '✨ Features: ' + features.join(', ') + '\n' : ''}\nAs-is. Cash close, 14 days. Let me know if you want photos and comps.\n\nBest,\nKaulin\n📞 Contact me to discuss`;
+    return { buyer: b, sms, email_subject, email_body };
+  });
+
+  renderGeneratedMessages();
+  document.getElementById('copy-sms-btn').style.display = '';
+  document.getElementById('export-email-btn').style.display = '';
+  document.getElementById('log-blast-btn').style.display = '';
+  toast(`Generated messages for ${lastGeneratedMessages.length} buyers`, 'success');
+}
+
+function renderGeneratedMessages() {
+  const div = document.getElementById('generated-messages');
+  div.style.display = 'flex';
+  div.innerHTML = lastGeneratedMessages.map((m, i) => `
+    <div class="msg-item">
+      <div class="msg-header">
+        <span class="msg-buyer">${esc(m.buyer.name)} · ${esc(m.buyer.company||'')}</span>
+        <span class="msg-type">${m.buyer.phone || ''}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;margin-bottom:4px;">SMS</div>
+          <div class="msg-text">${esc(m.sms)}</div>
+          <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(m.sms)})">📋 Copy SMS</button>
+        </div>
+        <div>
+          <div style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;margin-bottom:4px;">Email</div>
+          <div class="msg-text">${esc(m.email_body)}</div>
+          <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(m.email_body)})">📋 Copy Email</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function copyAllSMS() {
+  const all = lastGeneratedMessages.map(m => `--- ${m.buyer.name} (${m.buyer.phone}) ---\n${m.sms}`).join('\n\n');
+  copyText(all);
+}
+
+function exportEmailCSV() {
+  const rows = [['Buyer Name','Company','Email','Phone','Subject','Body']];
+  lastGeneratedMessages.forEach(m => {
+    rows.push([m.buyer.name, m.buyer.company||'', m.buyer.email||'', m.buyer.phone||'', m.email_subject, m.email_body.replace(/\n/g,' ')]);
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  downloadFile('deal-blast-emails.csv', csv, 'text/csv');
+  toast('Email CSV exported', 'success');
+}
+
+async function logBlast() {
+  const data = {
+    buyer_ids: matchedBuyers.map(b => b.id),
+    property_address: document.getElementById('b-address').value,
+    asking_price: parseFloat(document.getElementById('b-price').value)||null,
+    arv: parseFloat(document.getElementById('b-arv').value)||null,
+    beds: parseInt(document.getElementById('b-beds').value)||null,
+    baths: parseFloat(document.getElementById('b-baths').value)||null,
+    sqft: parseInt(document.getElementById('b-sqft').value)||null,
+    condition: parseInt(document.getElementById('b-condition').value)||null,
+    notes: [...document.querySelectorAll('.prop-types-grid input:checked')].map(c=>c.value).join(', ')
+  };
+  await fetch('/api/deals', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+  toast(`Logged blast to ${data.buyer_ids.length} buyers`, 'success');
+  loadBuyers();
+  loadStats();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Deal History
+// ═══════════════════════════════════════════════════════════
+async function loadHistory() {
+  loadStats();
+  const [deals, buyers] = await Promise.all([
+    fetch('/api/deals').then(r => r.json()),
+    fetch('/api/buyers').then(r => r.json())
+  ]);
+
+  // Reliability ranking
+  const reliDiv = document.getElementById('reliability-table');
+  const withDeals = buyers.filter(b => b.deals_sent > 0).sort((a,b) => (b.response_rate||0) - (a.response_rate||0));
+  reliDiv.innerHTML = `<table>
+    <thead><tr><th>Buyer</th><th>Company</th><th>Deals Sent</th><th>Response Rate</th></tr></thead>
+    <tbody>${withDeals.map(b => `<tr>
+      <td>${esc(b.name)}</td>
+      <td>${esc(b.company||'')}</td>
+      <td>${b.deals_sent}</td>
+      <td style="color:${(b.response_rate||0)>50?'var(--green)':'var(--amber)'}">
+        ${b.response_rate ? b.response_rate.toFixed(0)+'%' : '–'}
+      </td>
+    </tr>`).join('')}
+    ${!withDeals.length ? '<tr><td colspan="4" style="color:var(--text3);text-align:center;padding:20px;">No deals logged yet</td></tr>' : ''}
+    </tbody>
+  </table>`;
+
+  // Deals table
+  const dealsDiv = document.getElementById('deals-table');
+  dealsDiv.innerHTML = `<table>
+    <thead><tr><th>Date</th><th>Buyer</th><th>Address</th><th>Asking</th><th>ARV</th><th>Response</th><th>Outcome</th><th></th></tr></thead>
+    <tbody>${deals.map(d => `<tr>
+      <td>${fmtDate(d.sent_at)}</td>
+      <td>${esc(d.buyer_name||'–')}<br><small style="color:var(--text3)">${esc(d.buyer_phone||'')}</small></td>
+      <td>${esc(d.property_address||'–')}</td>
+      <td>${d.asking_price ? '$'+d.asking_price.toLocaleString() : '–'}</td>
+      <td>${d.arv ? '$'+d.arv.toLocaleString() : '–'}</td>
+      <td>${d.response ? `<span class="outcome-badge ${d.response==='yes'?'outcome-closed':'outcome-passed'}">${d.response}</span>` : '<span class="outcome-badge outcome-none">none</span>'}</td>
+      <td>${d.outcome ? `<span class="outcome-badge outcome-${d.outcome}">${d.outcome}</span>` : '<span class="outcome-badge outcome-pending">pending</span>'}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openDealModal(${d.id},'${d.response||''}','${d.outcome||''}','${esc(d.notes||'')}')">Update</button></td>
+    </tr>`).join('')}
+    ${!deals.length ? '<tr><td colspan="8" style="color:var(--text3);text-align:center;padding:30px;">No deals logged yet</td></tr>' : ''}
+    </tbody>
+  </table>`;
+}
+
+function openDealModal(id, response, outcome, notes) {
+  document.getElementById('d-id').value = id;
+  document.getElementById('d-response').value = response || '';
+  document.getElementById('d-outcome').value = outcome || '';
+  document.getElementById('d-notes').value = notes || '';
+  openModal('deal-modal');
+}
+
+async function saveDeal() {
+  const id = document.getElementById('d-id').value;
+  await fetch(`/api/deals/${id}`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      response: document.getElementById('d-response').value,
+      outcome: document.getElementById('d-outcome').value,
+      notes: document.getElementById('d-notes').value
+    })
+  });
+  closeModal('deal-modal');
+  loadHistory();
+  toast('Deal updated', 'success');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Stats
+// ═══════════════════════════════════════════════════════════
+async function loadStats() {
+  const data = await fetch('/api/stats').then(r => r.json());
+  document.getElementById('h-buyers').textContent = data.total_buyers;
+  document.getElementById('h-deals').textContent = data.total_deals;
+  document.getElementById('h-closed').textContent = data.deals_closed;
+
+  const rate = data.total_deals > 0 ? ((data.positive_responses / data.total_deals)*100).toFixed(0)+'%' : '–';
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card"><div class="num">${data.total_buyers}</div><div class="lbl">Total Buyers</div></div>
+    <div class="stat-card"><div class="num">${data.total_deals}</div><div class="lbl">Deals Blasted</div></div>
+    <div class="stat-card"><div class="num">${data.positive_responses}</div><div class="lbl">Positive Responses</div></div>
+    <div class="stat-card"><div class="num">${data.deals_closed}</div><div class="lbl">Deals Closed</div></div>
+    <div class="stat-card"><div class="num">${rate}</div><div class="lbl">Response Rate</div></div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Utilities
+// ═══════════════════════════════════════════════════════════
+function exportBuyerCSV() {
+  const rows = [['Name','Company','Phone','Email','Source','Target Zips','Min Price','Max Price','Property Types','Buy Criteria','Deals Sent','Response Rate','Verified']];
+  filteredBuyers.forEach(b => {
+    rows.push([b.name, b.company||'', b.phone||'', b.email||'', b.source||'', (b.target_zips||[]).join(';'), b.min_price||'', b.max_price||'', (b.property_types||[]).join(';'), b.buy_criteria||'', b.deals_sent||0, b.response_rate||0, b.verified?'Yes':'No']);
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  downloadFile('cash-buyers.csv', csv, 'text/csv');
+  toast('CSV exported', 'success');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function copyText(text, el) {
+  navigator.clipboard.writeText(text).then(() => {
+    toast('Copied!', 'success');
+    if (el) { const orig = el.querySelector('.copy-hint'); if(orig) { orig.textContent = '✓ copied'; setTimeout(() => orig.textContent = 'click to copy', 2000); } }
+  });
+}
+
+function toast(msg, type = 'success') {
+  const div = document.createElement('div');
+  div.className = 'toast ' + type;
+  div.textContent = msg;
+  document.getElementById('toasts').appendChild(div);
+  setTimeout(() => div.remove(), 3200);
+}
+
+function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtPrice(n) { if (!n) return '?'; if (n >= 1000000) return (n/1000000).toFixed(1)+'M'; if (n >= 1000) return (n/1000).toFixed(0)+'K'; return n; }
+function fmtDate(dt) { if (!dt) return '–'; return new Date(dt).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}); }
+
+function downloadFile(name, content, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], {type}));
+  a.download = name; a.click();
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+</script>
+</body>
+</html>

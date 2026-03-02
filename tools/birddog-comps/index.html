@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Birddog — Comps & Offer Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1e3a5f;
+  --navy-light:#2a5080;
+  --gold:#b8860b;
+  --gold-light:#d4a017;
+  --white:#ffffff;
+  --bg:#f4f6f9;
+  --card:#ffffff;
+  --border:#d8dde6;
+  --text:#1a1a2e;
+  --muted:#6b7a90;
+  --green:#1a7a4a;
+  --green-bg:#e8f5ed;
+  --yellow:#7a6800;
+  --yellow-bg:#fff9e0;
+  --red:#b81c1c;
+  --red-bg:#fde8e8;
+}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── Header ── */
+header{background:var(--navy);color:var(--white);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.logo{display:flex;align-items:center;gap:12px;font-size:1.15rem;font-weight:700;letter-spacing:.02em}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--gold)}
+nav{display:flex;gap:4px}
+nav button{background:transparent;border:none;color:rgba(255,255,255,.65);font-family:inherit;font-size:.875rem;font-weight:500;padding:8px 16px;border-radius:6px;cursor:pointer;transition:all .15s}
+nav button.active,nav button:hover{background:rgba(255,255,255,.12);color:#fff}
+nav button.active{color:var(--gold-light)}
+
+/* ── Layout ── */
+main{max-width:1100px;margin:0 auto;padding:32px 24px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── Cards ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card+.card{margin-top:20px}
+h2{font-size:1.1rem;font-weight:600;color:var(--navy);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+h2::before{content:'';display:inline-block;width:4px;height:18px;background:var(--gold);border-radius:2px;flex-shrink:0}
+
+/* ── Forms ── */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+label{font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+input,select{height:42px;padding:0 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:.95rem;color:var(--text);background:#fff;transition:border-color .15s,box-shadow .15s;outline:none}
+input:focus,select:focus{border-color:var(--navy-light);box-shadow:0 0 0 3px rgba(30,58,95,.1)}
+input[type=range]{height:auto;padding:8px 0;border:none;box-shadow:none;background:transparent;cursor:pointer}
+input[type=range]:focus{box-shadow:none}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 24px;border-radius:8px;font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .15s;border:none}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy-light)}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover{background:var(--gold-light)}
+.btn-outline{background:transparent;border:1.5px solid var(--navy);color:var(--navy)}
+.btn-outline:hover{background:var(--navy);color:#fff}
+.btn-sm{height:36px;padding:0 16px;font-size:.82rem}
+
+.mt-4{margin-top:16px}
+.mt-6{margin-top:24px}
+
+/* ── Results ── */
+.results-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-top:20px}
+.stat-box{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px 20px}
+.stat-box .label{font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.stat-box .value{font-size:1.45rem;font-weight:700;color:var(--navy)}
+.stat-box .sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+.stat-box.highlight{background:var(--navy);border-color:var(--navy)}
+.stat-box.highlight .label{color:rgba(255,255,255,.65)}
+.stat-box.highlight .value{color:#fff}
+.stat-box.highlight .sub{color:rgba(255,255,255,.55)}
+
+/* ── Comps table ── */
+.comps-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:.875rem}
+.comps-table th{background:var(--bg);color:var(--muted);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:10px 14px;text-align:left;border-bottom:2px solid var(--border)}
+.comps-table td{padding:11px 14px;border-bottom:1px solid var(--border)}
+.comps-table tr:last-child td{border-bottom:none}
+.comps-table tr:hover td{background:#f8f9fb}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.72rem;font-weight:600}
+.tag-same{background:#e8f0fe;color:#1e3a8a}
+.tag-adj{background:#fef3c7;color:#92400e}
+
+/* ── Sensitivity table ── */
+.sens-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.875rem}
+.sens-table th{background:var(--bg);color:var(--muted);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:10px 16px;text-align:left;border-bottom:2px solid var(--border)}
+.sens-table td{padding:11px 16px;border-bottom:1px solid var(--border)}
+.sens-table tr.current td{background:#eef2f8;font-weight:600}
+.sens-table tr:last-child td{border-bottom:none}
+
+/* ── Verdict ── */
+.verdict{display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:10px;font-weight:700;font-size:1rem;margin-top:16px}
+.verdict.green{background:var(--green-bg);color:var(--green)}
+.verdict.yellow{background:var(--yellow-bg);color:var(--yellow)}
+.verdict.red{background:var(--red-bg);color:var(--red)}
+.verdict-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.verdict.green .verdict-dot{background:var(--green)}
+.verdict.yellow .verdict-dot{background:#d4a017}
+.verdict.red .verdict-dot{background:var(--red)}
+
+/* ── Market dashboard ── */
+.market-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.zip-card{border-radius:12px;padding:20px;border-left:5px solid transparent;border:1px solid var(--border)}
+.zip-card.high{border-left:5px solid var(--green);background:linear-gradient(135deg,var(--green-bg),#fff)}
+.zip-card.medium{border-left:5px solid #d4a017;background:linear-gradient(135deg,var(--yellow-bg),#fff)}
+.zip-card.low{border-left:5px solid var(--red);background:linear-gradient(135deg,var(--red-bg),#fff)}
+.zip-card .zipcode{font-size:1.3rem;font-weight:700;color:var(--navy);margin-bottom:8px}
+.zip-card .arv{font-size:.85rem;color:var(--muted);margin-bottom:4px}
+.zip-card .arv span{font-weight:600;color:var(--text)}
+.zip-card .buybx{font-size:.82rem;color:var(--muted)}
+.zip-card .buybx span{font-weight:600;color:var(--text)}
+.demand-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:.06em;margin-bottom:10px}
+.demand-badge.high{background:var(--green-bg);color:var(--green)}
+.demand-badge.medium{background:var(--yellow-bg);color:var(--yellow)}
+.demand-badge.low{background:var(--red-bg);color:var(--red)}
+
+/* ── Offer letter ── */
+.letter-form .form-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+#letterOutput{display:none;margin-top:24px}
+.letter-box{background:#fff;border:2px solid var(--navy);border-radius:12px;padding:40px 48px;font-family:'IBM Plex Sans',sans-serif;max-width:700px;margin:0 auto;line-height:1.7}
+.letter-box h3{text-align:center;font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
+.letter-box .letter-sub{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.letter-box p{margin-bottom:14px;font-size:.92rem;color:#333}
+.letter-box .terms-block{background:var(--bg);border-radius:8px;padding:16px 20px;margin:16px 0}
+.letter-box .terms-block li{margin-bottom:6px;font-size:.88rem;color:#444}
+.letter-box .sig-line{margin-top:36px;border-top:1.5px solid #aaa;width:260px;padding-top:6px;font-size:.8rem;color:var(--muted)}
+.letter-box .price-highlight{font-size:1.25rem;font-weight:700;color:var(--navy)}
+@media print{nav,header,.btn,.form-grid,.no-print{display:none!important}.letter-box{border:none;padding:20px}}
+
+/* ── Misc ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.section-header h2{margin-bottom:0}
+.empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:.9rem}
+.adj-note{font-size:.78rem;color:var(--muted);margin-top:8px}
+.range-row{display:flex;align-items:center;gap:14px}
+.range-row span{font-size:.9rem;font-weight:600;color:var(--navy);white-space:nowrap;min-width:50px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}
+.divider{height:1px;background:var(--border);margin:24px 0}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    Birddog &nbsp;·&nbsp; Comps &amp; Offer Calculator
+  </div>
+  <nav>
+    <button class="active" onclick="showTab('comps',this)">Comps</button>
+    <button onclick="showTab('offer',this)">Offer Calc</button>
+    <button onclick="showTab('letter',this)">Offer Letter</button>
+    <button onclick="showTab('market',this)">Market</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 1 — COMPS ENGINE
+═══════════════════════════════════════════════════ -->
+<div id="tab-comps" class="tab-panel active">
+  <div class="card">
+    <h2>Pull Comps</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>ZIP Code</label>
+        <input id="c-zip" type="text" placeholder="e.g. 33610" maxlength="5"/>
+      </div>
+      <div class="form-group">
+        <label>Beds</label>
+        <select id="c-beds">
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Baths</label>
+        <select id="c-baths">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Sq Ft</label>
+        <input id="c-sqft" type="number" placeholder="e.g. 1400"/>
+      </div>
+    </div>
+    <div class="mt-4">
+      <button class="btn btn-primary" onclick="runComps()">▸ Pull Comps</button>
+    </div>
+  </div>
+
+  <div id="comps-results" style="display:none">
+    <div class="card mt-6">
+      <div class="section-header">
+        <h2>ARV Summary</h2>
+        <button class="btn btn-gold btn-sm" onclick="sendToOffer()">Use ARV in Offer Calc →</button>
+      </div>
+      <div class="results-grid">
+        <div class="stat-box highlight">
+          <div class="label">Adjusted ARV</div>
+          <div class="value" id="r-arv">—</div>
+          <div class="sub">Recommended offer basis</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">Median Sale Price</div>
+          <div class="value" id="r-median">—</div>
+          <div class="sub">From top 5 comps</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">Price / Sq Ft</div>
+          <div class="value" id="r-ppsf">—</div>
+          <div class="sub">Median $/sqft</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">ARV Adjustments</div>
+          <div class="value" id="r-adj">—</div>
+          <div class="sub">Bed + sqft delta</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-6">
+      <h2>Top 5 Comparable Sales</h2>
+      <p class="adj-note">Sorted by relevance — same zip preferred, ±1 bed, ±300 sqft</p>
+      <div style="overflow-x:auto">
+        <table class="comps-table">
+          <thead>
+            <tr>
+              <th>Address</th>
+              <th>ZIP</th>
+              <th>Beds/Baths</th>
+              <th>Sq Ft</th>
+              <th>Sale Price</th>
+              <th>$/Sqft</th>
+              <th>Date</th>
+              <th>Match</th>
+            </tr>
+          </thead>
+          <tbody id="comps-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="comps-error" style="display:none" class="card mt-6">
+    <div class="empty" id="comps-error-msg">No comps found.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 2 — OFFER CALCULATOR
+═══════════════════════════════════════════════════ -->
+<div id="tab-offer" class="tab-panel">
+  <div class="two-col">
+    <div class="card">
+      <h2>Deal Inputs</h2>
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div class="form-group">
+          <label>ARV ($)</label>
+          <input id="o-arv" type="number" placeholder="e.g. 195000"/>
+        </div>
+        <div class="form-group">
+          <label>Square Footage</label>
+          <input id="o-sqft" type="number" placeholder="e.g. 1400"/>
+        </div>
+        <div class="form-group">
+          <label>Property Condition (1–10)</label>
+          <div class="range-row">
+            <input id="o-condition" type="range" min="1" max="10" value="6" oninput="updateConditionLabel()"/>
+            <span id="condition-label">6 / Fair</span>
+          </div>
+          <div id="condition-desc" style="font-size:.78rem;color:var(--muted);margin-top:2px">Moderate repairs needed — estimate: $25/sqft</div>
+        </div>
+        <button class="btn btn-primary" onclick="runOffer()">▸ Calculate Offer</button>
+      </div>
+    </div>
+
+    <div id="offer-results" style="display:none">
+      <div class="card">
+        <h2>Offer Results</h2>
+        <div class="results-grid" style="grid-template-columns:1fr 1fr">
+          <div class="stat-box highlight">
+            <div class="label">MAO</div>
+            <div class="value" id="r-mao">—</div>
+            <div class="sub">Max Allowable Offer</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">Repair Estimate</div>
+            <div class="value" id="r-repairs">—</div>
+            <div class="sub">Based on condition</div>
+          </div>
+        </div>
+        <div id="r-verdict"></div>
+
+        <div class="divider"></div>
+        <h2>ARV Sensitivity</h2>
+        <table class="sens-table">
+          <thead>
+            <tr><th>Scenario</th><th>ARV</th><th>MAO</th></tr>
+          </thead>
+          <tbody id="sens-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 3 — OFFER LETTER
+═══════════════════════════════════════════════════ -->
+<div id="tab-letter" class="tab-panel">
+  <div class="card letter-form">
+    <h2>Offer Letter Generator</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Property Address</label>
+        <input id="l-address" type="text" placeholder="123 Main St, Tampa FL 33610"/>
+      </div>
+      <div class="form-group">
+        <label>Purchase Price ($)</label>
+        <input id="l-price" type="number" placeholder="e.g. 120000"/>
+      </div>
+      <div class="form-group">
+        <label>Buyer Last Name</label>
+        <input id="l-lastname" type="text" placeholder="e.g. Smith"/>
+      </div>
+      <div class="form-group">
+        <label>Today's Date</label>
+        <input id="l-date" type="date"/>
+      </div>
+      <div class="form-group">
+        <label>Seller Name</label>
+        <input id="l-seller" type="text" placeholder="Property Owner"/>
+      </div>
+      <div class="form-group">
+        <label>EMD Amount ($)</label>
+        <input id="l-emd" type="number" value="1000"/>
+      </div>
+    </div>
+    <div class="mt-4">
+      <button class="btn btn-primary" onclick="generateLetter()">▸ Generate Letter</button>
+    </div>
+  </div>
+
+  <div id="letterOutput">
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:12px" class="no-print">
+      <button class="btn btn-outline btn-sm" onclick="window.print()">🖨 Print</button>
+      <button class="btn btn-gold btn-sm" onclick="copyLetter()">📋 Copy</button>
+    </div>
+    <div class="letter-box" id="letterContent"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 4 — MARKET DASHBOARD
+═══════════════════════════════════════════════════ -->
+<div id="tab-market" class="tab-panel">
+  <div class="card">
+    <div class="section-header">
+      <h2>Tampa Market Snapshot</h2>
+      <span style="font-size:.78rem;color:var(--muted)">Updated Dec 2025 · Cash Buyer Intelligence</span>
+    </div>
+    <div class="market-grid" id="market-grid">
+      <div class="empty">Loading...</div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ── Tab navigation ────────────────────────────────────────────────────────────
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'market') loadMarket();
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const fmt = v => '$' + Math.round(v).toLocaleString();
+const fmtSign = v => (v >= 0 ? '+' : '') + fmt(v);
+
+// ── Condition label ───────────────────────────────────────────────────────────
+const CONDITIONS = {
+  1:'1 — Tear Down',2:'2 — Major Gut',3:'3 — Full Rehab',
+  4:'4 — Heavy Rehab',5:'5 — Moderate Rehab',6:'6 — Fair',
+  7:'7 — Light Repairs',8:'8 — Good',9:'9 — Great',10:'10 — Turnkey'
+};
+const REPAIR_LABELS = {1:'$55',2:'$55',3:'$55',4:'$40',5:'$40',6:'$25',7:'$25',8:'$12',9:'$12',10:'$5'};
+
+function updateConditionLabel() {
+  const v = +document.getElementById('o-condition').value;
+  document.getElementById('condition-label').textContent = CONDITIONS[v] || v;
+  const rates = {1:55,2:55,3:55,4:40,5:40,6:25,7:25,8:12,9:12,10:5};
+  document.getElementById('condition-desc').textContent = `Repair estimate: $${rates[v]}/sqft`;
+}
+updateConditionLabel();
+
+// ── Comps ─────────────────────────────────────────────────────────────────────
+let lastArv = null;
+let lastSqft = null;
+
+async function runComps() {
+  const zip = document.getElementById('c-zip').value.trim();
+  const beds = +document.getElementById('c-beds').value;
+  const baths = +document.getElementById('c-baths').value;
+  const sqft = +document.getElementById('c-sqft').value;
+
+  if (!zip || !sqft) { alert('Please enter ZIP and Sq Ft.'); return; }
+
+  const res = await fetch('/api/comps', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ zip, beds, baths, sqft })
+  });
+  const data = await res.json();
+
+  document.getElementById('comps-error').style.display = 'none';
+  document.getElementById('comps-results').style.display = 'none';
+
+  if (data.error) {
+    document.getElementById('comps-error-msg').textContent = data.error;
+    document.getElementById('comps-error').style.display = 'block';
+    return;
+  }
+
+  lastArv = data.arv;
+  lastSqft = sqft;
+
+  document.getElementById('r-arv').textContent = fmt(data.arv);
+  document.getElementById('r-median').textContent = fmt(data.medianPrice);
+  document.getElementById('r-ppsf').textContent = '$' + data.medianPpsf + '/sqft';
+
+  const adjParts = [];
+  if (data.bedAdj !== 0) adjParts.push(`Beds: ${fmtSign(data.bedAdj)}`);
+  if (data.sqftAdj !== 0) adjParts.push(`Sqft: ${fmtSign(data.sqftAdj)}`);
+  document.getElementById('r-adj').textContent = adjParts.length ? adjParts.join(' · ') : 'No adjustment';
+
+  const tbody = document.getElementById('comps-tbody');
+  tbody.innerHTML = data.comps.map(c => {
+    const ppsf = Math.round(c.price / c.sqft);
+    const match = c.zip === zip
+      ? '<span class="tag tag-same">Same ZIP</span>'
+      : '<span class="tag tag-adj">Adjacent</span>';
+    return `<tr>
+      <td>${c.address}</td>
+      <td>${c.zip}</td>
+      <td>${c.beds}bd/${c.baths}ba</td>
+      <td>${c.sqft.toLocaleString()}</td>
+      <td>${fmt(c.price)}</td>
+      <td>$${ppsf}</td>
+      <td>${c.date}</td>
+      <td>${match}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('comps-results').style.display = 'block';
+}
+
+function sendToOffer() {
+  if (!lastArv) return;
+  document.getElementById('o-arv').value = lastArv;
+  if (lastSqft) document.getElementById('o-sqft').value = lastSqft;
+  // Switch to offer tab
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-offer').classList.add('active');
+  document.querySelectorAll('nav button')[1].classList.add('active');
+}
+
+// ── Offer Calc ────────────────────────────────────────────────────────────────
+async function runOffer() {
+  const arv = +document.getElementById('o-arv').value;
+  const sqft = +document.getElementById('o-sqft').value;
+  const condition = +document.getElementById('o-condition').value;
+
+  if (!arv || !sqft) { alert('Please enter ARV and Sq Ft.'); return; }
+
+  const res = await fetch('/api/offer', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ arv, sqft, condition })
+  });
+  const data = await res.json();
+
+  document.getElementById('r-mao').textContent = fmt(data.mao);
+  document.getElementById('r-repairs').textContent = fmt(data.repairs);
+
+  const vEl = document.getElementById('r-verdict');
+  vEl.innerHTML = `<div class="verdict ${data.verdictClass}">
+    <div class="verdict-dot"></div>
+    ${data.verdict}
+  </div>`;
+
+  const tbody = document.getElementById('sens-tbody');
+  tbody.innerHTML = data.sensitivity.map(row => {
+    const isCurrent = row.label === 'ARV';
+    return `<tr class="${isCurrent ? 'current' : ''}">
+      <td>${row.label}</td>
+      <td>${fmt(row.arvVal)}</td>
+      <td style="color:${row.mao >= 50000 ? 'var(--green)' : row.mao >= 30000 ? 'var(--yellow)' : 'var(--red)'}; font-weight:600">${fmt(row.mao)}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('offer-results').style.display = 'block';
+}
+
+// ── Offer Letter ──────────────────────────────────────────────────────────────
+// Pre-fill today's date
+document.getElementById('l-date').value = new Date().toISOString().split('T')[0];
+
+function generateLetter() {
+  const address = document.getElementById('l-address').value.trim();
+  const price = +document.getElementById('l-price').value;
+  const lastname = document.getElementById('l-lastname').value.trim() || '[Last Name]';
+  const dateVal = document.getElementById('l-date').value;
+  const seller = document.getElementById('l-seller').value.trim() || 'Property Owner';
+  const emd = +document.getElementById('l-emd').value || 1000;
+
+  if (!address || !price) { alert('Please enter Address and Purchase Price.'); return; }
+
+  const formatted = new Date(dateVal + 'T00:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const expDate = new Date(dateVal + 'T00:00:00');
+  expDate.setDate(expDate.getDate() + 2);
+  const expFormatted = expDate.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+  document.getElementById('letterContent').innerHTML = `
+    <h3>Letter of Intent to Purchase Real Property</h3>
+    <div class="letter-sub">Non-Binding · For Discussion Purposes Only</div>
+
+    <p><strong>Date:</strong> ${formatted}</p>
+    <p><strong>To:</strong> ${seller} ("Seller")</p>
+    <p><strong>From:</strong> Kaulin ${lastname}, a Florida real estate investor ("Buyer")</p>
+    <p><strong>Re:</strong> ${address} ("Property")</p>
+
+    <p>Dear ${seller},</p>
+    <p>Buyer hereby submits this Letter of Intent to purchase the above-referenced Property under the following terms and conditions:</p>
+
+    <ul class="terms-block">
+      <li><strong>Purchase Price:</strong> <span class="price-highlight">${fmt(price)}</span> (${fmt(price).replace('$','').trim()} U.S. Dollars)</li>
+      <li><strong>Financing:</strong> All-cash purchase. No financing contingency.</li>
+      <li><strong>Condition:</strong> As-is, where-is, with no representations or warranties from Seller.</li>
+      <li><strong>Earnest Money Deposit:</strong> ${fmt(emd)}, due within 3 business days of executed PSA.</li>
+      <li><strong>Inspection Period:</strong> 7 days from execution of PSA (waivable by Buyer at Buyer's sole discretion).</li>
+      <li><strong>Closing Timeline:</strong> Within 14 calendar days of an accepted offer / executed PSA.</li>
+      <li><strong>Closing Costs:</strong> Each party responsible for their own customary costs; Buyer pays title.</li>
+      <li><strong>Assignment:</strong> Buyer reserves the right to assign this contract or close in an entity.</li>
+    </ul>
+
+    <p>This LOI is non-binding and intended solely to outline proposed deal terms. A formal Purchase and Sale Agreement ("PSA") will be prepared upon acceptance.</p>
+
+    <p><strong>Offer Expiration:</strong> This offer expires at 11:59 PM on <strong>${expFormatted}</strong> (48 hours from date of delivery). Buyer reserves the right to withdraw or modify this offer at any time prior to execution of a PSA.</p>
+
+    <p>If these terms are acceptable, please indicate your agreement below or contact Buyer directly to discuss.</p>
+
+    <p style="margin-top:32px">Respectfully submitted,</p>
+    <div class="sig-line">Kaulin ${lastname} · Florida Real Estate Investor</div>
+    <div style="margin-top:32px">
+      <div class="sig-line">Seller Acknowledgment / Signature &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date</div>
+    </div>
+  `;
+
+  document.getElementById('letterOutput').style.display = 'block';
+  document.getElementById('letterOutput').scrollIntoView({ behavior:'smooth' });
+}
+
+function copyLetter() {
+  const el = document.getElementById('letterContent');
+  const range = document.createRange();
+  range.selectNode(el);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+  document.execCommand('copy');
+  window.getSelection().removeAllRanges();
+  alert('Letter copied to clipboard!');
+}
+
+// ── Market Dashboard ──────────────────────────────────────────────────────────
+async function loadMarket() {
+  const grid = document.getElementById('market-grid');
+  if (grid.querySelector('.zip-card')) return; // already loaded
+
+  const data = await fetch('/api/market').then(r => r.json());
+  grid.innerHTML = data.map(z => {
+    const cls = z.demand.toLowerCase();
+    return `<div class="zip-card ${cls}">
+      <div class="zipcode">${z.zip}</div>
+      <span class="demand-badge ${cls}">${z.demand} DEMAND</span>
+      <div class="arv">Median ARV: <span>${fmt(z.medianArv)}</span></div>
+      <div class="buybx">Buy Box: <span>${fmt(z.buyBoxLow)} – ${fmt(z.buyBoxHigh)}</span></div>
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>

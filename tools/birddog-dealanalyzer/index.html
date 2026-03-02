@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BIRDDOG // DEAL ANALYZER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #21262d;
+  --bg4: #30363d;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #484f58;
+  --green: #00d26a;
+  --green-dim: #00d26a22;
+  --green-glow: 0 0 20px #00d26a66, 0 0 60px #00d26a22;
+  --red: #ff4757;
+  --red-dim: #ff475722;
+  --yellow: #ffd32a;
+  --yellow-dim: #ffd32a22;
+  --blue: #58a6ff;
+  --mono: 'Roboto Mono', monospace;
+  --sans: 'Roboto', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.topbar-logo {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  color: var(--green);
+}
+.topbar-logo span { color: var(--text2); }
+.topbar-ticker {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+  border-left: 1px solid var(--border);
+  padding-left: 12px;
+  display: flex;
+  gap: 20px;
+}
+.ticker-item { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.ticker-label { font-size: 9px; color: var(--text3); letter-spacing: 0.05em; text-transform: uppercase; }
+.ticker-val { color: var(--green); font-weight: 600; }
+.ticker-val.red { color: var(--red); }
+.ticker-val.yellow { color: var(--yellow); }
+
+.nav-tabs {
+  display: flex;
+  gap: 2px;
+}
+.nav-tab {
+  background: none;
+  border: none;
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  padding: 6px 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+.nav-tab:hover { background: var(--bg3); color: var(--text); }
+.nav-tab.active { background: var(--green-dim); color: var(--green); border: 1px solid #00d26a33; }
+
+/* ── LAYOUT ── */
+.workspace {
+  display: flex;
+  height: calc(100vh - 52px);
+  overflow: hidden;
+}
+
+.panel {
+  display: none;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 24px;
+}
+.panel.active { display: block; }
+
+.panel-split {
+  display: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.panel-split.active { display: flex; }
+
+.split-left {
+  width: 520px;
+  min-width: 520px;
+  overflow-y: auto;
+  padding: 24px;
+  border-right: 1px solid var(--border);
+}
+.split-right {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+  border-radius: 8px 8px 0 0;
+}
+.card-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+.card-body { padding: 16px; }
+
+/* ── FORM ELEMENTS ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.form-full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.field input, .field select, .field textarea {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px var(--green-dim);
+}
+.field input[type=number] { font-family: var(--mono); }
+.field textarea { resize: vertical; min-height: 60px; }
+.field select option { background: var(--bg3); }
+
+/* ── SLIDER ── */
+.slider-wrap { display: flex; flex-direction: column; gap: 6px; }
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text3);
+  font-family: var(--mono);
+}
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--bg4);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--green);
+  cursor: pointer;
+  box-shadow: 0 0 6px var(--green);
+}
+.slider-val {
+  text-align: center;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--green);
+}
+
+/* ── CHECKBOXES ── */
+.checkbox-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text2);
+  transition: all 0.15s;
+}
+.checkbox-item:hover { border-color: var(--green); color: var(--text); }
+.checkbox-item.checked { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.checkbox-item input { display: none; }
+
+/* ── REPAIR TABLE ── */
+.repair-table { width: 100%; border-collapse: collapse; }
+.repair-table tr { border-bottom: 1px solid var(--border); }
+.repair-table tr:last-child { border-bottom: none; }
+.repair-table td { padding: 6px 10px; font-size: 12px; vertical-align: middle; }
+.repair-table td:first-child { color: var(--text2); font-family: var(--mono); }
+.repair-table td:last-child { text-align: right; }
+.repair-table input {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 4px 8px;
+  width: 100px;
+  text-align: right;
+  outline: none;
+}
+.repair-table input:focus { border-color: var(--green); }
+.repair-total-row td { font-family: var(--mono); font-weight: 700; font-size: 14px; background: var(--bg3); }
+.contingency-row td { color: var(--yellow); font-size: 11px; }
+
+/* ── BIG NUMBER ── */
+.big-number {
+  font-family: var(--mono);
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.big-number.green { color: var(--green); text-shadow: var(--green-glow); }
+.big-number.red { color: var(--red); }
+.big-number.yellow { color: var(--yellow); }
+
+.big-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 4px;
+}
+
+/* ── COMPS ── */
+.comp-slot {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.comp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.comp-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+}
+.comp-adj-price {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--green);
+}
+.comp-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 6px; }
+
+/* ── VERDICT CARD ── */
+.verdict-card {
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  margin-bottom: 16px;
+  border: 2px solid var(--border);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.verdict-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  opacity: 0.05;
+}
+.verdict-card.strong { border-color: var(--green); box-shadow: var(--green-glow); background: var(--green-dim); }
+.verdict-card.strong::before { background: var(--green); opacity: 0.08; }
+.verdict-card.marginal { border-color: var(--yellow); box-shadow: 0 0 20px #ffd32a44; background: var(--yellow-dim); }
+.verdict-card.pass { border-color: var(--red); box-shadow: 0 0 20px #ff475744; background: var(--red-dim); }
+
+.verdict-text {
+  font-family: var(--mono);
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.verdict-text.green { color: var(--green); }
+.verdict-text.yellow { color: var(--yellow); }
+.verdict-text.red { color: var(--red); }
+
+.verdict-sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.action-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+.action-badge.offer { background: var(--green); color: #000; animation: flashGreen 1s infinite; }
+.action-badge.negotiate { background: var(--yellow); color: #000; }
+.action-badge.walk { background: var(--red); color: #fff; }
+
+@keyframes flashGreen {
+  0%,100% { box-shadow: 0 0 10px var(--green), 0 0 30px #00d26a44; }
+  50% { box-shadow: 0 0 20px var(--green), 0 0 60px #00d26a66; }
+}
+
+/* ── SENSITIVITY TABLE ── */
+.sens-table { width: 100%; border-collapse: collapse; font-family: var(--mono); }
+.sens-table th {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text2);
+  padding: 8px 10px;
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+}
+.sens-table th:first-child { text-align: left; }
+.sens-table td { padding: 8px 10px; font-size: 12px; text-align: right; border-bottom: 1px solid #21262d; }
+.sens-table td:first-child { text-align: left; color: var(--text2); }
+.sens-table tr.base-row td { background: var(--bg3); }
+.sens-table .deal { color: var(--green); }
+.sens-table .nodeal { color: var(--red); }
+.sens-table .marginal { color: var(--yellow); }
+
+/* ── DEAL MATH GRID ── */
+.math-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.math-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  text-align: center;
+}
+.math-box-label { font-family: var(--mono); font-size: 9px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.math-box-title { font-size: 11px; color: var(--text2); margin-bottom: 8px; }
+.math-box-val { font-family: var(--mono); font-size: 22px; font-weight: 700; }
+.math-box-val.green { color: var(--green); }
+.math-box-val.red { color: var(--red); }
+.math-box-val.yellow { color: var(--yellow); }
+.math-box-sub { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+/* ── SCRIPT PANEL ── */
+.script-block {
+  background: var(--bg3);
+  border-left: 3px solid var(--green);
+  border-radius: 0 4px 4px 0;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+}
+.script-block.opener { border-left-color: var(--blue); }
+.script-block.objection { border-left-color: var(--red); }
+.script-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+.script-q { color: var(--yellow); font-style: italic; }
+.script-highlight { color: var(--green); font-weight: 700; }
+
+/* ── HISTORY TABLE ── */
+.hist-table { width: 100%; border-collapse: collapse; }
+.hist-table th {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.hist-table td { padding: 10px 10px; font-size: 12px; border-bottom: 1px solid #21262d; }
+.hist-table tr:hover td { background: var(--bg3); }
+.hist-table .mono { font-family: var(--mono); }
+.verdict-badge {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+.verdict-badge.STRONG { background: var(--green-dim); color: var(--green); border: 1px solid #00d26a44; }
+.verdict-badge.MARGINAL { background: var(--yellow-dim); color: var(--yellow); border: 1px solid #ffd32a44; }
+.verdict-badge.PASS { background: var(--red-dim); color: var(--red); border: 1px solid #ff475744; }
+
+.status-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.status-dot.yes { background: var(--green); }
+.status-dot.no { background: var(--text3); }
+
+/* ── STATS ROW ── */
+.stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  text-align: center;
+}
+.stat-val { font-family: var(--mono); font-size: 28px; font-weight: 700; color: var(--green); }
+.stat-label { font-family: var(--mono); font-size: 9px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+
+/* ── BUTTONS ── */
+.btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+.btn:hover { background: var(--bg3); border-color: var(--text2); }
+.btn.primary { background: var(--green); border-color: var(--green); color: #000; font-weight: 700; }
+.btn.primary:hover { background: #00e87a; box-shadow: 0 0 12px var(--green); }
+.btn.danger { border-color: var(--red); color: var(--red); }
+.btn.danger:hover { background: var(--red-dim); }
+.btn.secondary { border-color: var(--blue); color: var(--blue); }
+
+/* ── MEMO ── */
+#memo-preview {
+  display: none;
+  background: #fff;
+  color: #111;
+  padding: 40px;
+  border-radius: 8px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+}
+#memo-preview h1 { font-size: 18px; text-align: center; letter-spacing: 0.05em; border-bottom: 2px solid #111; padding-bottom: 12px; margin-bottom: 20px; }
+#memo-preview h2 { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; margin: 20px 0 8px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+#memo-preview table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+#memo-preview table td, #memo-preview table th { padding: 6px 10px; border: 1px solid #ddd; font-size: 12px; }
+#memo-preview table th { background: #f5f5f5; font-weight: 700; }
+#memo-preview .memo-val { font-family: monospace; font-weight: 700; }
+#memo-preview .sig-line { border-top: 1px solid #111; width: 200px; margin-top: 40px; padding-top: 4px; font-size: 11px; }
+
+/* ── MISC ── */
+.row { display: flex; gap: 12px; align-items: center; }
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+.text-sm { font-size: 11px; color: var(--text2); }
+.text-mono { font-family: var(--mono); }
+.text-green { color: var(--green); }
+.text-red { color: var(--red); }
+.text-yellow { color: var(--yellow); }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.gap-8 { gap: 8px; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.justify-between { justify-content: space-between; }
+.align-center { align-items: center; }
+.confidence-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 3px 10px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+.confidence-badge.HIGH { background: var(--green-dim); color: var(--green); border: 1px solid #00d26a44; }
+.confidence-badge.MEDIUM { background: var(--yellow-dim); color: var(--yellow); border: 1px solid #ffd32a44; }
+.confidence-badge.LOW { background: var(--red-dim); color: var(--red); border: 1px solid #ff475744; }
+
+.arv-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.chart-wrap { position: relative; height: 200px; }
+
+/* DEAL HISTORY ROW CLICKABLE */
+.hist-table tr.clickable { cursor: pointer; }
+.hist-table tr.clickable:hover td { background: #1a2233; }
+
+/* ── PRINT ── */
+@media print {
+  .topbar, .nav-tabs, .workspace { display: none !important; }
+  #memo-preview { display: block !important; color: #111 !important; background: #fff !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-logo">BIRDDOG <span>// DEAL ANALYZER</span></div>
+    <div class="topbar-ticker" id="topbar-ticker">
+      <div class="ticker-item">
+        <span class="ticker-label">Analyzed</span>
+        <span class="ticker-val" id="t-analyzed">—</span>
+      </div>
+      <div class="ticker-item">
+        <span class="ticker-label">Offers</span>
+        <span class="ticker-val" id="t-offers">—</span>
+      </div>
+      <div class="ticker-item">
+        <span class="ticker-label">Accept %</span>
+        <span class="ticker-val" id="t-accept">—</span>
+      </div>
+      <div class="ticker-item">
+        <span class="ticker-label">Profit</span>
+        <span class="ticker-val text-green" id="t-profit">—</span>
+      </div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-tab="analyzer">Analyzer</button>
+    <button class="nav-tab" data-tab="history">History</button>
+  </div>
+</div>
+
+<div class="workspace">
+
+  <!-- ══ ANALYZER PANEL ══ -->
+  <div id="tab-analyzer" class="panel-split active">
+
+    <!-- LEFT COLUMN -->
+    <div class="split-left">
+
+      <!-- Deal Intake -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot"></span> Property Intake</div>
+          <div class="row gap-8">
+            <button class="btn secondary" onclick="clearForm()">Clear</button>
+            <button class="btn primary" onclick="saveDeal()">💾 Save Deal</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="field form-full mb-8">
+            <label>Property Address</label>
+            <input type="text" id="f-address" placeholder="e.g. 4521 N 22nd St Tampa FL 33610" />
+          </div>
+          <div class="form-grid-3">
+            <div class="field">
+              <label>Beds</label>
+              <input type="number" id="f-beds" min="0" max="10" step="1" value="3" oninput="recalc()" />
+            </div>
+            <div class="field">
+              <label>Baths</label>
+              <input type="number" id="f-baths" min="0" max="10" step="0.5" value="1" oninput="recalc()" />
+            </div>
+            <div class="field">
+              <label>Sqft</label>
+              <input type="number" id="f-sqft" min="0" value="1200" oninput="recalc()" />
+            </div>
+            <div class="field">
+              <label>Year Built</label>
+              <input type="number" id="f-year" min="1900" max="2030" value="1975" oninput="recalc()" />
+            </div>
+            <div class="field">
+              <label>Lot Size (sqft)</label>
+              <input type="number" id="f-lot" min="0" value="5000" />
+            </div>
+            <div class="field">
+              <label>Seller Asking $</label>
+              <input type="number" id="f-asking" min="0" value="0" oninput="recalc()" />
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Condition slider -->
+          <div class="field mb-8">
+            <label>Property Condition</label>
+            <div class="slider-wrap">
+              <div class="slider-val" id="condition-val">5</div>
+              <input type="range" id="f-condition" min="1" max="10" step="1" value="5" oninput="updateCondition(); recalc()" />
+              <div class="slider-labels">
+                <span>1 – Condemned</span>
+                <span>5 – Heavy Rehab</span>
+                <span>8 – Cosmetic</span>
+                <span>10 – Move-In</span>
+              </div>
+              <div style="text-align:center; margin-top:4px; font-family:var(--mono); font-size:11px; color:var(--text2)" id="condition-desc"></div>
+            </div>
+          </div>
+
+          <!-- Seller Situations -->
+          <div class="field mb-8">
+            <label>Seller Situation(s)</label>
+            <div class="checkbox-grid" id="situations-grid">
+              <label class="checkbox-item" onclick="toggleSituation(this)">
+                <input type="checkbox" value="Tax Delinquent" /> Tax Delinquent
+              </label>
+              <label class="checkbox-item" onclick="toggleSituation(this)">
+                <input type="checkbox" value="Pre-Foreclosure" /> Pre-Foreclosure
+              </label>
+              <label class="checkbox-item" onclick="toggleSituation(this)">
+                <input type="checkbox" value="Divorce" /> Divorce
+              </label>
+              <label class="checkbox-item" onclick="toggleSituation(this)">
+                <input type="checkbox" value="Probate" /> Probate
+              </label>
+              <label class="checkbox-item" onclick="toggleSituation(this)">
+                <input type="checkbox" value="Tired Landlord" /> Tired Landlord
+              </label>
+              <label class="checkbox-item" onclick="toggleSituation(this)">
+                <input type="checkbox" value="Code Violations" /> Code Violations
+              </label>
+              <label class="checkbox-item" onclick="toggleSituation(this)">
+                <input type="checkbox" value="Vacant" /> Vacant
+              </label>
+              <label class="checkbox-item" onclick="toggleSituation(this)">
+                <input type="checkbox" value="Absentee Owner" /> Absentee Owner
+              </label>
+            </div>
+          </div>
+
+          <!-- Motivation slider -->
+          <div class="field mb-8">
+            <label>Seller Motivation</label>
+            <div class="slider-wrap">
+              <div class="slider-val" id="motivation-val">5</div>
+              <input type="range" id="f-motivation" min="1" max="10" step="1" value="5" oninput="document.getElementById('motivation-val').textContent=this.value" />
+              <div class="slider-labels">
+                <span>1 – Not Motivated</span>
+                <span style="margin-left:auto">10 – Must Sell Now</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="field mb-8">
+            <label>Seller Timeline</label>
+            <select id="f-timeline">
+              <option value="ASAP">ASAP (Under 2 Weeks)</option>
+              <option value="1 month">1 Month</option>
+              <option value="3 months">3 Months</option>
+              <option value="flexible">Flexible</option>
+            </select>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Known Liens / Encumbrances</label>
+              <input type="text" id="f-liens" placeholder="e.g. Tax lien $8,200" />
+            </div>
+            <div class="field">
+              <label>Notes</label>
+              <input type="text" id="f-notes" placeholder="Quick notes..." />
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Deal Outcome Tracking -->
+          <div class="field mb-8">
+            <label>Deal Outcome</label>
+            <div class="checkbox-grid">
+              <label class="checkbox-item" onclick="toggleOutcome(this)">
+                <input type="checkbox" id="f-offered" /> Offered
+              </label>
+              <label class="checkbox-item" onclick="toggleOutcome(this)">
+                <input type="checkbox" id="f-accepted" /> Accepted
+              </label>
+              <label class="checkbox-item" onclick="toggleOutcome(this)">
+                <input type="checkbox" id="f-closed" /> Closed
+              </label>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Assignment Fee / Profit</label>
+              <input type="number" id="f-profit" min="0" value="0" placeholder="e.g. 15000" />
+            </div>
+            <div class="field">
+              <label>Deal Notes</label>
+              <input type="text" id="f-deal-notes" placeholder="Outcome details..." />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repair Estimator -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot"></span> Repair Estimator</div>
+          <button class="btn" onclick="resetRepairs()">↺ Reset</button>
+        </div>
+        <div class="card-body">
+          <table class="repair-table">
+            <tbody id="repair-tbody">
+              <tr>
+                <td>Base Rehab (condition-based)</td>
+                <td><input type="number" id="r-base" oninput="updateRepairTotal()" /></td>
+              </tr>
+              <tr>
+                <td>Roof</td>
+                <td><input type="number" id="r-roof" oninput="updateRepairTotal()" /></td>
+              </tr>
+              <tr>
+                <td>HVAC</td>
+                <td><input type="number" id="r-hvac" oninput="updateRepairTotal()" /></td>
+              </tr>
+              <tr>
+                <td>Plumbing</td>
+                <td><input type="number" id="r-plumbing" oninput="updateRepairTotal()" /></td>
+              </tr>
+              <tr>
+                <td>Electrical</td>
+                <td><input type="number" id="r-electrical" oninput="updateRepairTotal()" /></td>
+              </tr>
+              <tr>
+                <td>Kitchen</td>
+                <td><input type="number" id="r-kitchen" oninput="updateRepairTotal()" /></td>
+              </tr>
+              <tr>
+                <td>Bathrooms</td>
+                <td><input type="number" id="r-bathrooms" oninput="updateRepairTotal()" /></td>
+              </tr>
+              <tr>
+                <td>Flooring</td>
+                <td><input type="number" id="r-flooring" oninput="updateRepairTotal()" /></td>
+              </tr>
+              <tr>
+                <td>Paint (Interior)</td>
+                <td><input type="number" id="r-paint-int" oninput="updateRepairTotal()" /></td>
+              </tr>
+              <tr>
+                <td>Paint (Exterior)</td>
+                <td><input type="number" id="r-paint-ext" oninput="updateRepairTotal()" /></td>
+              </tr>
+              <tr>
+                <td>Landscaping</td>
+                <td><input type="number" id="r-landscaping" oninput="updateRepairTotal()" /></td>
+              </tr>
+              <tr class="contingency-row">
+                <td>Contingency (15%)</td>
+                <td><input type="number" id="r-contingency" readonly style="color:var(--yellow);cursor:default" /></td>
+              </tr>
+              <tr class="repair-total-row">
+                <td>TOTAL REPAIRS</td>
+                <td><span id="repair-total-display" style="font-family:var(--mono);font-size:18px;color:var(--red)">$0</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ARV Calculator -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot"></span> ARV Calculator</div>
+          <div class="arv-row">
+            <span class="confidence-badge" id="arv-confidence-badge">—</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div style="text-align:center; margin-bottom:16px;">
+            <div class="big-label">After Repair Value</div>
+            <div class="big-number green" id="arv-display">$—</div>
+          </div>
+          <div id="comps-container">
+            <!-- Comp slots injected by JS -->
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end split-left -->
+
+    <!-- RIGHT COLUMN -->
+    <div class="split-right">
+
+      <!-- VERDICT CARD -->
+      <div class="card" id="verdict-wrapper">
+        <div class="card-body" style="padding:0">
+          <div class="verdict-card" id="verdict-card">
+            <div class="verdict-text" id="verdict-text">ENTER DEAL DATA</div>
+            <div class="verdict-sub" id="verdict-sub">Awaiting analysis</div>
+            <div id="action-badge-wrap"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deal Math -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot"></span> Deal Math</div>
+          <span class="text-sm text-mono">Real-time</span>
+        </div>
+        <div class="card-body">
+          <div class="math-grid">
+            <div class="math-box">
+              <div class="math-box-label">Standard</div>
+              <div class="math-box-title">ARV × 70% − Repairs − $15K</div>
+              <div class="math-box-val green" id="mao-standard">$—</div>
+              <div class="math-box-sub">Your Fee: $15,000</div>
+            </div>
+            <div class="math-box">
+              <div class="math-box-label">Aggressive</div>
+              <div class="math-box-title">ARV × 75% − Repairs − $12K</div>
+              <div class="math-box-val yellow" id="mao-aggressive">$—</div>
+              <div class="math-box-sub">Your Fee: $12,000</div>
+            </div>
+            <div class="math-box">
+              <div class="math-box-label">Conservative</div>
+              <div class="math-box-title">ARV × 65% − Repairs − $18K</div>
+              <div class="math-box-val red" id="mao-conservative">$—</div>
+              <div class="math-box-sub">Your Fee: $18,000</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <div style="font-family:var(--mono); font-size:10px; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px;">Cash Buyer Profit (Standard MAO)</div>
+          <div class="math-grid">
+            <div class="math-box">
+              <div class="math-box-label">Buyer Buys At</div>
+              <div class="math-box-val" id="buyer-buys" style="font-size:16px; color:var(--text2)">$—</div>
+            </div>
+            <div class="math-box">
+              <div class="math-box-label">Closing Costs (3%)</div>
+              <div class="math-box-val" id="buyer-closing" style="font-size:16px; color:var(--text2)">$—</div>
+            </div>
+            <div class="math-box">
+              <div class="math-box-label">Net Buyer Profit</div>
+              <div class="math-box-val green" id="buyer-profit" style="font-size:16px;">$—</div>
+            </div>
+          </div>
+          <div style="font-family:var(--mono); font-size:10px; color:var(--text3); margin-top:6px;">
+            Holding costs (3 mo): <span style="color:var(--yellow)">$4,500</span> · ARV − MAO − Repairs − Closing − Holding = Net Buyer Profit
+          </div>
+        </div>
+      </div>
+
+      <!-- Sensitivity Table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot"></span> Sensitivity Analysis</div>
+        </div>
+        <div class="card-body" style="padding: 0 0 8px;">
+          <table class="sens-table">
+            <thead>
+              <tr>
+                <th>ARV Scenario</th>
+                <th>ARV</th>
+                <th>MAO Std</th>
+                <th>MAO Agg</th>
+                <th>MAO Cons</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="sens-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Negotiation Script -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot"></span> Negotiation Script</div>
+          <button class="btn" onclick="generateScript()">↻ Regenerate</button>
+        </div>
+        <div class="card-body" id="script-body">
+          <div class="text-sm" style="color:var(--text3)">Fill in seller situation and deal data to generate script...</div>
+        </div>
+      </div>
+
+      <!-- Deal Memo -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot"></span> Deal Memo</div>
+          <div class="row gap-8">
+            <button class="btn secondary" onclick="generateMemo()">📄 Generate Memo</button>
+            <button class="btn" onclick="window.print()">🖨 Print</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="memo-status" class="text-sm" style="color:var(--text3)">Generate a deal memo to review or print.</div>
+          <div id="memo-preview"></div>
+        </div>
+      </div>
+
+    </div><!-- end split-right -->
+  </div>
+
+  <!-- ══ HISTORY PANEL ══ -->
+  <div id="tab-history" class="panel">
+
+    <!-- Stats Row -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-box"><div class="stat-val" id="s-analyzed">—</div><div class="stat-label">Analyzed</div></div>
+      <div class="stat-box"><div class="stat-val" id="s-offers">—</div><div class="stat-label">Offers Made</div></div>
+      <div class="stat-box"><div class="stat-val yellow" id="s-accepted">—</div><div class="stat-label">Accepted</div></div>
+      <div class="stat-box"><div class="stat-val green" id="s-closed">—</div><div class="stat-label">Closed</div></div>
+      <div class="stat-box"><div class="stat-val green" id="s-profit">—</div><div class="stat-label">Total Profit</div></div>
+    </div>
+
+    <div class="row" style="gap:24px; align-items:flex-start; margin-bottom:20px;">
+      <div style="flex:1">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Monthly Deal Flow</div></div>
+          <div class="card-body"><div class="chart-wrap"><canvas id="deal-chart"></canvas></div></div>
+        </div>
+      </div>
+      <div style="width:220px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">By Verdict</div></div>
+          <div class="card-body"><div class="chart-wrap"><canvas id="verdict-chart"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deal History Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Deal History</div>
+        <button class="btn primary" onclick="newDeal()">+ New Deal</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div style="overflow-x:auto">
+          <table class="hist-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Address</th>
+                <th>Bed/Bath</th>
+                <th>Sqft</th>
+                <th>ARV</th>
+                <th>Repairs</th>
+                <th>MAO</th>
+                <th>Asking</th>
+                <th>Verdict</th>
+                <th>Offered</th>
+                <th>Accepted</th>
+                <th>Closed</th>
+                <th>Profit</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="hist-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end workspace -->
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let currentDealId = null;
+let dealChart = null;
+let verdictChart = null;
+
+// ══════════════════════════════════════════════════════════════
+// NAV TABS
+// ══════════════════════════════════════════════════════════════
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.panel, .panel-split').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    if (tab === 'history') loadHistory();
+  });
+});
+
+// ══════════════════════════════════════════════════════════════
+// CONDITION
+// ══════════════════════════════════════════════════════════════
+const conditionDescs = {
+  1: 'Condemned — Structurally unsafe', 2: 'Severely Distressed — Major structural issues',
+  3: 'Very Poor — Full gut rehab needed', 4: 'Poor — Heavy rehab throughout',
+  5: 'Below Average — Heavy cosmetic + systems', 6: 'Fair — Significant cosmetic + some systems',
+  7: 'Average — Cosmetic updates needed', 8: 'Good — Mostly cosmetic',
+  9: 'Very Good — Minor touch-ups', 10: 'Move-In Ready — No work needed'
+};
+
+function updateCondition() {
+  const v = +document.getElementById('f-condition').value;
+  document.getElementById('condition-val').textContent = v;
+  document.getElementById('condition-desc').textContent = conditionDescs[v] || '';
+}
+
+// ══════════════════════════════════════════════════════════════
+// CHECKBOX TOGGLE
+// ══════════════════════════════════════════════════════════════
+function toggleSituation(el) {
+  const cb = el.querySelector('input');
+  cb.checked = !cb.checked;
+  el.classList.toggle('checked', cb.checked);
+  generateScript();
+}
+
+function getSelectedSituations() {
+  return [...document.querySelectorAll('#situations-grid input:checked')].map(i => i.value);
+}
+
+function setSelectedSituations(situations) {
+  document.querySelectorAll('#situations-grid input').forEach(cb => {
+    cb.checked = situations.includes(cb.value);
+    cb.parentElement.classList.toggle('checked', cb.checked);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// REPAIR CALCULATIONS
+// ══════════════════════════════════════════════════════════════
+function calcRepairs(sqft, condition, year_built, baths) {
+  let base;
+  if (condition <= 3) base = sqft * 55;
+  else if (condition <= 5) base = sqft * 40;
+  else if (condition <= 7) base = sqft * 25;
+  else if (condition <= 9) base = sqft * 12;
+  else base = sqft * 5;
+
+  const roof = year_built < 2005 ? 12000 : 0;
+  const hvac = condition <= 5 ? 6500 : 0;
+  const plumbing = condition <= 4 ? 8000 : 0;
+  const electrical = condition <= 4 ? 6000 : 0;
+  const kitchen = condition <= 6 ? 12000 : 4000;
+  const bathrooms = condition <= 6 ? baths * 3500 : baths * 1500;
+  const flooring = condition <= 7 ? sqft * 4 : sqft * 1.5;
+  const paint_int = sqft * 1.25;
+  const paint_ext = 3500;
+  const landscaping = 1500;
+  const subtotal = base + roof + hvac + plumbing + electrical + kitchen + bathrooms + flooring + paint_int + paint_ext + landscaping;
+  const contingency = subtotal * 0.15;
+  const total = subtotal + contingency;
+  return { base, roof, hvac, plumbing, electrical, kitchen, bathrooms, flooring, paint_int, paint_ext, landscaping, contingency, total };
+}
+
+function setRepairFields(r) {
+  document.getElementById('r-base').value = Math.round(r.base);
+  document.getElementById('r-roof').value = Math.round(r.roof);
+  document.getElementById('r-hvac').value = Math.round(r.hvac);
+  document.getElementById('r-plumbing').value = Math.round(r.plumbing);
+  document.getElementById('r-electrical').value = Math.round(r.electrical);
+  document.getElementById('r-kitchen').value = Math.round(r.kitchen);
+  document.getElementById('r-bathrooms').value = Math.round(r.bathrooms);
+  document.getElementById('r-flooring').value = Math.round(r.flooring);
+  document.getElementById('r-paint-int').value = Math.round(r.paint_int);
+  document.getElementById('r-paint-ext').value = Math.round(r.paint_ext);
+  document.getElementById('r-landscaping').value = Math.round(r.landscaping);
+  document.getElementById('r-contingency').value = Math.round(r.contingency);
+  updateRepairTotal();
+}
+
+function getRepairFields() {
+  const vals = ['base','roof','hvac','plumbing','electrical','kitchen','bathrooms','flooring','paint-int','paint-ext','landscaping'];
+  const data = {};
+  let subtotal = 0;
+  for (const k of vals) {
+    const v = +document.getElementById('r-'+k).value || 0;
+    data[k.replace('-','_')] = v;
+    subtotal += v;
+  }
+  const contingency = subtotal * 0.15;
+  data.contingency = contingency;
+  document.getElementById('r-contingency').value = Math.round(contingency);
+  return { data, total: subtotal + contingency };
+}
+
+function updateRepairTotal() {
+  const vals = ['base','roof','hvac','plumbing','electrical','kitchen','bathrooms','flooring','paint-int','paint-ext','landscaping'];
+  let subtotal = 0;
+  for (const k of vals) subtotal += +document.getElementById('r-'+k).value || 0;
+  const contingency = subtotal * 0.15;
+  document.getElementById('r-contingency').value = Math.round(contingency);
+  const total = subtotal + contingency;
+  document.getElementById('repair-total-display').textContent = fmt(total);
+  recalcMath();
+}
+
+function resetRepairs() {
+  const sqft = +document.getElementById('f-sqft').value || 0;
+  const condition = +document.getElementById('f-condition').value || 5;
+  const year_built = +document.getElementById('f-year').value || 1990;
+  const baths = +document.getElementById('f-baths').value || 1;
+  setRepairFields(calcRepairs(sqft, condition, year_built, baths));
+}
+
+// ══════════════════════════════════════════════════════════════
+// COMPS
+// ══════════════════════════════════════════════════════════════
+function buildComps() {
+  const container = document.getElementById('comps-container');
+  container.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    container.innerHTML += `
+    <div class="comp-slot" id="comp-${i}">
+      <div class="comp-header">
+        <span class="comp-num">COMP ${i+1}</span>
+        <span class="comp-adj-price" id="comp-adj-${i}">—</span>
+      </div>
+      <div class="comp-grid">
+        <div class="field">
+          <label>Address</label>
+          <input type="text" id="comp-addr-${i}" placeholder="Street address" oninput="calcARV()" />
+        </div>
+        <div class="field">
+          <label>Sale Date</label>
+          <input type="date" id="comp-date-${i}" oninput="calcARV()" />
+        </div>
+        <div class="field">
+          <label>Sale Price</label>
+          <input type="number" id="comp-price-${i}" oninput="calcARV()" />
+        </div>
+        <div class="field">
+          <label>Sqft</label>
+          <input type="number" id="comp-sqft-${i}" oninput="calcARV()" />
+        </div>
+        <div class="field">
+          <label>Bd/Ba</label>
+          <input type="text" id="comp-bdba-${i}" placeholder="3/2" oninput="calcARV()" />
+        </div>
+      </div>
+    </div>`;
+  }
+}
+
+function calcARV() {
+  const subjectSqft = +document.getElementById('f-sqft').value || 0;
+  const subjectBeds = +document.getElementById('f-beds').value || 0;
+  const now = new Date();
+
+  const adjPrices = [];
+  let filledComps = 0;
+  let allRecent = true;
+  let recentCount = 0;
+
+  for (let i = 0; i < 5; i++) {
+    const price = +document.getElementById(`comp-price-${i}`).value;
+    const sqft = +document.getElementById(`comp-sqft-${i}`).value;
+    const dateStr = document.getElementById(`comp-date-${i}`).value;
+    const bdba = document.getElementById(`comp-bdba-${i}`).value;
+
+    if (!price || !sqft) {
+      document.getElementById(`comp-adj-${i}`).textContent = '—';
+      continue;
+    }
+    filledComps++;
+
+    const ppsf = price / sqft;
+    const baseAdj = ppsf * subjectSqft;
+    let adj = 0;
+
+    // Bed adjustment
+    if (bdba) {
+      const parts = bdba.split('/');
+      const compBeds = +parts[0] || subjectBeds;
+      adj += (subjectBeds - compBeds) * 5000;
+    }
+
+    // Sqft adjustment
+    adj += (subjectSqft - sqft) * 30;
+
+    const adjPrice = baseAdj + adj;
+    adjPrices.push(adjPrice);
+    document.getElementById(`comp-adj-${i}`).textContent = fmt(adjPrice);
+
+    // Check recency
+    if (dateStr) {
+      const compDate = new Date(dateStr);
+      const daysDiff = (now - compDate) / (1000 * 60 * 60 * 24);
+      if (daysDiff <= 90) recentCount++;
+      else allRecent = false;
+    }
+  }
+
+  // Weighted ARV = median
+  let arv = 0;
+  let confidence = 'LOW';
+  if (adjPrices.length > 0) {
+    adjPrices.sort((a, b) => a - b);
+    const mid = Math.floor(adjPrices.length / 2);
+    arv = adjPrices.length % 2 === 0
+      ? (adjPrices[mid-1] + adjPrices[mid]) / 2
+      : adjPrices[mid];
+
+    if (filledComps >= 5 && allRecent) confidence = 'HIGH';
+    else if (filledComps >= 3) confidence = 'MEDIUM';
+    else confidence = 'LOW';
+  }
+
+  document.getElementById('arv-display').textContent = arv > 0 ? fmt(arv) : '$—';
+  const badge = document.getElementById('arv-confidence-badge');
+  badge.textContent = filledComps > 0 ? confidence : '—';
+  badge.className = 'confidence-badge ' + confidence;
+
+  recalcMath();
+  return arv;
+}
+
+function getARV() {
+  const txt = document.getElementById('arv-display').textContent;
+  if (txt === '$—') return 0;
+  return parseFmt(txt);
+}
+
+// ══════════════════════════════════════════════════════════════
+// MAIN RECALC
+// ══════════════════════════════════════════════════════════════
+function recalc() {
+  updateCondition();
+  const sqft = +document.getElementById('f-sqft').value || 0;
+  const condition = +document.getElementById('f-condition').value || 5;
+  const year_built = +document.getElementById('f-year').value || 1990;
+  const baths = +document.getElementById('f-baths').value || 1;
+
+  const r = calcRepairs(sqft, condition, year_built, baths);
+  setRepairFields(r);
+  calcARV();
+}
+
+function recalcMath() {
+  const arv = getARV();
+  const { total: repairs } = getRepairFields();
+
+  const maoStd = (arv * 0.70) - repairs - 15000;
+  const maoAgg = (arv * 0.75) - repairs - 12000;
+  const maoCons = (arv * 0.65) - repairs - 18000;
+
+  document.getElementById('mao-standard').textContent = fmt(maoStd);
+  document.getElementById('mao-aggressive').textContent = fmt(maoAgg);
+  document.getElementById('mao-conservative').textContent = fmt(maoCons);
+
+  // Buyer math
+  const closingCosts = arv * 0.03;
+  const holdingCosts = 4500;
+  const buyerProfit = arv - maoStd - repairs - closingCosts - holdingCosts;
+  document.getElementById('buyer-buys').textContent = fmt(maoStd);
+  document.getElementById('buyer-closing').textContent = fmt(closingCosts);
+  document.getElementById('buyer-profit').textContent = fmt(buyerProfit);
+
+  // Verdict
+  updateVerdict(maoStd, maoAgg, repairs, arv);
+  updateSensitivity(arv, repairs);
+  generateScript();
+}
+
+// ══════════════════════════════════════════════════════════════
+// VERDICT
+// ══════════════════════════════════════════════════════════════
+function updateVerdict(maoStd, maoAgg, repairs, arv) {
+  const card = document.getElementById('verdict-card');
+  const textEl = document.getElementById('verdict-text');
+  const subEl = document.getElementById('verdict-sub');
+  const badgeWrap = document.getElementById('action-badge-wrap');
+  const asking = +document.getElementById('f-asking').value || 0;
+
+  let verdictClass, verdictText, verdictSub, textClass;
+  if (arv === 0) {
+    card.className = 'verdict-card';
+    textEl.className = 'verdict-text';
+    textEl.textContent = 'ENTER DEAL DATA';
+    subEl.textContent = 'Awaiting analysis';
+    badgeWrap.innerHTML = '';
+    return;
+  }
+
+  if (maoStd > 50000) {
+    verdictClass = 'strong'; verdictText = 'STRONG DEAL';
+    verdictSub = `MAO Standard: ${fmt(maoStd)} · Buyer nets ~${fmt(arv - maoStd - repairs - arv*0.03 - 4500)}`;
+    textClass = 'green';
+  } else if (maoStd >= 30000) {
+    verdictClass = 'marginal'; verdictText = 'MARGINAL';
+    verdictSub = `MAO Standard: ${fmt(maoStd)} · Thin margins, negotiate hard`;
+    textClass = 'yellow';
+  } else {
+    verdictClass = 'pass'; verdictText = 'PASS';
+    verdictSub = `MAO Standard: ${fmt(maoStd)} · Numbers don't support a deal`;
+    textClass = 'red';
+  }
+
+  card.className = 'verdict-card ' + verdictClass;
+  textEl.className = 'verdict-text ' + textClass;
+  textEl.textContent = verdictText;
+  subEl.textContent = verdictSub;
+
+  // Action badge
+  let badgeHTML = '';
+  if (asking > 0) {
+    if (asking <= maoStd) {
+      badgeHTML = '<div class="action-badge offer">⚡ OFFER NOW</div>';
+    } else if (asking <= maoAgg) {
+      badgeHTML = `<div class="action-badge negotiate">↕ NEGOTIATE<br><small style="font-size:9px;letter-spacing:0">Need $${fmt(asking - maoStd)} reduction</small></div>`;
+    } else {
+      badgeHTML = `<div class="action-badge walk">✕ WALK AWAY<br><small style="font-size:9px;letter-spacing:0">Seller ${fmt(asking)} vs MAO ${fmt(maoStd)}</small></div>`;
+    }
+  }
+  badgeWrap.innerHTML = badgeHTML;
+}
+
+// ══════════════════════════════════════════════════════════════
+// SENSITIVITY
+// ══════════════════════════════════════════════════════════════
+function updateSensitivity(arv, repairs) {
+  const tbody = document.getElementById('sens-tbody');
+  const scenarios = [-0.2, -0.1, 0, 0.1, 0.2];
+  const labels = ['-20%', '-10%', 'Base', '+10%', '+20%'];
+  let html = '';
+  for (let i = 0; i < scenarios.length; i++) {
+    const scenARV = arv * (1 + scenarios[i]);
+    const maoStd = (scenARV * 0.70) - repairs - 15000;
+    const maoAgg = (scenARV * 0.75) - repairs - 12000;
+    const maoCons = (scenARV * 0.65) - repairs - 18000;
+    const isBase = scenarios[i] === 0;
+    let statusClass, statusText;
+    if (maoStd > 50000) { statusClass = 'deal'; statusText = '✓ Deal'; }
+    else if (maoStd >= 30000) { statusClass = 'marginal'; statusText = '~ Marginal'; }
+    else { statusClass = 'nodeal'; statusText = '✕ Pass'; }
+    html += `<tr${isBase ? ' class="base-row"' : ''}>
+      <td>${labels[i]}${isBase ? ' ◄' : ''}</td>
+      <td>${fmt(scenARV)}</td>
+      <td class="${statusClass}">${fmt(maoStd)}</td>
+      <td>${fmt(maoAgg)}</td>
+      <td>${fmt(maoCons)}</td>
+      <td class="${statusClass}">${statusText}</td>
+    </tr>`;
+  }
+  tbody.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// NEGOTIATION SCRIPT
+// ══════════════════════════════════════════════════════════════
+function generateScript() {
+  const situations = getSelectedSituations();
+  const maoEl = document.getElementById('mao-standard').textContent;
+  const mao = maoEl === '$—' ? '[OFFER PRICE]' : maoEl;
+  const timeline = document.getElementById('f-timeline').value || 'ASAP';
+  const body = document.getElementById('script-body');
+
+  let opener = '';
+  if (situations.includes('Tax Delinquent')) {
+    opener = `"I understand you've been dealing with some tax issues on the property — I've helped several homeowners in similar situations and I want to see if I can do the same for you."`;
+  } else if (situations.includes('Pre-Foreclosure')) {
+    opener = `"I know the foreclosure process can feel overwhelming. My goal is to give you a clean exit that protects your credit as much as possible."`;
+  } else if (situations.includes('Divorce')) {
+    opener = `"I understand this is a difficult time. My goal is to make this process as simple and fast as possible so both parties can move forward."`;
+  } else if (situations.includes('Probate')) {
+    opener = `"I work with families going through probate regularly and I know how complex it can be. I'd love to make this as easy as possible for your family."`;
+  } else if (situations.includes('Tired Landlord')) {
+    opener = `"I talk to a lot of landlords who are just done with the headaches — no more tenants, repairs, or management. I can get you out clean."`;
+  } else {
+    opener = `"Thank you for taking my call. I'm a local investor in Tampa and I buy houses directly from homeowners — no agents, no fees, as-is."`;
+  }
+
+  const timelineStr = timeline === 'ASAP' ? 'as little as 2 weeks' : timeline === '1 month' ? 'about 1 month' : timeline === '3 months' ? 'up to 3 months' : 'on your timeline';
+
+  body.innerHTML = `
+    <div class="script-block opener">
+      <div class="script-label">📞 Opener</div>
+      <div class="script-q">${opener}</div>
+    </div>
+    <div class="script-block">
+      <div class="script-label">🔍 Discovery Questions (always ask all 5)</div>
+      <ol style="padding-left:16px; margin-top:4px">
+        <li class="script-q">"How long have you owned the property?"</li>
+        <li class="script-q">"What's your ideal timeline for closing?"</li>
+        <li class="script-q">"Is there anything about the property you want me to know before I make an offer?"</li>
+        <li class="script-q">"Have you had any other offers or interest?"</li>
+        <li class="script-q">"What would you need to feel good about this deal?"</li>
+      </ol>
+    </div>
+    <div class="script-block">
+      <div class="script-label">💰 The Pitch</div>
+      <div class="script-q">"Based on what you've told me, I can offer you <span class="script-highlight">${mao}</span> cash, close in <span class="script-highlight">${timelineStr}</span>, and you don't have to do any repairs or pay any agent fees. That means you walk away with <span class="script-highlight">${mao}</span> in your pocket, usually within 2 weeks."</div>
+    </div>
+    <div class="divider"></div>
+    <div class="script-label" style="margin-bottom:6px">🥊 Objection Handlers</div>
+    <div class="script-block objection">
+      <div class="script-label">If they say: "That's too low"</div>
+      <div class="script-q">"I understand — let me show you the math so you can see how I got there." <em style="color:var(--text2)">(Explain ARV − repairs − costs = your offer)</em></div>
+    </div>
+    <div class="script-block objection">
+      <div class="script-label">If they say: "I need to think about it"</div>
+      <div class="script-q">"Of course. Can I follow up Thursday? The market moves fast and I want to make sure this is still available."</div>
+    </div>
+    <div class="script-block objection">
+      <div class="script-label">If they say: "It's already listed"</div>
+      <div class="script-q">"Perfect — have you had any showings? I can work with your agent and might be able to close faster than a retail buyer."</div>
+    </div>
+    <div class="script-block objection">
+      <div class="script-label">If they say: "I want retail price"</div>
+      <div class="script-q">"I get it. The difference is I'm offering certainty — no inspections, no financing contingencies, no deals falling through."</div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// DEAL MEMO
+// ══════════════════════════════════════════════════════════════
+function generateMemo() {
+  const address = document.getElementById('f-address').value || '—';
+  const beds = document.getElementById('f-beds').value;
+  const baths = document.getElementById('f-baths').value;
+  const sqft = document.getElementById('f-sqft').value;
+  const year = document.getElementById('f-year').value;
+  const condition = document.getElementById('f-condition').value;
+  const asking = +document.getElementById('f-asking').value;
+  const arv = getARV();
+  const { data: rd, total: repairs } = getRepairFields();
+  const maoStd = (arv * 0.70) - repairs - 15000;
+  const maoAgg = (arv * 0.75) - repairs - 12000;
+  const maoCons = (arv * 0.65) - repairs - 18000;
+  const todayStr = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const expiry = new Date(Date.now() + 48*60*60*1000).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const situations = getSelectedSituations();
+
+  // Build comps table
+  let compsHTML = '<tr><th>Address</th><th>Date</th><th>Price</th><th>Sqft</th><th>Adj Price</th></tr>';
+  for (let i = 0; i < 5; i++) {
+    const addr = document.getElementById(`comp-addr-${i}`).value;
+    if (!addr) continue;
+    const price = document.getElementById(`comp-price-${i}`).value;
+    const date = document.getElementById(`comp-date-${i}`).value;
+    const csqft = document.getElementById(`comp-sqft-${i}`).value;
+    const adjEl = document.getElementById(`comp-adj-${i}`).textContent;
+    compsHTML += `<tr><td>${addr}</td><td>${date}</td><td>${fmtRaw(+price)}</td><td>${csqft}</td><td><strong>${adjEl}</strong></td></tr>`;
+  }
+
+  const memoEl = document.getElementById('memo-preview');
+  memoEl.style.display = 'block';
+  memoEl.innerHTML = `
+    <h1>PROPERTY ACQUISITION ANALYSIS — CONFIDENTIAL</h1>
+    <p style="text-align:center;color:#555;font-size:11px">Generated ${todayStr} · For Internal Use Only · Birddog Wholesale RE</p>
+
+    <h2>Property Details</h2>
+    <table>
+      <tr><th>Address</th><td class="memo-val">${address}</td><th>Beds/Baths</th><td class="memo-val">${beds}/${baths}</td></tr>
+      <tr><th>Sqft</th><td class="memo-val">${sqft}</td><th>Year Built</th><td class="memo-val">${year}</td></tr>
+      <tr><th>Condition</th><td class="memo-val">${condition}/10 — ${conditionDescs[condition]}</td><th>Seller Situations</th><td class="memo-val">${situations.join(', ') || 'N/A'}</td></tr>
+      <tr><th>Seller Asking</th><td class="memo-val">${asking ? fmtRaw(asking) : 'N/A'}</td><th>Seller Timeline</th><td class="memo-val">${document.getElementById('f-timeline').value}</td></tr>
+    </table>
+
+    <h2>Comparable Sales Analysis</h2>
+    <table>${compsHTML}</table>
+    <p><strong>ARV (Median Adjusted):</strong> <span class="memo-val" style="color:#006600">${fmt(arv)}</span> · Confidence: ${document.getElementById('arv-confidence-badge').textContent}</p>
+
+    <h2>Repair Scope</h2>
+    <table>
+      <tr><th>Item</th><th>Estimated</th><th>Item</th><th>Estimated</th></tr>
+      <tr><td>Base Rehab</td><td>${fmtRaw(rd.base)}</td><td>Roof</td><td>${fmtRaw(rd.roof)}</td></tr>
+      <tr><td>HVAC</td><td>${fmtRaw(rd.hvac)}</td><td>Plumbing</td><td>${fmtRaw(rd.plumbing)}</td></tr>
+      <tr><td>Electrical</td><td>${fmtRaw(rd.electrical)}</td><td>Kitchen</td><td>${fmtRaw(rd.kitchen)}</td></tr>
+      <tr><td>Bathrooms</td><td>${fmtRaw(rd.bathrooms)}</td><td>Flooring</td><td>${fmtRaw(rd.flooring)}</td></tr>
+      <tr><td>Paint Interior</td><td>${fmtRaw(rd.paint_int)}</td><td>Paint Exterior</td><td>${fmtRaw(rd.paint_ext)}</td></tr>
+      <tr><td>Landscaping</td><td>${fmtRaw(rd.landscaping)}</td><td>Contingency (15%)</td><td>${fmtRaw(rd.contingency)}</td></tr>
+      <tr><th colspan="3">TOTAL REPAIRS</th><th>${fmtRaw(repairs)}</th></tr>
+    </table>
+
+    <h2>Deal Math</h2>
+    <table>
+      <tr><th>Metric</th><th>Standard</th><th>Aggressive</th><th>Conservative</th></tr>
+      <tr><td>ARV</td><td>${fmtRaw(arv)}</td><td>${fmtRaw(arv)}</td><td>${fmtRaw(arv)}</td></tr>
+      <tr><td>Multiplier</td><td>70%</td><td>75%</td><td>65%</td></tr>
+      <tr><td>Less Repairs</td><td>${fmtRaw(repairs)}</td><td>${fmtRaw(repairs)}</td><td>${fmtRaw(repairs)}</td></tr>
+      <tr><td>Your Fee</td><td>$15,000</td><td>$12,000</td><td>$18,000</td></tr>
+      <tr><th>MAO (Max Allowable Offer)</th><th>${fmtRaw(maoStd)}</th><th>${fmtRaw(maoAgg)}</th><th>${fmtRaw(maoCons)}</th></tr>
+    </table>
+
+    <h2>Offer Terms</h2>
+    <table>
+      <tr><th>Purchase Price</th><td class="memo-val">${fmtRaw(maoStd)}</td></tr>
+      <tr><th>Terms</th><td>Cash · As-Is Condition · No Contingencies</td></tr>
+      <tr><th>Close</th><td>14-Day Close from Acceptance</td></tr>
+      <tr><th>Inspection Period</th><td>7 Days (Waivable)</td></tr>
+      <tr><th>Offer Expiration</th><td>${expiry} (48 Hours)</td></tr>
+    </table>
+
+    <div style="display:flex; gap:60px; margin-top:40px">
+      <div><div class="sig-line">Investor Signature</div></div>
+      <div><div class="sig-line">Date</div></div>
+      <div><div class="sig-line">Seller Signature</div></div>
+    </div>
+
+    <p style="font-size:10px;color:#888;margin-top:24px;text-align:center">
+      This document is for investment analysis purposes only. Not a legal contract. All figures are estimates.
+      Birddog Wholesale Real Estate · Tampa, FL
+    </p>
+    <div style="text-align:center;margin-top:16px">
+      <button onclick="window.print()" style="padding:8px 24px;background:#000;color:#fff;border:none;border-radius:4px;cursor:pointer;font-family:monospace">Print / Save PDF</button>
+    </div>`;
+
+  document.getElementById('memo-status').textContent = '✓ Memo generated';
+}
+
+// ══════════════════════════════════════════════════════════════
+// SAVE DEAL
+// ══════════════════════════════════════════════════════════════
+async function saveDeal() {
+  const address = document.getElementById('f-address').value;
+  if (!address) { alert('Please enter a property address'); return; }
+
+  const arv = getARV();
+  const { data: rd, total: repairs } = getRepairFields();
+  const maoStd = (arv * 0.70) - repairs - 15000;
+  const maoAgg = (arv * 0.75) - repairs - 12000;
+  const maoCons = (arv * 0.65) - repairs - 18000;
+
+  let verdict = 'PASS';
+  if (maoStd > 50000) verdict = 'STRONG DEAL';
+  else if (maoStd >= 30000) verdict = 'MARGINAL';
+
+  const comps = [];
+  for (let i = 0; i < 5; i++) {
+    comps.push({
+      address: document.getElementById(`comp-addr-${i}`).value,
+      date: document.getElementById(`comp-date-${i}`).value,
+      price: +document.getElementById(`comp-price-${i}`).value,
+      sqft: +document.getElementById(`comp-sqft-${i}`).value,
+      bdba: document.getElementById(`comp-bdba-${i}`).value
+    });
+  }
+
+  const payload = {
+    address,
+    beds: +document.getElementById('f-beds').value,
+    baths: +document.getElementById('f-baths').value,
+    sqft: +document.getElementById('f-sqft').value,
+    year_built: +document.getElementById('f-year').value,
+    lot_size: +document.getElementById('f-lot').value,
+    condition: +document.getElementById('f-condition').value,
+    seller_situations: getSelectedSituations(),
+    seller_motivation: +document.getElementById('f-motivation').value,
+    asking_price: +document.getElementById('f-asking').value,
+    seller_timeline: document.getElementById('f-timeline').value,
+    liens: document.getElementById('f-liens').value,
+    notes: document.getElementById('f-notes').value,
+    arv, arv_confidence: document.getElementById('arv-confidence-badge').textContent,
+    comps,
+    repairs_total: repairs, repairs_detail: rd,
+    mao_standard: maoStd, mao_aggressive: maoAgg, mao_conservative: maoCons,
+    verdict
+  };
+
+  let res;
+  if (currentDealId) {
+    res = await fetch(`/api/deals/${currentDealId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  } else {
+    res = await fetch('/api/deals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const data = await res.json();
+    currentDealId = data.id;
+  }
+  if (res.ok) {
+    showSaved();
+    loadTicker();
+  }
+}
+
+function showSaved() {
+  const btn = document.querySelector('button[onclick="saveDeal()"]');
+  const orig = btn.textContent;
+  btn.textContent = '✓ Saved!';
+  btn.style.background = '#00d26a';
+  setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
+}
+
+// ══════════════════════════════════════════════════════════════
+// HISTORY
+// ══════════════════════════════════════════════════════════════
+async function loadHistory() {
+  const [dealsRes, statsRes] = await Promise.all([
+    fetch('/api/deals'), fetch('/api/stats')
+  ]);
+  const deals = await dealsRes.json();
+  const { stats, monthly, byVerdict } = await statsRes.json();
+
+  // Stats row
+  document.getElementById('s-analyzed').textContent = stats.total_analyzed || 0;
+  document.getElementById('s-offers').textContent = stats.offers_made || 0;
+  document.getElementById('s-accepted').textContent = stats.accepted || 0;
+  document.getElementById('s-closed').textContent = stats.closed || 0;
+  document.getElementById('s-profit').textContent = stats.total_profit ? fmt(stats.total_profit) : '$0';
+
+  // Ticker
+  document.getElementById('t-analyzed').textContent = stats.total_analyzed || 0;
+  document.getElementById('t-offers').textContent = stats.offers_made || 0;
+  document.getElementById('t-accept').textContent = (stats.acceptance_rate || 0) + '%';
+  document.getElementById('t-profit').textContent = stats.total_profit ? fmt(stats.total_profit) : '$0';
+
+  // Monthly chart
+  const monthLabels = monthly.map(m => m.month).reverse();
+  const monthData = monthly.map(m => m.count).reverse();
+
+  if (dealChart) dealChart.destroy();
+  dealChart = new Chart(document.getElementById('deal-chart'), {
+    type: 'bar',
+    data: {
+      labels: monthLabels,
+      datasets: [{ label: 'Deals Analyzed', data: monthData, backgroundColor: '#00d26a44', borderColor: '#00d26a', borderWidth: 1 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#8b949e', font: { family: 'Roboto Mono', size: 10 } }, grid: { color: '#21262d' } },
+        y: { ticks: { color: '#8b949e', font: { family: 'Roboto Mono', size: 10 } }, grid: { color: '#21262d' }, beginAtZero: true }
+      }
+    }
+  });
+
+  // Verdict chart
+  const vColors = { 'STRONG DEAL': '#00d26a', 'MARGINAL': '#ffd32a', 'PASS': '#ff4757' };
+  const vLabels = byVerdict.map(v => v.verdict);
+  const vData = byVerdict.map(v => v.count);
+  const vColors2 = vLabels.map(l => vColors[l] || '#8b949e');
+
+  if (verdictChart) verdictChart.destroy();
+  verdictChart = new Chart(document.getElementById('verdict-chart'), {
+    type: 'doughnut',
+    data: { labels: vLabels, datasets: [{ data: vData, backgroundColor: vColors2, borderWidth: 0 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#8b949e', font: { family: 'Roboto Mono', size: 10 } } } }
+    }
+  });
+
+  // Table
+  const tbody = document.getElementById('hist-tbody');
+  tbody.innerHTML = deals.map(d => {
+    const verdict = d.verdict || 'PASS';
+    const vKey = verdict === 'STRONG DEAL' ? 'STRONG' : verdict === 'MARGINAL' ? 'MARGINAL' : 'PASS';
+    return `<tr class="clickable" onclick="loadDeal(${d.id})">
+      <td class="text-sm" style="color:var(--text2);white-space:nowrap">${d.created_at ? d.created_at.split(' ')[0] : '—'}</td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.address}</td>
+      <td class="mono">${d.beds}/${d.baths}</td>
+      <td class="mono">${(d.sqft||0).toLocaleString()}</td>
+      <td class="mono text-green">${fmt(d.arv)}</td>
+      <td class="mono text-red">${fmt(d.repairs_total)}</td>
+      <td class="mono" style="color:var(--yellow)">${fmt(d.mao_standard)}</td>
+      <td class="mono">${d.asking_price ? fmt(d.asking_price) : '—'}</td>
+      <td><span class="verdict-badge ${vKey}">${verdict}</span></td>
+      <td><span class="status-dot ${d.offered ? 'yes' : 'no'}"></span>${d.offered ? 'Yes' : 'No'}</td>
+      <td><span class="status-dot ${d.accepted ? 'yes' : 'no'}"></span>${d.accepted ? 'Yes' : 'No'}</td>
+      <td><span class="status-dot ${d.closed ? 'yes' : 'no'}"></span>${d.closed ? 'Yes' : 'No'}</td>
+      <td class="mono ${d.profit > 0 ? 'text-green' : ''}">${d.profit ? fmt(d.profit) : '—'}</td>
+      <td>
+        <button class="btn" style="padding:3px 8px;font-size:9px" onclick="event.stopPropagation();loadDeal(${d.id})">Edit</button>
+        <button class="btn danger" style="padding:3px 8px;font-size:9px" onclick="event.stopPropagation();deleteDeal(${d.id})">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function loadDeal(id) {
+  const deal = await (await fetch(`/api/deals/${id}`)).json();
+  currentDealId = id;
+
+  document.getElementById('f-address').value = deal.address || '';
+  document.getElementById('f-beds').value = deal.beds || 3;
+  document.getElementById('f-baths').value = deal.baths || 1;
+  document.getElementById('f-sqft').value = deal.sqft || 1200;
+  document.getElementById('f-year').value = deal.year_built || 1975;
+  document.getElementById('f-lot').value = deal.lot_size || 5000;
+  document.getElementById('f-condition').value = deal.condition || 5;
+  document.getElementById('f-motivation').value = deal.seller_motivation || 5;
+  document.getElementById('f-asking').value = deal.asking_price || 0;
+  document.getElementById('f-timeline').value = deal.seller_timeline || 'ASAP';
+  document.getElementById('f-liens').value = deal.liens || '';
+  document.getElementById('f-notes').value = deal.notes || '';
+
+  document.getElementById('motivation-val').textContent = deal.seller_motivation || 5;
+  setSelectedSituations(deal.seller_situations || []);
+
+  // Repairs
+  if (deal.repairs_detail) {
+    const rd = deal.repairs_detail;
+    document.getElementById('r-base').value = Math.round(rd.base || 0);
+    document.getElementById('r-roof').value = Math.round(rd.roof || 0);
+    document.getElementById('r-hvac').value = Math.round(rd.hvac || 0);
+    document.getElementById('r-plumbing').value = Math.round(rd.plumbing || 0);
+    document.getElementById('r-electrical').value = Math.round(rd.electrical || 0);
+    document.getElementById('r-kitchen').value = Math.round(rd.kitchen || 0);
+    document.getElementById('r-bathrooms').value = Math.round(rd.bathrooms || 0);
+    document.getElementById('r-flooring').value = Math.round(rd.flooring || 0);
+    document.getElementById('r-paint-int').value = Math.round(rd.paint_interior || rd.paint_int || 0);
+    document.getElementById('r-paint-ext').value = Math.round(rd.paint_exterior || rd.paint_ext || 0);
+    document.getElementById('r-landscaping').value = Math.round(rd.landscaping || 0);
+    document.getElementById('r-contingency').value = Math.round(rd.contingency || 0);
+    updateRepairTotal();
+  }
+
+  // Comps
+  const comps = deal.comps || [];
+  for (let i = 0; i < 5; i++) {
+    const c = comps[i] || {};
+    document.getElementById(`comp-addr-${i}`).value = c.address || '';
+    document.getElementById(`comp-date-${i}`).value = c.date || '';
+    document.getElementById(`comp-price-${i}`).value = c.price || '';
+    document.getElementById(`comp-sqft-${i}`).value = c.sqft || '';
+    document.getElementById(`comp-bdba-${i}`).value = c.bdba || `${c.beds || ''}/${c.baths || ''}`;
+  }
+
+  updateCondition();
+  calcARV();
+  recalcMath();
+
+  // Switch to analyzer tab
+  document.querySelector('[data-tab="analyzer"]').click();
+}
+
+async function deleteDeal(id) {
+  if (!confirm('Delete this deal?')) return;
+  await fetch(`/api/deals/${id}`, { method: 'DELETE' });
+  loadHistory();
+}
+
+function newDeal() {
+  clearForm();
+  document.querySelector('[data-tab="analyzer"]').click();
+}
+
+function clearForm() {
+  currentDealId = null;
+  document.getElementById('f-address').value = '';
+  document.getElementById('f-beds').value = 3;
+  document.getElementById('f-baths').value = 1;
+  document.getElementById('f-sqft').value = 1200;
+  document.getElementById('f-year').value = 1975;
+  document.getElementById('f-lot').value = 5000;
+  document.getElementById('f-condition').value = 5;
+  document.getElementById('f-motivation').value = 5;
+  document.getElementById('f-asking').value = 0;
+  document.getElementById('f-timeline').value = 'ASAP';
+  document.getElementById('f-liens').value = '';
+  document.getElementById('f-notes').value = '';
+  document.getElementById('motivation-val').textContent = '5';
+  setSelectedSituations([]);
+  for (let i = 0; i < 5; i++) {
+    ['addr','date','price','sqft','bdba'].forEach(f => {
+      document.getElementById(`comp-${f}-${i}`).value = '';
+    });
+    document.getElementById(`comp-adj-${i}`).textContent = '—';
+  }
+  document.getElementById('arv-display').textContent = '$—';
+  document.getElementById('arv-confidence-badge').textContent = '—';
+  document.getElementById('arv-confidence-badge').className = 'confidence-badge';
+  document.getElementById('memo-preview').style.display = 'none';
+  document.getElementById('memo-status').textContent = 'Generate a deal memo to review or print.';
+  updateCondition();
+  recalc();
+}
+
+// ══════════════════════════════════════════════════════════════
+// TICKER
+// ══════════════════════════════════════════════════════════════
+async function loadTicker() {
+  try {
+    const { stats } = await (await fetch('/api/stats')).json();
+    document.getElementById('t-analyzed').textContent = stats.total_analyzed || 0;
+    document.getElementById('t-offers').textContent = stats.offers_made || 0;
+    document.getElementById('t-accept').textContent = (stats.acceptance_rate || 0) + '%';
+    document.getElementById('t-profit').textContent = stats.total_profit ? fmt(stats.total_profit) : '$0';
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════════
+function fmt(n) {
+  if (!n && n !== 0) return '$—';
+  const abs = Math.abs(n);
+  const str = '$' + Math.round(abs).toLocaleString();
+  return n < 0 ? '-' + str : str;
+}
+function fmtRaw(n) {
+  if (!n && n !== 0) return '$—';
+  return '$' + Math.round(n).toLocaleString();
+}
+function parseFmt(s) {
+  return +(s.replace(/[$,]/g, '')) || 0;
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+buildComps();
+updateCondition();
+recalc();
+loadTicker();
+</script>
+</body>
+</html>

@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Birddog Skip Tracer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #1a1a1a;
+      --bg2: #222222;
+      --bg3: #2a2a2a;
+      --bg4: #333333;
+      --border: #3a3a3a;
+      --green: #22c55e;
+      --green-dim: #166534;
+      --green-glow: rgba(34,197,94,0.15);
+      --red: #ef4444;
+      --red-dim: #7f1d1d;
+      --yellow: #eab308;
+      --yellow-dim: #713f12;
+      --blue: #3b82f6;
+      --text: #e5e5e5;
+      --text-dim: #888888;
+      --text-muted: #555555;
+      --mono: 'DM Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ─── Layout ────────────────────────────────────────── */
+    .app {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      grid-template-rows: 60px 1fr;
+      min-height: 100vh;
+    }
+    .topbar {
+      grid-column: 1 / -1;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+    }
+    .topbar-logo {
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--green);
+      letter-spacing: 0.05em;
+    }
+    .topbar-logo span { color: var(--text-dim); }
+    .topbar-badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      background: var(--green-dim);
+      color: var(--green);
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .topbar-right {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ─── Sidebar ───────────────────────────────────────── */
+    .sidebar {
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      padding: 16px 0;
+      overflow-y: auto;
+    }
+    .sidebar-section {
+      padding: 8px 16px 4px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-dim);
+      transition: all 0.15s;
+      border-left: 2px solid transparent;
+    }
+    .nav-item:hover { background: var(--bg3); color: var(--text); }
+    .nav-item.active {
+      background: var(--green-glow);
+      color: var(--green);
+      border-left-color: var(--green);
+    }
+    .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+    /* ─── Main Content ──────────────────────────────────── */
+    .main {
+      overflow-y: auto;
+      padding: 28px;
+    }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ─── Section Headers ───────────────────────────────── */
+    .panel-header {
+      margin-bottom: 24px;
+    }
+    .panel-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .panel-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+    }
+
+    /* ─── Cards ─────────────────────────────────────────── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ─── Buttons ───────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--green);
+      color: #000;
+    }
+    .btn-primary:hover { background: #16a34a; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--bg3); color: var(--text); border-color: var(--green); }
+    .btn-outline-green {
+      background: var(--green-glow);
+      color: var(--green);
+      border: 1px solid var(--green-dim);
+    }
+    .btn-outline-green:hover { background: var(--green-dim); }
+    .btn-red {
+      background: var(--red-dim);
+      color: var(--red);
+      border: 1px solid var(--red);
+    }
+    .btn-sm { padding: 5px 10px; font-size: 11px; }
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* ─── File Upload ───────────────────────────────────── */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 36px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--green);
+      background: var(--green-glow);
+    }
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .upload-icon { font-size: 32px; margin-bottom: 8px; }
+    .upload-text { font-family: var(--mono); font-size: 13px; color: var(--text-dim); }
+    .upload-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ─── Stats Bar ─────────────────────────────────────── */
+    .stats-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      min-width: 100px;
+    }
+    .stat-value {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--green);
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+    .stat.warn .stat-value { color: var(--yellow); }
+    .stat.danger .stat-value { color: var(--red); }
+
+    /* ─── Table ─────────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+    thead { background: var(--bg3); }
+    th {
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg3); }
+    tr.duplicate td { background: rgba(234,179,8,0.05); }
+    tr.invalid-zip td { background: rgba(239,68,68,0.05); }
+
+    /* ─── Badges ────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: var(--mono);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+    .badge-green { background: var(--green-dim); color: var(--green); }
+    .badge-red { background: var(--red-dim); color: var(--red); }
+    .badge-yellow { background: var(--yellow-dim); color: var(--yellow); }
+    .badge-blue { background: rgba(59,130,246,0.15); color: var(--blue); }
+
+    /* ─── Search Links ──────────────────────────────────── */
+    .search-links { display: flex; gap: 4px; flex-wrap: wrap; }
+    .search-link {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: var(--mono);
+      background: var(--bg4);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .search-link:hover { background: var(--green-glow); color: var(--green); border-color: var(--green-dim); }
+
+    /* ─── Form elements ─────────────────────────────────── */
+    input[type="text"], input[type="number"], input[type="search"] {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 14px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+    input:focus { border-color: var(--green); }
+    .input-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .input-group input { flex: 1; }
+    label {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── Cost Estimator ────────────────────────────────── */
+    .cost-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .cost-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      transition: border-color 0.2s;
+    }
+    .cost-card.recommended {
+      border-color: var(--green);
+      background: var(--green-glow);
+    }
+    .cost-card-name {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .cost-card-cost {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--green);
+      margin-bottom: 4px;
+    }
+    .cost-card-rate {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-family: var(--mono);
+    }
+    .cost-card-best {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .cost-card-breakeven {
+      font-size: 11px;
+      color: var(--yellow);
+      margin-top: 4px;
+      font-family: var(--mono);
+    }
+    .recommendation-box {
+      background: var(--green-glow);
+      border: 1px solid var(--green-dim);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--green);
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    /* ─── Property Lookup ───────────────────────────────── */
+    .lookup-result {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .lookup-row {
+      display: flex;
+      gap: 16px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: baseline;
+    }
+    .lookup-row:last-child { border-bottom: none; }
+    .lookup-key {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      min-width: 140px;
+    }
+    .lookup-val {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+    }
+    .lookup-note {
+      font-size: 12px;
+      color: var(--yellow);
+      margin-top: 8px;
+      font-family: var(--mono);
+    }
+
+    /* ─── Progress Bar ──────────────────────────────────── */
+    .progress-wrap {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      height: 8px;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--green);
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    .progress-label {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* ─── Empty State ───────────────────────────────────── */
+    .empty {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+    .empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
+    .empty-text { font-size: 13px; }
+
+    /* ─── Alerts ────────────────────────────────────────── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+    .alert-success { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+    .alert-error { background: var(--red-dim); color: var(--red); border: 1px solid var(--red); }
+    .alert-info { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid var(--blue); }
+
+    /* ─── Tooltip ───────────────────────────────────────── */
+    [title] { cursor: help; }
+
+    /* ─── Loader ─────────────────────────────────────────── */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Filter bar ────────────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .filter-bar input { max-width: 260px; }
+    .filter-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-family: var(--mono);
+      cursor: pointer;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      transition: all 0.15s;
+    }
+    .filter-toggle.active { background: var(--yellow-dim); color: var(--yellow); border-color: var(--yellow); }
+    .filter-toggle.active.dup { background: var(--red-dim); color: var(--red); border-color: var(--red); }
+
+    /* ─── Scrollbar ─────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--green-dim); }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-logo">🦅 Birddog <span>/ Skip Tracer</span></div>
+    <div class="topbar-badge">Tampa FL</div>
+    <div class="topbar-right" id="server-time"></div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-section">Tools</div>
+    <div class="nav-item active" data-panel="cleaner">
+      <span class="nav-icon">🧹</span> CSV Cleaner
+    </div>
+    <div class="nav-item" data-panel="freelookup">
+      <span class="nav-icon">🔍</span> Free Lookup
+    </div>
+    <div class="nav-item" data-panel="cost">
+      <span class="nav-icon">💰</span> Cost Estimator
+    </div>
+    <div class="sidebar-section">Property</div>
+    <div class="nav-item" data-panel="property">
+      <span class="nav-icon">🏠</span> Owner Lookup
+    </div>
+    <div class="nav-item" data-panel="batch">
+      <span class="nav-icon">📦</span> Batch Lookup
+    </div>
+    <div class="sidebar-section">Export</div>
+    <div class="nav-item" data-panel="export">
+      <span class="nav-icon">📤</span> Export Hub
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ── PANEL 1: CSV Cleaner ───────────────────────── -->
+    <section class="panel active" id="panel-cleaner">
+      <div class="panel-header">
+        <div class="panel-title">CSV Cleaner</div>
+        <div class="panel-desc">Upload messy county CSV → normalize to BatchSkipTracing.com format</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Upload County CSV</div>
+        <div class="upload-zone" id="csv-drop">
+          <input type="file" id="csv-file" accept=".csv,.txt"/>
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">Drop CSV here or click to browse</div>
+          <div class="upload-hint">Accepts county export formats (messy names, embedded cities, etc.)</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
+          <button class="btn btn-primary" id="load-seed">Load 20 Sample Records</button>
+          <span style="font-size:11px;color:var(--text-muted);font-family:var(--mono);">or upload your own above</span>
+        </div>
+      </div>
+
+      <div id="cleaner-results" style="display:none;">
+        <div class="stats-bar" id="cleaner-stats"></div>
+        <div class="filter-bar">
+          <input type="search" id="cleaner-search" placeholder="Search name or address…"/>
+          <button class="filter-toggle" id="toggle-dupes">Show Duplicates</button>
+          <button class="filter-toggle" id="toggle-invalid">Invalid Zips</button>
+          <button class="btn btn-outline-green btn-sm" id="cleaner-export-btn">⬇ Export BatchSkipTracing CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table id="cleaner-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Property Address</th>
+                <th>City</th>
+                <th>ST</th>
+                <th>Zip</th>
+                <th>Mailing Address</th>
+                <th>Status</th>
+                <th>Search</th>
+              </tr>
+            </thead>
+            <tbody id="cleaner-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PANEL 2: Free Lookup ───────────────────────── -->
+    <section class="panel" id="panel-freelookup">
+      <div class="panel-header">
+        <div class="panel-title">Free Lookup</div>
+        <div class="panel-desc">Generate direct search links to free public databases</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Search by Name</div>
+        <div class="input-group">
+          <div style="flex:1;">
+            <label>First Name</label>
+            <input type="text" id="lookup-first" placeholder="John"/>
+          </div>
+          <div style="flex:1;">
+            <label>Last Name</label>
+            <input type="text" id="lookup-last" placeholder="Smith"/>
+          </div>
+          <div style="flex:1;">
+            <label>City</label>
+            <input type="text" id="lookup-city" placeholder="Tampa" value="Tampa"/>
+          </div>
+          <div style="align-self:flex-end;">
+            <button class="btn btn-primary" id="lookup-btn">Generate Links</button>
+          </div>
+        </div>
+        <div id="lookup-links" style="display:none;">
+          <div style="margin-bottom:12px;font-family:var(--mono);font-size:12px;color:var(--text-dim);">Click any button to open in new tab →</div>
+          <div class="btn-group" id="lookup-buttons"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Quick Search from Loaded Records</div>
+        <div id="lookup-from-records">
+          <div class="empty">
+            <div class="empty-icon">📋</div>
+            <div class="empty-text">Load records in CSV Cleaner first</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PANEL 3: Cost Estimator ────────────────────── -->
+    <section class="panel" id="panel-cost">
+      <div class="panel-header">
+        <div class="panel-title">Cost Estimator</div>
+        <div class="panel-desc">Compare skip trace pricing and get a recommendation</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">How many records?</div>
+        <div class="input-group" style="max-width:320px;">
+          <input type="number" id="cost-input" placeholder="e.g. 250" min="0" max="99999"/>
+          <button class="btn btn-primary" id="cost-calc">Calculate</button>
+        </div>
+        <div id="cost-results" style="display:none;">
+          <div class="cost-grid" id="cost-grid"></div>
+          <div class="recommendation-box" id="cost-recommendation"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PANEL 4: Property Owner Lookup ─────────────── -->
+    <section class="panel" id="panel-property">
+      <div class="panel-header">
+        <div class="panel-title">Property Owner Lookup</div>
+        <div class="panel-desc">Query Hillsborough County Property Appraiser by address</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Enter Property Address</div>
+        <div class="input-group">
+          <input type="text" id="prop-address" placeholder="e.g. 4521 N 22nd St Tampa FL 33610"/>
+          <button class="btn btn-primary" id="prop-lookup-btn">Lookup</button>
+        </div>
+        <div id="prop-loading" style="display:none;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--text-dim);">
+          <div class="spinner"></div> Fetching from HCPA…
+        </div>
+        <div id="prop-result" style="display:none;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Quick Add to Leads</div>
+        <div id="prop-leads-list">
+          <div class="empty">
+            <div class="empty-icon">📌</div>
+            <div class="empty-text">Use "Add to Leads" after a lookup</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PANEL 5: Batch Lookup ──────────────────────── -->
+    <section class="panel" id="panel-batch">
+      <div class="panel-header">
+        <div class="panel-title">Batch Lookup</div>
+        <div class="panel-desc">Upload CSV of addresses → generate all lookup links + export enriched CSV</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Upload Address CSV</div>
+        <div class="upload-zone" id="batch-drop">
+          <input type="file" id="batch-file" accept=".csv,.txt"/>
+          <div class="upload-icon">📋</div>
+          <div class="upload-text">Drop CSV of addresses or click to browse</div>
+          <div class="upload-hint">Columns: address, city, state, zip (and optional name)</div>
+        </div>
+      </div>
+
+      <div id="batch-results" style="display:none;">
+        <div class="progress-wrap" id="batch-progress-wrap" style="display:none;">
+          <div class="progress-bar" id="batch-progress"></div>
+        </div>
+        <div class="progress-label" id="batch-progress-label"></div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-family:var(--mono);font-size:13px;color:var(--text-dim);">
+            <span id="batch-count">0</span> records enriched
+          </div>
+          <button class="btn btn-outline-green btn-sm" id="batch-export-btn">⬇ Export Enriched CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table id="batch-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Address</th>
+                <th>HCPA</th>
+                <th>TruePeople</th>
+                <th>FastPeople</th>
+                <th>Whitepages</th>
+              </tr>
+            </thead>
+            <tbody id="batch-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PANEL 6: Export Hub ────────────────────────── -->
+    <section class="panel" id="panel-export">
+      <div class="panel-header">
+        <div class="panel-title">Export Hub</div>
+        <div class="panel-desc">Export your loaded records in multiple formats</div>
+      </div>
+
+      <div id="export-no-records" class="card">
+        <div class="empty">
+          <div class="empty-icon">📤</div>
+          <div class="empty-text">Load records in CSV Cleaner first, then export here</div>
+        </div>
+      </div>
+
+      <div id="export-cards" style="display:none;">
+        <div class="stats-bar" id="export-stats"></div>
+
+        <div class="card">
+          <div class="card-title">BatchSkipTracing.com Format</div>
+          <p style="font-size:13px;color:var(--text-dim);margin-bottom:14px;font-family:var(--mono);">
+            Columns: FirstName, LastName, PropertyAddress, PropertyCity, PropertyState, PropertyZip, MailingAddress, MailingCity, MailingState, MailingZip
+          </p>
+          <button class="btn btn-primary" onclick="exportRecords('batchskiptracing')">⬇ Download BatchSkipTracing CSV</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">PropStream Format</div>
+          <p style="font-size:13px;color:var(--text-dim);margin-bottom:14px;font-family:var(--mono);">
+            Columns: Address, City, State, Zip, OwnerFirst, OwnerLast
+          </p>
+          <button class="btn btn-ghost" onclick="exportRecords('propstream')">⬇ Download PropStream CSV</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Birddog CRM Format</div>
+          <p style="font-size:13px;color:var(--text-dim);margin-bottom:14px;font-family:var(--mono);">
+            Columns: name, address, city, zip, phone, email, source, status
+          </p>
+          <button class="btn btn-outline-green" onclick="exportRecords('birddog')">⬇ Download Birddog CRM CSV</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ─── State ────────────────────────────────────────────────────────────────────
+let loadedRecords = [];
+let batchRecords = [];
+let propLeads = [];
+let filterDupes = false;
+let filterInvalid = false;
+
+// ─── Navigation ───────────────────────────────────────────────────────────────
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById('panel-' + item.dataset.panel).classList.add('active');
+    if (item.dataset.panel === 'export') updateExportPanel();
+    if (item.dataset.panel === 'freelookup') updateFreeLookupPanel();
+  });
+});
+
+// ─── Time ─────────────────────────────────────────────────────────────────────
+function tick() {
+  const now = new Date();
+  document.getElementById('server-time').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+}
+tick();
+setInterval(tick, 1000);
+
+// ─── CSV Cleaner ──────────────────────────────────────────────────────────────
+const csvDrop = document.getElementById('csv-drop');
+const csvFile = document.getElementById('csv-file');
+
+csvDrop.addEventListener('dragover', e => { e.preventDefault(); csvDrop.classList.add('dragover'); });
+csvDrop.addEventListener('dragleave', () => csvDrop.classList.remove('dragover'));
+csvDrop.addEventListener('drop', e => {
+  e.preventDefault();
+  csvDrop.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) uploadCSV(file);
+});
+csvFile.addEventListener('change', e => {
+  if (e.target.files[0]) uploadCSV(e.target.files[0]);
+});
+
+async function uploadCSV(file) {
+  const form = new FormData();
+  form.append('file', file);
+  try {
+    showLoading(true);
+    const res = await fetch('/api/clean-csv', { method: 'POST', body: form });
+    const data = await res.json();
+    if (data.error) return alert('Error: ' + data.error);
+    loadedRecords = data.records;
+    renderCleanerTable(data);
+    showLoading(false);
+  } catch (err) {
+    alert('Upload failed: ' + err.message);
+    showLoading(false);
+  }
+}
+
+document.getElementById('load-seed').addEventListener('click', async () => {
+  try {
+    const res = await fetch('/api/seed');
+    const data = await res.json();
+    loadedRecords = data.records;
+    renderCleanerTable({ ...data, duplicates: data.records.filter(r => r.isDuplicate).length, invalidZips: data.records.filter(r => !r.zipValid).length });
+  } catch (err) {
+    alert('Failed to load seed data: ' + err.message);
+  }
+});
+
+function renderCleanerTable(data) {
+  const { records, count, duplicates, invalidZips } = data;
+  document.getElementById('cleaner-results').style.display = 'block';
+
+  // Stats
+  const statsEl = document.getElementById('cleaner-stats');
+  statsEl.innerHTML = `
+    <div class="stat"><div class="stat-value">${count}</div><div class="stat-label">Total Records</div></div>
+    <div class="stat ${duplicates > 0 ? 'danger' : ''}"><div class="stat-value">${duplicates}</div><div class="stat-label">Duplicates</div></div>
+    <div class="stat ${invalidZips > 0 ? 'warn' : ''}"><div class="stat-value">${invalidZips}</div><div class="stat-label">Invalid Zips</div></div>
+    <div class="stat"><div class="stat-value">${count - duplicates}</div><div class="stat-label">Clean Records</div></div>
+  `;
+
+  renderFilteredRows(records);
+}
+
+function renderFilteredRows(records) {
+  const search = (document.getElementById('cleaner-search').value || '').toLowerCase();
+  let filtered = records;
+  if (filterDupes) filtered = filtered.filter(r => r.isDuplicate);
+  if (filterInvalid) filtered = filtered.filter(r => !r.zipValid);
+  if (search) filtered = filtered.filter(r =>
+    `${r.firstName} ${r.lastName} ${r.propertyAddress}`.toLowerCase().includes(search)
+  );
+
+  const tbody = document.getElementById('cleaner-tbody');
+  tbody.innerHTML = filtered.map((r, i) => {
+    const full = encodeURIComponent(`${r.firstName} ${r.lastName}`);
+    const city = encodeURIComponent(r.propertyCity || 'Tampa');
+    const state = r.propertyState || 'FL';
+    const tpsUrl = `https://www.truepeoplesearch.com/results?name=${full}&citystatezip=${city}+${state}`;
+    const fpsUrl = `https://www.fastpeoplesearch.com/name/${full}_${r.propertyCity || 'Tampa'}-${state}`;
+    const wpUrl = `https://www.whitepages.com/name/${full}/${r.propertyCity || 'Tampa'}-${state}`;
+
+    const rowClass = r.isDuplicate ? 'duplicate' : (!r.zipValid ? 'invalid-zip' : '');
+    const statusBadge = r.isDuplicate
+      ? '<span class="badge badge-red">DUPE</span>'
+      : r.zipValid
+        ? '<span class="badge badge-green">OK</span>'
+        : '<span class="badge badge-yellow">BAD ZIP</span>';
+
+    return `<tr class="${rowClass}">
+      <td style="color:var(--text-muted)">${i + 1}</td>
+      <td>${r.firstName}</td>
+      <td>${r.lastName}</td>
+      <td>${r.propertyAddress}</td>
+      <td>${r.propertyCity}</td>
+      <td>${r.propertyState}</td>
+      <td style="${!r.zipValid ? 'color:var(--yellow)' : ''}">${r.propertyZip}</td>
+      <td style="color:var(--text-dim);font-size:11px;">${r.mailingAddress !== r.propertyAddress ? `${r.mailingAddress}, ${r.mailingCity} ${r.mailingState} ${r.mailingZip}` : '<span style="color:var(--text-muted)">same</span>'}</td>
+      <td>${statusBadge}</td>
+      <td>
+        <div class="search-links">
+          <a class="search-link" href="${tpsUrl}" target="_blank" title="TruePeopleSearch">TPS</a>
+          <a class="search-link" href="${fpsUrl}" target="_blank" title="FastPeopleSearch">FPS</a>
+          <a class="search-link" href="${wpUrl}" target="_blank" title="Whitepages">WP</a>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:24px;font-family:var(--mono);">No records match filters</td></tr>`;
+  }
+}
+
+document.getElementById('cleaner-search').addEventListener('input', () => renderFilteredRows(loadedRecords));
+
+document.getElementById('toggle-dupes').addEventListener('click', function() {
+  filterDupes = !filterDupes;
+  this.classList.toggle('active', filterDupes);
+  this.classList.toggle('dup', filterDupes);
+  this.textContent = filterDupes ? '✕ Clear Filter' : 'Show Duplicates';
+  renderFilteredRows(loadedRecords);
+});
+document.getElementById('toggle-invalid').addEventListener('click', function() {
+  filterInvalid = !filterInvalid;
+  this.classList.toggle('active', filterInvalid);
+  this.textContent = filterInvalid ? '✕ Clear Filter' : 'Invalid Zips';
+  renderFilteredRows(loadedRecords);
+});
+
+document.getElementById('cleaner-export-btn').addEventListener('click', () => exportRecords('batchskiptracing'));
+
+// ─── Free Lookup ──────────────────────────────────────────────────────────────
+document.getElementById('lookup-btn').addEventListener('click', generateLookupLinks);
+document.getElementById('lookup-first').addEventListener('keydown', e => e.key === 'Enter' && generateLookupLinks());
+document.getElementById('lookup-last').addEventListener('keydown', e => e.key === 'Enter' && generateLookupLinks());
+
+function generateLookupLinks() {
+  const first = document.getElementById('lookup-first').value.trim();
+  const last = document.getElementById('lookup-last').value.trim();
+  const city = document.getElementById('lookup-city').value.trim() || 'Tampa';
+  if (!first && !last) return;
+
+  const full = encodeURIComponent(`${first} ${last}`.trim());
+  const cityEnc = encodeURIComponent(city + ' FL');
+  const cityDash = `${city.replace(/\s+/g, '-')}-FL`;
+
+  const links = [
+    { label: '🔍 TruePeopleSearch', url: `https://www.truepeoplesearch.com/results?name=${full}&citystatezip=${cityEnc}`, color: '#3b82f6' },
+    { label: '🔍 FastPeopleSearch', url: `https://www.fastpeoplesearch.com/name/${full}_${cityDash}`, color: '#8b5cf6' },
+    { label: '🔍 Whitepages', url: `https://www.whitepages.com/name/${full}/${cityDash}`, color: '#f59e0b' },
+  ];
+
+  const container = document.getElementById('lookup-buttons');
+  container.innerHTML = links.map(l =>
+    `<a class="btn btn-ghost" href="${l.url}" target="_blank" style="border-color:${l.color};color:${l.color};">${l.label}</a>`
+  ).join('');
+  document.getElementById('lookup-links').style.display = 'block';
+}
+
+function updateFreeLookupPanel() {
+  if (!loadedRecords.length) return;
+  const container = document.getElementById('lookup-from-records');
+  container.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>Name</th><th>Address</th><th>Quick Search</th>
+  </tr></thead><tbody>${loadedRecords.slice(0, 50).map(r => {
+    const full = encodeURIComponent(`${r.firstName} ${r.lastName}`);
+    const city = encodeURIComponent((r.propertyCity || 'Tampa') + ' FL');
+    const cityDash = `${(r.propertyCity || 'Tampa').replace(/\s+/g, '-')}-FL`;
+    return `<tr>
+      <td>${r.firstName} ${r.lastName}</td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--text-dim);">${r.propertyAddress}</td>
+      <td>
+        <div class="search-links">
+          <a class="search-link" href="https://www.truepeoplesearch.com/results?name=${full}&citystatezip=${city}" target="_blank">TruePeople</a>
+          <a class="search-link" href="https://www.fastpeoplesearch.com/name/${full}_${cityDash}" target="_blank">FastPeople</a>
+          <a class="search-link" href="https://www.whitepages.com/name/${full}/${cityDash}" target="_blank">Whitepages</a>
+        </div>
+      </td>
+    </tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+
+// ─── Cost Estimator ───────────────────────────────────────────────────────────
+document.getElementById('cost-calc').addEventListener('click', runCostCalc);
+document.getElementById('cost-input').addEventListener('keydown', e => e.key === 'Enter' && runCostCalc());
+
+async function runCostCalc() {
+  const n = parseInt(document.getElementById('cost-input').value) || 0;
+  const res = await fetch(`/api/cost-estimate?records=${n}`);
+  const data = await res.json();
+  
+  const breakEvenN = 660;
+  const recommended = n >= breakEvenN ? 'PropStream' : 'BatchSkipTracing.com';
+
+  document.getElementById('cost-grid').innerHTML = data.services.map(s => `
+    <div class="cost-card ${s.name === recommended ? 'recommended' : ''}">
+      ${s.name === recommended ? '<div class="badge badge-green" style="margin-bottom:8px;">✓ RECOMMENDED</div>' : ''}
+      <div class="cost-card-name">${s.name}</div>
+      <div class="cost-card-cost">${s.cost}</div>
+      <div class="cost-card-rate">${s.rate}</div>
+      <div class="cost-card-best">Best for: ${s.bestFor}</div>
+      ${s.breakEven ? `<div class="cost-card-breakeven">Break-even: ${s.breakEven}</div>` : ''}
+    </div>
+  `).join('');
+
+  document.getElementById('cost-recommendation').textContent = '💡 ' + data.recommendation;
+  document.getElementById('cost-results').style.display = 'block';
+}
+
+// ─── Property Lookup ──────────────────────────────────────────────────────────
+document.getElementById('prop-lookup-btn').addEventListener('click', runPropLookup);
+document.getElementById('prop-address').addEventListener('keydown', e => e.key === 'Enter' && runPropLookup());
+
+async function runPropLookup() {
+  const address = document.getElementById('prop-address').value.trim();
+  if (!address) return;
+
+  document.getElementById('prop-loading').style.display = 'flex';
+  document.getElementById('prop-result').style.display = 'none';
+
+  try {
+    const res = await fetch(`/api/property-lookup?address=${encodeURIComponent(address)}`);
+    const data = await res.json();
+    document.getElementById('prop-loading').style.display = 'none';
+
+    let html = `<div class="lookup-result">
+      <div class="lookup-row">
+        <div class="lookup-key">HCPA Link</div>
+        <div class="lookup-val"><a href="${data.searchUrl}" target="_blank" class="btn btn-outline-green btn-sm">Open in HCPA ↗</a></div>
+      </div>`;
+
+    if (data.owner) {
+      html += `<div class="lookup-row"><div class="lookup-key">Owner</div><div class="lookup-val">${data.owner}</div></div>`;
+    }
+    if (data.mailingAddress) {
+      html += `<div class="lookup-row"><div class="lookup-key">Mailing Address</div><div class="lookup-val">${data.mailingAddress}</div></div>`;
+    }
+    if (data.homestead !== null) {
+      html += `<div class="lookup-row"><div class="lookup-key">Homestead</div><div class="lookup-val">${data.homestead ? '<span class="badge badge-green">YES</span>' : '<span class="badge badge-red">NO</span>'}</div></div>`;
+    }
+    if (data.lastSalePrice) {
+      html += `<div class="lookup-row"><div class="lookup-key">Last Sale Price</div><div class="lookup-val">${data.lastSalePrice}</div></div>`;
+    }
+    if (data.lastSaleDate) {
+      html += `<div class="lookup-row"><div class="lookup-key">Last Sale Date</div><div class="lookup-val">${data.lastSaleDate}</div></div>`;
+    }
+    if (data.note) {
+      html += `<div class="lookup-note">ℹ ${data.note}</div>`;
+    }
+
+    html += `<div style="margin-top:14px;">
+      <button class="btn btn-outline-green btn-sm" onclick="addToLeads(${JSON.stringify({ address, owner: data.owner, searchUrl: data.searchUrl }).replace(/'/g, "\\'")})">
+        + Add to Leads
+      </button>
+    </div>`;
+    html += `</div>`;
+
+    document.getElementById('prop-result').innerHTML = html;
+    document.getElementById('prop-result').style.display = 'block';
+  } catch (err) {
+    document.getElementById('prop-loading').style.display = 'none';
+    document.getElementById('prop-result').innerHTML = `<div class="alert alert-error">Lookup failed: ${err.message}</div>`;
+    document.getElementById('prop-result').style.display = 'block';
+  }
+}
+
+function addToLeads(lead) {
+  if (typeof lead === 'string') lead = JSON.parse(lead);
+  propLeads.push(lead);
+  renderPropLeads();
+}
+
+function renderPropLeads() {
+  const container = document.getElementById('prop-leads-list');
+  if (!propLeads.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">📌</div><div class="empty-text">Use "Add to Leads" after a lookup</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="table-wrap"><table><thead><tr>
+    <th>#</th><th>Address</th><th>Owner</th><th>HCPA</th>
+  </tr></thead><tbody>${propLeads.map((l, i) => `
+    <tr>
+      <td style="color:var(--text-muted)">${i + 1}</td>
+      <td style="font-family:var(--mono);font-size:12px;">${l.address}</td>
+      <td style="font-family:var(--mono);font-size:12px;">${l.owner || '—'}</td>
+      <td><a href="${l.searchUrl}" target="_blank" class="search-link">HCPA ↗</a></td>
+    </tr>
+  `).join('')}</tbody></table></div>`;
+}
+
+// ─── Batch Lookup ─────────────────────────────────────────────────────────────
+const batchDrop = document.getElementById('batch-drop');
+const batchFile = document.getElementById('batch-file');
+
+batchDrop.addEventListener('dragover', e => { e.preventDefault(); batchDrop.classList.add('dragover'); });
+batchDrop.addEventListener('dragleave', () => batchDrop.classList.remove('dragover'));
+batchDrop.addEventListener('drop', e => {
+  e.preventDefault();
+  batchDrop.classList.remove('dragover');
+  if (e.dataTransfer.files[0]) uploadBatch(e.dataTransfer.files[0]);
+});
+batchFile.addEventListener('change', e => {
+  if (e.target.files[0]) uploadBatch(e.target.files[0]);
+});
+
+async function uploadBatch(file) {
+  const form = new FormData();
+  form.append('file', file);
+
+  // Show progress
+  document.getElementById('batch-results').style.display = 'block';
+  document.getElementById('batch-progress-wrap').style.display = 'block';
+  document.getElementById('batch-progress').style.width = '30%';
+  document.getElementById('batch-progress-label').textContent = 'Processing…';
+
+  try {
+    const res = await fetch('/api/batch-lookup', { method: 'POST', body: form });
+    const data = await res.json();
+    if (data.error) return alert('Error: ' + data.error);
+
+    batchRecords = data.records;
+
+    document.getElementById('batch-progress').style.width = '100%';
+    document.getElementById('batch-progress-label').textContent = `${data.count} of ${data.count} processed`;
+    document.getElementById('batch-count').textContent = data.count;
+
+    const tbody = document.getElementById('batch-tbody');
+    tbody.innerHTML = data.records.map((r, i) => {
+      const keys = Object.keys(r);
+      const address = r.address || r.Address || r.PropertyAddress || r[keys[0]] || '';
+      return `<tr>
+        <td style="color:var(--text-muted)">${i + 1}</td>
+        <td style="font-family:var(--mono);font-size:11px;">${address}</td>
+        <td>${r.hcpaUrl ? `<a class="search-link" href="${r.hcpaUrl}" target="_blank">HCPA ↗</a>` : '—'}</td>
+        <td>${r.truePeopleUrl ? `<a class="search-link" href="${r.truePeopleUrl}" target="_blank">TPS ↗</a>` : '—'}</td>
+        <td>${r.fastPeopleUrl ? `<a class="search-link" href="${r.fastPeopleUrl}" target="_blank">FPS ↗</a>` : '—'}</td>
+        <td>${r.whitepagesUrl ? `<a class="search-link" href="${r.whitepagesUrl}" target="_blank">WP ↗</a>` : '—'}</td>
+      </tr>`;
+    }).join('');
+
+    setTimeout(() => {
+      document.getElementById('batch-progress-wrap').style.display = 'none';
+    }, 1500);
+  } catch (err) {
+    alert('Batch lookup failed: ' + err.message);
+  }
+}
+
+document.getElementById('batch-export-btn').addEventListener('click', async () => {
+  if (!batchRecords.length) return;
+  const res = await fetch('/api/batch-export', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ records: batchRecords }),
+  });
+  downloadResponse(res, 'batch_enriched.csv');
+});
+
+// ─── Export Hub ───────────────────────────────────────────────────────────────
+function updateExportPanel() {
+  const hasRecords = loadedRecords.length > 0;
+  document.getElementById('export-no-records').style.display = hasRecords ? 'none' : 'block';
+  document.getElementById('export-cards').style.display = hasRecords ? 'block' : 'none';
+  if (hasRecords) {
+    document.getElementById('export-stats').innerHTML = `
+      <div class="stat"><div class="stat-value">${loadedRecords.length}</div><div class="stat-label">Total Records</div></div>
+      <div class="stat"><div class="stat-value">${loadedRecords.filter(r => !r.isDuplicate).length}</div><div class="stat-label">Unique Records</div></div>
+    `;
+  }
+}
+
+async function exportRecords(format) {
+  if (!loadedRecords.length) return alert('No records loaded. Use CSV Cleaner first.');
+  const res = await fetch('/api/export', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ records: loadedRecords, format }),
+  });
+  const names = { batchskiptracing: 'batchskiptracing_export.csv', propstream: 'propstream_export.csv', birddog: 'birddog_export.csv' };
+  downloadResponse(res, names[format] || 'export.csv');
+}
+
+async function downloadResponse(res, filename) {
+  if (!res.ok) {
+    const err = await res.json();
+    return alert('Export failed: ' + err.error);
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function showLoading(on) {
+  // Simple inline implementation
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+// Auto-load seed data on first visit
+(async () => {
+  try {
+    const res = await fetch('/api/seed');
+    const data = await res.json();
+    loadedRecords = data.records;
+    renderCleanerTable({
+      ...data,
+      duplicates: data.records.filter(r => r.isDuplicate).length,
+      invalidZips: data.records.filter(r => !r.zipValid).length,
+    });
+  } catch (e) { /* silence */ }
+})();
+</script>
+</body>
+</html>
